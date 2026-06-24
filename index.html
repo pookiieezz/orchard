@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สวนผลไม้ — มังคุดและทุเรียน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root{
+  --g-dk:#1a5c3a;--g:#2d8653;--g-md:#3aab6d;--g-lt:#c8ead8;--g-pl:#edf7f2;
+  --am:#c47a1e;--am-lt:#fef3e0;--rd:#b83232;--rd-lt:#fdeaea;--bl:#1e5fa0;--bl-lt:#e5f0fc;--pu:#6b46c1;--pu-lt:#ede9fe;
+  --bg:#f5f8f6;--wh:#fff;--tx:#1a2e22;--tx2:#4a6358;--tx3:#8aaa97;--br:#d4e6dc;--br2:#b8d4c4;
+  --r:10px;--rl:16px;--sh:0 1px 4px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
+  --font:'Noto Sans Thai',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:14px;min-height:100vh}
+/* SIDEBAR */
+.sb{position:fixed;left:0;top:0;width:210px;height:100vh;background:var(--g-dk);display:flex;flex-direction:column;z-index:100;overflow-y:auto}
+.sb-hd{padding:18px 14px 14px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-logo{display:flex;align-items:center;gap:10px}
+.logo-ic{width:34px;height:34px;background:var(--g-md);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-tx{color:#fff;font-size:13px;font-weight:600;line-height:1.3}
+.logo-sub{color:rgba(255,255,255,.45);font-size:11px}
+.ng{padding:10px 8px 0}
+.nl{font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.07em;text-transform:uppercase;padding:0 6px;margin-bottom:3px}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:7px;cursor:pointer;color:rgba(255,255,255,.6);font-size:13px;transition:all .15s;margin-bottom:1px;border:none;background:none;width:100%;text-align:left}
+.ni i{font-size:16px;flex-shrink:0}
+.ni:hover{background:rgba(255,255,255,.08);color:#fff}
+.ni.on{background:rgba(255,255,255,.15);color:#fff;font-weight:500}
+.sb-ft{margin-top:auto;padding:10px 14px;border-top:1px solid rgba(255,255,255,.1);font-size:11px;color:rgba(255,255,255,.25)}
+/* MAIN */
+.mn{margin-left:210px;min-height:100vh}
+.tb{background:var(--wh);border-bottom:1px solid var(--br);padding:11px 22px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.tb-title{font-size:15px;font-weight:600}
+.tb-date{font-size:12px;color:var(--tx3)}
+.ct{padding:18px 22px;max-width:1100px}
+/* PAGE */
+.pg{display:none}.pg.on{display:block}
+/* CARDS */
+.card{background:var(--wh);border:1px solid var(--br);border-radius:var(--rl);padding:16px 18px;margin-bottom:12px;box-shadow:var(--sh)}
+.ct-title{font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.ct-title i{font-size:15px;color:var(--g-md)}
+/* GRID */
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:9px;margin-bottom:12px}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:9px;margin-bottom:12px}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:9px;margin-bottom:12px}
+.g2f{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:12px}
+.g3f{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;margin-bottom:12px}
+/* MET */
+.met{background:var(--g-pl);border:1px solid var(--g-lt);border-radius:var(--r);padding:12px 14px}
+.ml{font-size:11px;color:var(--tx2);margin-bottom:3px}
+.mv{font-size:20px;font-weight:600;color:var(--g-dk)}
+.mv.am{color:var(--am)}.mv.rd{color:var(--rd)}.mv.bl{color:var(--bl)}
+/* BADGE */
+.badge{display:inline-block;font-size:11px;padding:2px 7px;border-radius:100px;font-weight:500}
+.bg{background:#d1f2e0;color:#1a5c3a}.ba{background:#fef3e0;color:#c47a1e}
+.br-c{background:#fdeaea;color:#b83232}.bb{background:#e5f0fc;color:#1e5fa0}
+.bt{background:#d4f5ed;color:#0f6e56}.bp{background:#ede9fe;color:#6b46c1}.bgr{background:#f0f0f0;color:#555}
+/* FORMS */
+label{font-size:12px;color:var(--tx2);display:block;margin-bottom:3px;font-weight:500}
+input,select,textarea{font-size:13px;border:1px solid var(--br2);border-radius:8px;padding:7px 10px;background:var(--wh);color:var(--tx);width:100%;font-family:var(--font);transition:border-color .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--g-md);box-shadow:0 0 0 3px rgba(45,134,83,.1)}
+/* BTN */
+.btn{padding:7px 14px;font-size:13px;border-radius:8px;cursor:pointer;font-family:var(--font);font-weight:500;transition:all .15s;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--br2);background:var(--wh);color:var(--tx)}
+.btn:hover{border-color:var(--g-md);color:var(--g-dk)}
+.btnp{background:var(--g);color:#fff;border-color:var(--g)}.btnp:hover{background:var(--g-dk);border-color:var(--g-dk);color:#fff}
+.btnsm{padding:4px 9px;font-size:12px;border-radius:6px}
+/* TABLE */
+.tw{overflow-x:auto;border-radius:var(--r);border:1px solid var(--br)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:8px 11px;color:var(--tx2);font-weight:600;border-bottom:1px solid var(--br);background:var(--g-pl);font-size:12px;white-space:nowrap}
+td{padding:8px 11px;border-bottom:1px solid var(--br);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--g-pl)}
+/* STRIP */
+.strip{border-radius:0;padding:9px 12px;margin-bottom:7px;display:flex;gap:9px;align-items:flex-start;font-size:13px}
+.sg{background:var(--g-pl);border-left:3px solid var(--g)}.sa{background:var(--am-lt);border-left:3px solid var(--am)}.sr{background:var(--rd-lt);border-left:3px solid var(--rd)}.sbl{background:var(--bl-lt);border-left:3px solid var(--bl)}
+.st-g{font-weight:600;color:var(--g-dk);margin-bottom:2px}.st-a{font-weight:600;color:var(--am);margin-bottom:2px}.st-r{font-weight:600;color:var(--rd);margin-bottom:2px}
+.sb2{font-size:12px;color:var(--tx2);line-height:1.6}
+/* CALENDAR */
+.cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-h{font-size:11px;text-align:center;color:var(--tx3);padding:3px 0;font-weight:600}
+.cal-d{font-size:12px;text-align:center;padding:4px 2px;border-radius:6px;cursor:pointer;min-height:30px;transition:background .1s}
+.cal-d:hover{background:var(--g-pl)}.cal-d.today{background:var(--g-lt);color:var(--g-dk);font-weight:600}
+.cal-d.hd::after{content:'';display:block;width:5px;height:5px;border-radius:50%;margin:2px auto 0;background:var(--g-md)}
+.cal-d.db::after{background:var(--bl)}.cal-d.dam::after{background:var(--am)}.cal-d.dr::after{background:var(--rd)}
+/* FSTEP */
+.fstep{display:flex;gap:11px;margin-bottom:12px;align-items:flex-start}
+.fnum{width:26px;height:26px;border-radius:50%;background:var(--g-lt);color:var(--g-dk);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.ftit{font-size:13px;font-weight:600;margin-bottom:2px}.fdesc{font-size:12px;color:var(--tx2);line-height:1.6}.fgap{font-size:11px;color:var(--g-md);margin-top:2px}
+/* COMPAT */
+.cx{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.cb{border-radius:var(--r);padding:9px 11px}
+.ck{background:#e9f8ef;border:1px solid #a3ddb9}.cw{background:var(--am-lt);border:1px solid #f0c070}.cn{background:var(--rd-lt);border:1px solid #f0a0a0}
+.ck .cb-t{font-size:12px;font-weight:600;color:#1a5c3a;margin-bottom:3px}.cw .cb-t{color:var(--am);font-size:12px;font-weight:600;margin-bottom:3px}.cn .cb-t{color:var(--rd);font-size:12px;font-weight:600;margin-bottom:3px}
+.cb-d{font-size:11px;color:var(--tx2);line-height:1.5}
+/* CHART */
+.cr{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.cl{font-size:11px;color:var(--tx2);width:34px;text-align:right;flex-shrink:0}
+.ct2{flex:1;background:var(--br);border-radius:4px;height:18px;overflow:hidden;display:flex}
+.sg2{background:var(--g-md);border-radius:4px 0 0 4px}.sr2{background:#e07070;border-radius:0 4px 4px 0}
+.cv{font-size:11px;color:var(--tx2);min-width:55px}
+.hi{background:var(--g-pl)!important;font-weight:600}
+.muted{color:var(--tx3);font-size:12px}
+.pill{display:inline-block;padding:3px 8px;border-radius:100px;font-size:11px;font-weight:500;margin:1px}
+.notif{display:inline-block;width:7px;height:7px;border-radius:50%;background:#e05050;margin-left:4px;vertical-align:middle}
+.sep{border:none;border-top:1px solid var(--br);margin:10px 0}
+.msg-user{background:var(--g);color:#fff;border-radius:10px;padding:9px 12px;font-size:13px;max-width:85%;align-self:flex-end;line-height:1.5}
+.msg-ai{background:var(--g-pl);border:1px solid var(--g-lt);border-radius:10px;padding:9px 12px;font-size:13px;max-width:85%;align-self:flex-start;line-height:1.6;color:var(--tx)}
+.msg-typing{background:var(--g-pl);border-radius:10px;padding:9px 14px;font-size:13px;align-self:flex-start;color:var(--tx3)}
+@media(max-width:860px){
+  .sb{width:50px;overflow:hidden}.sb:hover{width:210px}
+  .logo-tx,.logo-sub,.nl,.ni span,.sb-ft{display:none}.sb:hover .logo-tx,.sb:hover .logo-sub,.sb:hover .nl,.sb:hover .ni span,.sb:hover .sb-ft{display:block}
+  .mn{margin-left:50px}.g2f,.g3f{grid-template-columns:1fr}.cx{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<!-- SIDEBAR -->
+<nav class="sb">
+  <div class="sb-hd"><div class="sb-logo"><div class="logo-ic">🌳</div><div><div class="logo-tx">สวนผลไม้</div><div class="logo-sub">มังคุด &amp; ทุเรียน</div></div></div></div>
+  <div class="ng">
+    <div class="nl">หน้าหลัก</div>
+    <button class="ni on" onclick="sp('dash',this)"><i class="ti ti-layout-dashboard"></i><span>ภาพรวม</span></button>
+    <button class="ni" onclick="sp('quick',this)"><i class="ti ti-bolt"></i><span>บันทึกด่วน</span></button>
+    <button class="ni" onclick="sp('alert',this)"><i class="ti ti-bell"></i><span>แจ้งเตือน</span><span id="n-dot"></span></button>
+    <button class="ni" onclick="sp('cal',this)"><i class="ti ti-calendar"></i><span>ปฏิทิน</span></button>
+    <button class="ni" onclick="sp('task',this)"><i class="ti ti-checklist"></i><span>บันทึกงาน</span></button>
+  </div>
+  <div class="ng">
+    <div class="nl">ผลผลิต &amp; การเงิน</div>
+    <button class="ni" onclick="sp('prod',this)"><i class="ti ti-scale"></i><span>บันทึกผลผลิต</span></button>
+    <button class="ni" onclick="sp('fin',this)"><i class="ti ti-coin"></i><span>รายรับ-รายจ่าย</span></button>
+    <button class="ni" onclick="sp('ann',this)"><i class="ti ti-chart-bar"></i><span>รายงานปี</span></button>
+  </div>
+  <div class="ng">
+    <div class="nl">แผนการใส่ปุ๋ย</div>
+    <button class="ni" onclick="sp('fm',this)"><i class="ti ti-plant"></i><span>แผนเดือนนี้</span></button>
+    <button class="ni" onclick="sp('fc',this)"><i class="ti ti-test-pipe"></i><span>ผสมปุ๋ยได้ไหม?</span></button>
+    <button class="ni" onclick="sp('fk',this)"><i class="ti ti-calculator"></i><span>คำนวณปุ๋ย</span></button>
+    <button class="ni" onclick="sp('spray',this)"><i class="ti ti-spray"></i><span>รูปแบบพ่นยา</span></button>
+  </div>
+  <div class="ng">
+    <div class="nl">ระบบ</div>
+    <button class="ni" onclick="sp('set',this)"><i class="ti ti-settings"></i><span>ตั้งค่าสวน</span></button>
+  </div>
+  <div class="sb-ft">v2.0 · บันทึกในเครื่อง</div>
+</nav>
+<!-- MAIN -->
+<div class="mn">
+  <div class="tb"><div class="tb-title" id="ptitle">ภาพรวมสวน</div><div class="tb-date" id="tdate"></div></div>
+  <div class="ct">
+
+<!-- DASHBOARD -->
+<div id="pg-dash" class="pg on">
+  <div class="g4">
+    <div class="met"><div class="ml">ต้นมังคุด</div><div class="mv" id="d-mn">50</div></div>
+    <div class="met"><div class="ml">ต้นทุเรียน</div><div class="mv" id="d-du">30</div></div>
+    <div class="met"><div class="ml">รายรับเดือนนี้</div><div class="mv" id="d-inc">0 ฿</div></div>
+    <div class="met"><div class="ml">รายจ่ายเดือนนี้</div><div class="mv rd" id="d-exp">0 ฿</div></div>
+    <div class="met"><div class="ml">ผลผลิตเดือนนี้</div><div class="mv am" id="d-prod">0 กก.</div></div>
+    <div class="met"><div class="ml">งานเร่งด่วน (3 วัน)</div><div class="mv rd" id="d-due">0</div></div>
+    <div class="met"><div class="ml">ต้นทุน/กก. มังคุด (ปีนี้)</div><div class="mv am" id="d-cost-mn">– ฿</div></div>
+    <div class="met"><div class="ml">ต้นทุน/กก. ทุเรียน (ปีนี้)</div><div class="mv am" id="d-cost-du">– ฿</div></div>
+  </div>
+  <div class="g3f">
+    <div class="card"><div class="ct-title"><i class="ti ti-bell-ringing"></i> แจ้งเตือนวันนี้</div><div id="d-al"><div class="muted">ไม่มีงานเร่งด่วน</div></div></div>
+    <div class="card"><div class="ct-title"><i class="ti ti-activity"></i> สรุปเดือนนี้</div>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div style="display:flex;justify-content:space-between"><span class="muted">รดน้ำ</span><span class="badge bb" id="d-cw">0 ครั้ง</span></div>
+        <div style="display:flex;justify-content:space-between"><span class="muted">ใส่ปุ๋ย</span><span class="badge ba" id="d-cf">0 ครั้ง</span></div>
+        <div style="display:flex;justify-content:space-between"><span class="muted">พ่นยา</span><span class="badge br-c" id="d-cs">0 ครั้ง</span></div>
+      </div>
+    </div>
+    <div class="card"><div class="ct-title"><i class="ti ti-plant"></i> ปุ๋ยเดือนนี้</div><div id="d-fnow" style="font-size:12px;line-height:1.9"></div></div>
+  </div>
+  <div class="card"><div class="ct-title"><i class="ti ti-clock"></i> กิจกรรมล่าสุด</div><div id="d-rec"><div class="muted">ยังไม่มีกิจกรรม</div></div></div>
+</div>
+
+<!-- ALERTS -->
+<div id="pg-alert" class="pg">
+  <div class="card">
+    <div class="ct-title"><i class="ti ti-bell-plus"></i> ตั้งการแจ้งเตือน</div>
+    <div class="g3" style="margin-bottom:9px">
+      <div><label>วันที่กำหนด</label><input type="date" id="al-d"></div>
+      <div><label>ประเภท</label><select id="al-t"><option value="water">รดน้ำ</option><option value="fert">ใส่ปุ๋ย</option><option value="spray">พ่นยา</option><option value="prune">ตัดแต่งกิ่ง</option><option value="harvest">เก็บเกี่ยว</option><option value="other">อื่นๆ</option></select></div>
+      <div><label>ทำซ้ำทุก (วัน / 0=ครั้งเดียว)</label><input type="number" id="al-r" value="0" min="0"></div>
+    </div>
+    <div style="margin-bottom:9px"><label>รายละเอียด</label><input type="text" id="al-n" placeholder="เช่น ใส่ปุ๋ย 15-15-15 อัตรา 500g/ต้น"></div>
+    <button class="btn btnp" onclick="addAl()"><i class="ti ti-plus"></i> เพิ่มแจ้งเตือน</button>
+  </div>
+  <div class="card"><div class="ct-title"><i class="ti ti-list"></i> รายการทั้งหมด</div><div id="al-list"><div class="muted">ยังไม่มี</div></div></div>
+</div>
+
+<!-- CALENDAR -->
+<div id="pg-cal" class="pg">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <button class="btn btnsm" onclick="cm(-1)"><i class="ti ti-chevron-left"></i></button>
+      <div style="font-size:14px;font-weight:600" id="cal-t"></div>
+      <button class="btn btnsm" onclick="cm(1)"><i class="ti ti-chevron-right"></i></button>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;font-size:12px">
+      <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bl);margin-right:3px"></span>รดน้ำ</span>
+      <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--am);margin-right:3px"></span>ใส่ปุ๋ย</span>
+      <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--rd);margin-right:3px"></span>พ่นยา</span>
+      <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--g-md);margin-right:3px"></span>อื่นๆ</span>
+    </div>
+    <div class="cal-g" id="cal-h"></div>
+    <div class="cal-g" id="cal-b" style="margin-top:3px"></div>
+  </div>
+  <div class="g2f">
+    <div class="card">
+      <div class="ct-title"><i class="ti ti-plus"></i> เพิ่มกิจกรรม</div>
+      <div class="g2" style="margin-bottom:9px">
+        <div><label>วันที่</label><input type="date" id="ev-d"></div>
+        <div><label>ประเภท</label><select id="ev-t"><option value="water">รดน้ำ</option><option value="fert">ใส่ปุ๋ย</option><option value="spray">พ่นยา</option><option value="other">อื่นๆ</option></select></div>
+      </div>
+      <div style="margin-bottom:9px"><label>รายละเอียด</label><input type="text" id="ev-n" placeholder="รายละเอียด"></div>
+      <button class="btn btnp" onclick="addEv()"><i class="ti ti-plus"></i> เพิ่ม</button>
+    </div>
+    <div class="card"><div class="ct-title"><i class="ti ti-calendar-event"></i> กิจกรรมเดือนนี้</div><div id="ev-list"><div class="muted">ยังไม่มีกิจกรรม</div></div></div>
+  </div>
+</div>
+
+<!-- TASKS -->
+<div id="pg-task" class="pg">
+  <div class="card">
+    <div class="ct-title"><i class="ti ti-pencil"></i> บันทึกงาน</div>
+    <div class="g3" style="margin-bottom:9px">
+      <div><label>วันที่</label><input type="date" id="tk-d"></div>
+      <div><label>กิจกรรม</label><select id="tk-t"><option value="water">รดน้ำ</option><option value="fert">ใส่ปุ๋ย</option><option value="spray">พ่นยา</option><option value="prune">ตัดแต่งกิ่ง</option><option value="harvest">เก็บเกี่ยว</option><option value="other">อื่นๆ</option></select></div>
+      <div><label>สวน</label><select id="tk-g"><option value="mangosteen">สวนมังคุด</option><option value="durian">สวนทุเรียน</option><option value="both">ทั้งสองสวน</option></select></div>
+    </div>
+    <div style="margin-bottom:9px"><label>รายละเอียด</label><input type="text" id="tk-n" placeholder="รายละเอียด"></div>
+    <button class="btn btnp" onclick="addTk()"><i class="ti ti-plus"></i> บันทึก</button>
+  </div>
+  <div class="card"><div class="ct-title"><i class="ti ti-history"></i> ประวัติ</div>
+    <div class="tw"><table><thead><tr><th>วันที่</th><th>สวน</th><th>กิจกรรม</th><th>รายละเอียด</th><th></th></tr></thead>
+    <tbody id="tk-list"><tr><td colspan="5" class="muted" style="text-align:center;padding:14px">ยังไม่มี</td></tr></tbody></table></div>
+  </div>
+</div>
+
+<!-- PRODUCE -->
+<div id="pg-prod" class="pg">
+  <div class="g3f" style="margin-bottom:0">
+    <div class="met" style="margin-bottom:12px"><div class="ml">มังคุดปีนี้</div><div class="mv" id="pr-mn">0 กก.</div></div>
+    <div class="met" style="margin-bottom:12px"><div class="ml">ทุเรียนปีนี้</div><div class="mv am" id="pr-du">0 กก.</div></div>
+    <div class="met" style="margin-bottom:12px"><div class="ml">รายได้ผลผลิตปีนี้</div><div class="mv bl" id="pr-rv">0 ฿</div></div>
+  </div>
+  <div class="card">
+    <div class="ct-title"><i class="ti ti-plus"></i> บันทึกผลผลิต</div>
+    <div class="g3" style="margin-bottom:9px">
+      <div><label>เดือน</label><select id="pr-m"><option value="0">มกราคม</option><option value="1">กุมภาพันธ์</option><option value="2">มีนาคม</option><option value="3">เมษายน</option><option value="4">พฤษภาคม</option><option value="5">มิถุนายน</option><option value="6">กรกฎาคม</option><option value="7">สิงหาคม</option><option value="8">กันยายน</option><option value="9">ตุลาคม</option><option value="10">พฤศจิกายน</option><option value="11">ธันวาคม</option></select></div>
+      <div><label>วันที่เก็บ</label><input type="date" id="pr-d"></div>
+      <div><label>ชนิด</label><select id="pr-tp"><option value="mangosteen">มังคุด</option><option value="durian">ทุเรียน</option></select></div>
+    </div>
+    <div class="g3" style="margin-bottom:9px">
+      <div><label>น้ำหนัก (กก.)</label><input type="number" id="pr-kg" placeholder="0" min="0" step="0.1"></div>
+    <div class="g3" style="margin-bottom:9px">
+      <div><label>ราคา (฿/กก.)</label><input type="number" id="pr-p" placeholder="0" step="0.5" oninput="calcPR()"></div>
+      <div><label>รายได้รวม (฿)</label><input type="number" id="pr-rv2" placeholder="คำนวณอัตโนมัติ"></div>
+      <div><label>หมายเหตุ</label><input type="text" id="pr-nt" placeholder="เช่น เกรด A"></div>
+    </div>
+    <button class="btn btnp" onclick="addPr()"><i class="ti ti-plus"></i> บันทึก</button>
+  </div>
+  <div class="card"><div class="ct-title"><i class="ti ti-list"></i> ประวัติ</div>
+    <div class="tw"><table><thead><tr><th>วันที่</th><th>ชนิด</th><th>น้ำหนัก</th><th>ราคา/กก.</th><th>รายได้</th><th>หมายเหตุ</th><th></th></tr></thead>
+    <tbody id="pr-list"><tr><td colspan="7" class="muted" style="text-align:center;padding:14px">ยังไม่มี</td></tr></tbody></table></div>
+  </div>
+</div>
+
+<!-- FINANCE -->
+<div id="pg-fin" class="pg">
+  <div style="display:flex;gap:9px;margin-bottom:12px;flex-wrap:wrap">
+    <select id="fn-m" onchange="renderFin()" style="width:auto"><option value="0">มกราคม</option><option value="1">กุมภาพันธ์</option><option value="2">มีนาคม</option><option value="3">เมษายน</option><option value="4">พฤษภาคม</option><option value="5">มิถุนายน</option><option value="6">กรกฎาคม</option><option value="7">สิงหาคม</option><option value="8">กันยายน</option><option value="9">ตุลาคม</option><option value="10">พฤศจิกายน</option><option value="11">ธันวาคม</option></select>
+    <select id="fn-y" onchange="renderFin()" style="width:auto"><option value="2025">2568</option><option value="2024">2567</option></select>
+  </div>
+  <div class="g3f" style="margin-bottom:12px">
+    <div class="met"><div class="ml">รายรับ</div><div class="mv" id="fn-inc">0 ฿</div></div>
+    <div class="met"><div class="ml">รายจ่าย</div><div class="mv rd" id="fn-exp">0 ฿</div></div>
+    <div class="met"><div class="ml">กำไร/ขาดทุน</div><div class="mv" id="fn-prf">0 ฿</div></div>
+  </div>
+  <div class="card">
+    <div class="ct-title"><i class="ti ti-plus"></i> เพิ่มรายการ</div>
+    <div class="g4" style="margin-bottom:9px">
+      <div><label>ประเภท</label><select id="fn-tp"><option value="income">รายรับ</option><option value="expense">รายจ่าย</option></select></div>
+      <div><label>จำนวนเงิน (฿)</label><input type="number" id="fn-amt" placeholder="0"></div>
+      <div><label>หมวดหมู่</label><select id="fn-cat"><option>ขายมังคุด</option><option>ขายทุเรียน</option><option>ค่าปุ๋ย</option><option>ค่ายา</option><option>ค่าน้ำมัน</option><option>ค่าแรง</option><option>อื่นๆ</option></select></div>
+      <div><label>หมายเหตุ</label><input type="text" id="fn-nt" placeholder="รายละเอียด"></div>
+    </div>
+    <button class="btn btnp" onclick="addFn()"><i class="ti ti-plus"></i> เพิ่ม</button>
+  </div>
+  <div class="card"><div class="ct-title"><i class="ti ti-list"></i> รายการ</div>
+    <div class="tw"><table><thead><tr><th>ประเภท</th><th>หมวด</th><th>จำนวน</th><th>หมายเหตุ</th><th></th></tr></thead>
+    <tbody id="fn-list"><tr><td colspan="5" class="muted" style="text-align:center;padding:14px">ยังไม่มี</td></tr></tbody></table></div>
+  </div>
+</div>
+
+<!-- ANNUAL -->
+<div id="pg-ann" class="pg">
+  <div style="display:flex;gap:9px;margin-bottom:12px">
+    <select id="an-y" onchange="renderAnn()" style="width:auto"><option value="2025">2568</option><option value="2024">2567</option></select>
+  </div>
+  <div class="g4">
+    <div class="met"><div class="ml">รายรับรวม</div><div class="mv" id="an-inc">0 ฿</div></div>
+    <div class="met"><div class="ml">รายจ่ายรวม</div><div class="mv rd" id="an-exp">0 ฿</div></div>
+    <div class="met"><div class="ml">กำไรสุทธิ</div><div class="mv" id="an-prf">0 ฿</div></div>
+    <div class="met"><div class="ml">ผลผลิตรวม</div><div class="mv am" id="an-kg">0 กก.</div></div>
+  </div>
+  <div class="card"><div class="ct-title"><i class="ti ti-chart-bar"></i> รายรับ–รายจ่ายรายเดือน</div><div id="an-ch"></div></div>
+  <div class="g2f">
+    <div class="card"><div class="ct-title"><i class="ti ti-scale"></i> ผลผลิตตามชนิด</div><div id="an-pr"></div></div>
+    <div class="card"><div class="ct-title"><i class="ti ti-receipt"></i> รายจ่ายตามหมวด</div><div id="an-ex"></div></div>
+  </div>
+</div>
+
+<!-- FERT MONTH -->
+<div id="pg-fm" class="pg">
+  <div style="display:flex;gap:9px;margin-bottom:12px;flex-wrap:wrap">
+    <select id="fm-m" onchange="renderFM()" style="width:auto"><option value="0">มกราคม</option><option value="1">กุมภาพันธ์</option><option value="2">มีนาคม</option><option value="3">เมษายน</option><option value="4">พฤษภาคม</option><option value="5">มิถุนายน</option><option value="6">กรกฎาคม</option><option value="7">สิงหาคม</option><option value="8">กันยายน</option><option value="9">ตุลาคม</option><option value="10">พฤศจิกายน</option><option value="11">ธันวาคม</option></select>
+    <select id="fm-t" onchange="renderFM()" style="width:auto"><option value="both">มังคุด + ทุเรียน</option><option value="mangosteen">มังคุด</option><option value="durian">ทุเรียน</option></select>
+  </div>
+  <div id="fm-c"></div>
+</div>
+
+<!-- FERT COMPAT -->
+<div id="pg-fc" class="pg">
+  <div class="card">
+    <div class="ct-title"><i class="ti ti-check" style="color:var(--g)"></i> ผสมได้เลย</div>
+    <div class="cx">
+      <div class="cb ck"><div class="cb-t">15-15-15 + ปุ๋ยอินทรีย์</div><div class="cb-d">ผสมได้ดี — อินทรีย์ช่วยให้ธาตุอาหารละลายช้าลง รากดูดได้นานขึ้น</div></div>
+      <div class="cb ck"><div class="cb-t">13-13-21 + 0-0-60</div><div class="cb-d">เข้ากันได้ดี — ใส่รวมกันเพื่อเพิ่มโพแทสเซียมบำรุงผล</div></div>
+      <div class="cb ck"><div class="cb-t">สูตร N-P-K ทั่วไป</div><div class="cb-d">ปุ๋ยเคมีสูตรสำเร็จที่ไม่มีแคลเซียมหรือกำมะถัน ผสมได้</div></div>
+      <div class="cb ck"><div class="cb-t">46-0-0 + 0-0-60</div><div class="cb-d">ผสมได้ แต่ควรห่างกัน 3–5 วันเพื่อไม่ให้ N สูญเสียเร็ว</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct-title"><i class="ti ti-alert-triangle" style="color:var(--am)"></i> ควรแยกใส่ — เว้น 7–14 วัน</div>
+    <div class="cx">
+      <div class="cb cw"><div class="cb-t">46-0-0 + ปูนขาว/โดโลไมท์</div><div class="cb-d">N สูญเสียเป็นแก๊สแอมโมเนีย — เว้นก่อน/หลัง 14 วัน</div></div>
+      <div class="cb cw"><div class="cb-t">ปุ๋ยฟอสฟอรัส + แคลเซียม</div><div class="cb-d">ตกตะกอน ดูดซึมไม่ได้ — ห่างกัน 10–14 วัน</div></div>
+      <div class="cb cw"><div class="cb-t">ปุ๋ยเคมี + ปุ๋ยคอก/หมัก</div><div class="cb-d">ใส่ได้แต่ควรห่างกัน 7 วัน เพื่อไม่ให้จุลินทรีย์ถูกทำลาย</div></div>
+      <div class="cb cw"><div class="cb-t">12-24-12 + 0-0-60 (ช่วงดอก)</div><div class="cb-d">ใส่ฟอสฟอรัสก่อน รอ 7 วัน แล้วตามด้วยโพแทสเซียม</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct-title"><i class="ti ti-x" style="color:var(--rd)"></i> ห้ามผสมเด็ดขาด</div>
+    <div class="cx">
+      <div class="cb cn"><div class="cb-t">46-0-0 + ปูนขาว (ผสมตรงๆ)</div><div class="cb-d">สูญเสีย N ทันที ต้องเว้นห่างกันอย่างน้อย 14 วัน</div></div>
+      <div class="cb cn"><div class="cb-t">ซูเปอร์ฟอสเฟต + ปุ๋ยแคลเซียม</div><div class="cb-d">เกิดตะกอนแคลเซียมฟอสเฟต พืชดูดไม่ได้เลย</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct-title"><i class="ti ti-list-numbers"></i> ลำดับการใส่ที่ถูกต้อง</div>
+    <div class="fstep"><div class="fnum">1</div><div><div class="ftit">ปุ๋ยอินทรีย์/คอก/หมัก</div><div class="fdesc">ใส่ก่อนเสมอ รอ 5–7 วัน แล้วค่อยตามด้วยปุ๋ยเคมี</div></div></div>
+    <div class="fstep"><div class="fnum">2</div><div><div class="ftit">ปุ๋ยฟอสฟอรัส (P สูง เช่น 12-24-12)</div><div class="fdesc">หลังอินทรีย์ รอ 7 วัน ก่อนไนโตรเจนหรือโพแทสเซียม</div></div></div>
+    <div class="fstep"><div class="fnum">3</div><div><div class="ftit">ปุ๋ยไนโตรเจน (46-0-0 หรือ N สูง)</div><div class="fdesc">หลังฟอสฟอรัส รอ 7–10 วัน ห้ามใส่พร้อมปูนขาว</div></div></div>
+    <div class="fstep"><div class="fnum">4</div><div><div class="ftit">ปุ๋ยโพแทสเซียม (0-0-60 หรือ K สูง)</div><div class="fdesc">ใส่สุดท้าย ห่างจากไนโตรเจน 5–7 วัน</div></div></div>
+    <div class="fstep" style="margin-bottom:0"><div class="fnum" style="background:var(--am-lt);color:var(--am)"><i class="ti ti-droplet" style="font-size:13px"></i></div><div><div class="ftit">รดน้ำหลังใส่ปุ๋ยทุกครั้ง</div><div class="fdesc">ป้องกันรากไหม้ โดยเฉพาะยูเรีย</div></div></div>
+  </div>
+</div>
+
+<!-- FERT CALC -->
+<div id="pg-fk" class="pg">
+  <div class="card">
+    <div class="ct-title"><i class="ti ti-calculator"></i> คำนวณอัตราการใช้ปุ๋ย</div>
+    <div class="g3" style="margin-bottom:11px">
+      <div><label>ชนิดผลไม้</label><select id="cl-tp" onchange="calcF()"><option value="mn">มังคุด</option><option value="du">ทุเรียน</option></select></div>
+      <div><label>ช่วงการเจริญเติบโต</label><select id="cl-st" onchange="calcF()"><option value="young">ต้นเล็ก (1–3 ปี)</option><option value="grow">ต้นรุ่น (4–7 ปี)</option><option value="mature">ก่อนออกดอก</option><option value="flower">ช่วงออกดอก</option><option value="fruit">ช่วงติดผล</option><option value="harvest">ก่อนเก็บเกี่ยว</option></select></div>
+      <div><label>สูตรปุ๋ย</label><select id="cl-fo" onchange="calcF()"><option value="15-15-15">15-15-15 (บำรุงต้น)</option><option value="46-0-0">46-0-0 (ยูเรีย)</option><option value="0-0-60">0-0-60 (โพแทสเซียม)</option><option value="12-24-12">12-24-12 (เร่งดอก)</option><option value="13-13-21">13-13-21 (บำรุงผล)</option><option value="8-24-24">8-24-24 (ก่อนเก็บ)</option></select></div>
+    </div>
+    <div class="g3" style="margin-bottom:11px">
+      <div><label>จำนวนต้น</label><input type="number" id="cl-tr" value="50" min="1" oninput="calcF()"></div>
+      <div><label>เส้นผ่าศูนย์กลางทรงพุ่มเฉลี่ย (ม.)</label><input type="number" id="cl-dm" value="4" step="0.5" min="0.5" oninput="calcF()"></div>
+      <div><label>อัตราปุ๋ย (กก./ตร.ม.)</label><input type="number" id="cl-ra" value="0.05" step="0.01" min="0.01" oninput="calcF()"></div>
+    </div>
+    <div id="cl-res" style="background:var(--g-pl);border:1px solid var(--g-lt);border-radius:var(--r);padding:14px"></div>
+  </div>
+</div>
+
+<!-- QUICK LOG -->
+<div id="pg-quick" class="pg">
+  <div class="card">
+    <div class="ct-title"><i class="ti ti-bolt"></i> บันทึกด่วน — กดปุ่มเดียวบันทึกวันนี้ทันที</div>
+    <div style="margin-bottom:14px">
+      <label>สวน</label>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn" id="qg-mn" onclick="setQG('mangosteen')" style="flex:1;justify-content:center;border-color:var(--g-md);color:var(--g-dk);font-weight:600">🌳 มังคุด</button>
+        <button class="btn" id="qg-du" onclick="setQG('durian')" style="flex:1;justify-content:center">🌴 ทุเรียน</button>
+        <button class="btn" id="qg-both" onclick="setQG('both')" style="flex:1;justify-content:center">ทั้งสองสวน</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <button class="btn" onclick="quickLog('water')" style="padding:18px;flex-direction:column;gap:6px;justify-content:center;align-items:center;font-size:15px;border-color:var(--bl);color:var(--bl)"><i class="ti ti-droplet" style="font-size:28px"></i>รดน้ำ</button>
+      <button class="btn" onclick="quickLog('fert')" style="padding:18px;flex-direction:column;gap:6px;justify-content:center;align-items:center;font-size:15px;border-color:var(--am);color:var(--am)"><i class="ti ti-plant-2" style="font-size:28px"></i>ใส่ปุ๋ย</button>
+      <button class="btn" onclick="quickLog('spray')" style="padding:18px;flex-direction:column;gap:6px;justify-content:center;align-items:center;font-size:15px;border-color:var(--rd);color:var(--rd)"><i class="ti ti-spray" style="font-size:28px"></i>พ่นยา</button>
+      <button class="btn" onclick="quickLog('prune')" style="padding:18px;flex-direction:column;gap:6px;justify-content:center;align-items:center;font-size:15px;border-color:var(--g-md);color:var(--g-dk)"><i class="ti ti-cut" style="font-size:28px"></i>ตัดแต่งกิ่ง</button>
+      <button class="btn" onclick="quickLog('harvest')" style="padding:18px;flex-direction:column;gap:6px;justify-content:center;align-items:center;font-size:15px;border-color:var(--g-dk);color:var(--g-dk)"><i class="ti ti-basket" style="font-size:28px"></i>เก็บเกี่ยว</button>
+      <button class="btn" onclick="quickLog('other')" style="padding:18px;flex-direction:column;gap:6px;justify-content:center;align-items:center;font-size:15px"><i class="ti ti-dots" style="font-size:28px"></i>อื่นๆ</button>
+    </div>
+    <div style="margin-bottom:9px"><label>หมายเหตุ (ไม่บังคับ)</label><input type="text" id="q-note" placeholder="เช่น ใส่ปุ๋ย 46-0-0 ครึ่งกก./ต้น"></div>
+    <div id="q-feedback" style="min-height:32px"></div>
+  </div>
+  <div class="card">
+    <div class="ct-title"><i class="ti ti-history"></i> บันทึกด่วนวันนี้</div>
+    <div id="q-today"><div class="muted">ยังไม่มีรายการวันนี้</div></div>
+  </div>
+</div>
+
+<!-- SPRAY LOG -->
+<div id="pg-spray" class="pg">
+  <!-- FORM บันทึก -->
+  <div class="card">
+    <div class="ct-title"><i class="ti ti-plus"></i> บันทึกการพ่นยา</div>
+    <div class="g3" style="margin-bottom:9px">
+      <div><label>วันที่พ่น</label><input type="date" id="sp-d"></div>
+      <div><label>สวน</label><select id="sp-g"><option value="mangosteen">สวนมังคุด</option><option value="durian">สวนทุเรียน</option><option value="both">ทั้งสองสวน</option></select></div>
+      <div><label>ชนิดยา/สารเคมี</label><input type="text" id="sp-name" placeholder="เช่น ไซเปอร์เมทริน, มาลาไทออน"></div>
+    </div>
+    <div class="g3" style="margin-bottom:9px">
+      <div><label>เป้าหมาย (โรค/แมลง)</label><input type="text" id="sp-target" placeholder="เช่น เพลี้ยแป้ง, โรคราสีชมพู"></div>
+      <div><label>อัตราการใช้</label><input type="text" id="sp-rate" placeholder="เช่น 20 มล./น้ำ 20 ล."></div>
+      <div><label>ปริมาณน้ำยาที่ใช้ (ลิตร)</label><input type="number" id="sp-vol" placeholder="0" min="0" step="0.5"></div>
+    </div>
+    <div class="g2f" style="margin-bottom:9px">
+      <div><label>ค่าใช้จ่าย (฿)</label><input type="number" id="sp-cost" placeholder="0" min="0"></div>
+      <div><label>ผลลัพธ์ (กรอกภายหลังได้)</label><select id="sp-result"><option value="">ยังไม่ประเมิน</option><option value="ดีมาก">ดีมาก — หายขาด</option><option value="ดี">ดี — ลดลงมาก</option><option value="พอใช้">พอใช้ — ลดลงบ้าง</option><option value="ไม่ได้ผล">ไม่ได้ผล</option></select></div>
+    </div>
+    <div style="margin-bottom:9px"><label>หมายเหตุ</label><input type="text" id="sp-note" placeholder="สภาพอากาศ, วิธีพ่น, หมายเหตุอื่นๆ"></div>
+    <button class="btn btnp" onclick="addSpray()"><i class="ti ti-plus"></i> บันทึก</button>
+  </div>
+
+  <!-- 2 คอลัมน์: ทุเรียน (ซ้าย) | มังคุด (ขวา) -->
+  <div class="g2f" style="align-items:start">
+    <!-- ซ้าย: ทุเรียน -->
+    <div class="card" style="border-top:3px solid var(--am)">
+      <div class="ct-title"><i class="ti ti-spray" style="color:var(--am)"></i> สวนทุเรียน</div>
+      <div id="sp-du"><div class="muted">ยังไม่มีบันทึก</div></div>
+    </div>
+    <!-- ขวา: มังคุด -->
+    <div class="card" style="border-top:3px solid var(--g)">
+      <div class="ct-title"><i class="ti ti-spray" style="color:var(--g-md)"></i> สวนมังคุด</div>
+      <div id="sp-mn"><div class="muted">ยังไม่มีบันทึก</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="pg-set" class="pg">
+  <div class="card">
+    <div class="ct-title"><i class="ti ti-trees"></i> ข้อมูลสวน</div>
+    <div class="g3" style="margin-bottom:11px">
+      <div><label>จำนวนต้นมังคุด</label><input type="number" id="s-mn" value="50" min="0" onchange="saveSt()"></div>
+      <div><label>จำนวนต้นทุเรียน</label><input type="number" id="s-du" value="30" min="0" onchange="saveSt()"></div>
+      <div><label>พื้นที่รวม (ไร่)</label><input type="number" id="s-ar" value="5" step="0.5" onchange="saveSt()"></div>
+    </div>
+    <div class="g3" style="margin-bottom:11px">
+      <div><label>ชื่อสวน</label><input type="text" id="s-nm" value="สวนของฉัน" onchange="saveSt()"></div>
+      <div><label>จังหวัด/พื้นที่</label><input type="text" id="s-lc" placeholder="เช่น จันทบุรี" onchange="saveSt()"></div>
+      <div><label>ปีเริ่มปลูก</label><input type="number" id="s-yr" placeholder="เช่น 2558" onchange="saveSt()"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct-title"><i class="ti ti-circle"></i> ขนาดทรงพุ่มเฉลี่ย</div>
+    <div class="g2f" style="margin-bottom:11px">
+      <div><label>ทรงพุ่มมังคุดเฉลี่ย (ม.)</label><input type="number" id="s-mnd" value="4" step="0.5" min="0.5" onchange="saveSt()"></div>
+      <div><label>ทรงพุ่มทุเรียนเฉลี่ย (ม.)</label><input type="number" id="s-dud" value="6" step="0.5" min="0.5" onchange="saveSt()"></div>
+    </div>
+    <button class="btn btnp" onclick="saveSt()"><i class="ti ti-device-floppy"></i> บันทึก</button>
+  </div>
+  <div class="card">
+    <div class="ct-title"><i class="ti ti-database"></i> จัดการข้อมูล</div>
+    <div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:9px">
+      <button class="btn" onclick="exportD()"><i class="ti ti-download"></i> ส่งออกข้อมูล (JSON)</button>
+      <label class="btn" style="cursor:pointer"><i class="ti ti-upload"></i> นำเข้าจาก JSON Backup <input type="file" id="imp-file" accept=".json" style="display:none" onchange="importJSON(this)"></label>
+      <button class="btn" style="color:var(--rd)" onclick="if(confirm('ลบข้อมูลทั้งหมด?')){localStorage.removeItem('orch3');location.reload()}"><i class="ti ti-trash"></i> ล้างข้อมูล</button>
+    </div>
+    <div class="card">
+    <div class="ct-title"><i class="ti ti-robot"></i> AI Assistant (Claude)</div>
+    <div style="font-size:12px;color:var(--tx2);margin-bottom:9px">ใส่ Anthropic API Key เพื่อใช้ AI ถามตอบเรื่องสวน — Key เก็บในเครื่องเท่านั้น ไม่ส่งไปที่อื่น<br>ขอ Key ได้ที่ <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--g-md)">console.anthropic.com</a></div>
+    <div style="display:flex;gap:8px;margin-bottom:6px">
+      <input type="password" id="ai-key" placeholder="sk-ant-..." style="flex:1" oninput="saveKey()">
+      <button class="btn btnp" onclick="toggleChat()" style="flex-shrink:0"><i class="ti ti-message-circle"></i> เปิด Chat</button>
+    </div>
+    <div id="key-status" style="font-size:12px;color:var(--tx3)"></div>
+  </div>
+</div>
+
+  </div>
+</div>
+
+<!-- AI CHAT BUBBLE -->
+<div id="chat-btn" onclick="toggleChat()" style="position:fixed;bottom:24px;right:24px;width:52px;height:52px;border-radius:50%;background:var(--g);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:200;transition:transform .15s" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+  <i class="ti ti-message-circle" style="font-size:24px"></i>
+</div>
+
+<!-- AI CHAT POPUP -->
+<div id="chat-popup" style="display:none;position:fixed;bottom:88px;right:24px;width:380px;max-height:560px;background:var(--wh);border:1px solid var(--br);border-radius:var(--rl);box-shadow:0 8px 32px rgba(0,0,0,.15);z-index:200;display:none;flex-direction:column;overflow:hidden">
+  <div style="padding:12px 14px;background:var(--g-dk);color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:8px">
+      <i class="ti ti-robot" style="font-size:18px"></i>
+      <div>
+        <div style="font-size:13px;font-weight:600">AI ที่ปรึกษาสวน</div>
+        <div style="font-size:11px;opacity:.6">ถามได้ทุกเรื่องเกี่ยวกับมังคุดและทุเรียน</div>
+      </div>
+    </div>
+    <button onclick="toggleChat()" style="background:none;border:none;color:#fff;cursor:pointer;font-size:18px;padding:2px"><i class="ti ti-x"></i></button>
+  </div>
+  <div id="chat-msgs" style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:200px;max-height:380px">
+    <div style="background:var(--g-pl);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--tx);max-width:85%;align-self:flex-start">
+      สวัสดีครับ! ผมเป็น AI ที่ปรึกษาสวนมังคุดและทุเรียนของคุณ ถามได้เลยครับ เช่น เปรียบเทียบปุ๋ย, แก้โรค, เวลาเก็บเกี่ยว ฯลฯ
+    </div>
+  </div>
+  <div style="padding:10px;border-top:1px solid var(--br);flex-shrink:0">
+    <div id="chat-no-key" style="font-size:12px;color:var(--rd);margin-bottom:6px;display:none"><i class="ti ti-alert-circle"></i> กรุณาใส่ API Key ในหน้าตั้งค่าก่อนครับ</div>
+    <div style="display:flex;gap:6px">
+      <input type="text" id="chat-input" placeholder="ถามเรื่องปุ๋ย โรค การดูแล..." style="flex:1;font-size:13px" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}">
+      <button onclick="sendChat()" id="chat-send" class="btn btnp" style="padding:7px 12px;flex-shrink:0"><i class="ti ti-send"></i></button>
+    </div>
+  </div>
+</div>
+
+<script>
+const MN=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const DN=['อา','จ','อ','พ','พฤ','ศ','ส'];
+const PTITLES={dash:'ภาพรวมสวน',quick:'บันทึกด่วน',alert:'การแจ้งเตือน',cal:'ปฏิทิน',task:'บันทึกงาน',prod:'บันทึกผลผลิต',fin:'รายรับ-รายจ่าย',ann:'รายงานปี',fm:'แผนปุ๋ยเดือนนี้',fc:'คู่มือผสมปุ๋ย',fk:'คำนวณปุ๋ย',spray:'รูปแบบพ่นยา',set:'ตั้งค่าสวน'};
+const TL={water:'รดน้ำ',fert:'ใส่ปุ๋ย',spray:'พ่นยา',prune:'ตัดแต่งกิ่ง',harvest:'เก็บเกี่ยว',other:'อื่นๆ'};
+const TC={water:'bb',fert:'ba',spray:'br-c',prune:'bt',harvest:'bg',other:'bgr'};
+let calDate=new Date(2026,5,1);
+let S={events:[],tasks:[],finance:[],produce:[],alerts:[],settings:{mn:50,du:30,ar:5,nm:'สวนของฉัน',lc:'',yr:'',mnd:4,dud:6}};
+try{let r=localStorage.getItem('orch3');if(r)S=JSON.parse(r);}catch(e){}
+
+const SCH={
+  mangosteen:[
+    {months:[11,0],label:'ธ.ค.–ม.ค.',stage:'หลังเก็บเกี่ยว / ฟื้นฟูต้น',ferts:[{n:'ปุ๋ยอินทรีย์',r:'5–10 กก./ต้น',c:'bg'},{n:'15-15-15',r:'0.5–1 กก./ต้น',c:'bt'}],freq:'1 ครั้ง/เดือน',gap:'ห่าง 7 วัน (อินทรีย์ก่อน)',note:'ใส่อินทรีย์ก่อน รอ 7 วัน ตามด้วย 15-15-15'},
+    {months:[1,2],label:'ก.พ.–มี.ค.',stage:'เร่งดอก',ferts:[{n:'8-24-24',r:'0.3–0.5 กก./ต้น',c:'ba'},{n:'หรือ 12-24-12',r:'0.3–0.5 กก./ต้น',c:'bp'}],freq:'1–2 ครั้ง/เดือน',gap:'เลือกสูตรเดียว ไม่ต้องผสม',note:'ลดน้ำ 30% ก่อนใส่เพื่อกระตุ้นดอก'},
+    {months:[3,4],label:'เม.ย.–พ.ค.',stage:'ติดผลเล็ก',ferts:[{n:'15-15-15',r:'0.5–0.8 กก./ต้น',c:'bt'},{n:'0-0-60',r:'0.2–0.3 กก./ต้น',c:'ba'}],freq:'1–2 ครั้ง/เดือน',gap:'ผสมพร้อมกันได้ (2:1)',note:'บำรุงผล ป้องกันผลแตก'},
+    {months:[4,5],label:'พ.ค.–มิ.ย.',stage:'ก่อนเก็บเกี่ยว',ferts:[{n:'13-13-21',r:'0.5 กก./ต้น',c:'bt'},{n:'0-0-60',r:'0.2 กก./ต้น',c:'ba'}],freq:'1 ครั้ง (หยุด 30 วันก่อนเก็บ)',gap:'ผสมพร้อมกันได้',note:'หยุดใส่ปุ๋ยก่อนเก็บ 30 วัน'},
+    {months:[6,7,8,9,10],label:'ก.ค.–พ.ย.',stage:'พักต้น',ferts:[{n:'ปุ๋ยอินทรีย์',r:'3–5 กก./ต้น',c:'bg'}],freq:'1 ครั้ง/2 เดือน',gap:'–',note:'บำรุงดินและจุลินทรีย์'},
+  ],
+  durian:[
+    {months:[7,8],label:'ส.ค.–ก.ย.',stage:'หลังเก็บเกี่ยว / บำรุงต้น',ferts:[{n:'ปุ๋ยอินทรีย์',r:'10–20 กก./ต้น',c:'bg'},{n:'15-15-15',r:'1–2 กก./ต้น',c:'bt'}],freq:'1–2 ครั้ง',gap:'ห่าง 7 วัน (อินทรีย์ก่อน)',note:'ใส่อินทรีย์ก่อน 7 วัน แล้วตาม 15-15-15'},
+    {months:[9,10],label:'ต.ค.–พ.ย.',stage:'เร่งใบ / สะสมแป้ง',ferts:[{n:'46-0-0 (ยูเรีย)',r:'0.5–1 กก./ต้น',c:'ba'},{n:'15-15-15',r:'0.5 กก./ต้น',c:'bt'}],freq:'1–2 ครั้ง/เดือน',gap:'ห่าง 5–7 วัน (46-0-0 ก่อน)',note:'เร่งแตกใบ สะสมอาหารในกิ่ง'},
+    {months:[11,0],label:'ธ.ค.–ม.ค.',stage:'เร่งดอก',ferts:[{n:'8-24-24',r:'0.5–1 กก./ต้น',c:'ba'},{n:'หรือ 0-46-0',r:'0.3–0.5 กก./ต้น',c:'bp'}],freq:'1–2 ครั้ง/เดือน',gap:'เลือกสูตรเดียว ไม่ต้องผสม',note:'จัดการน้ำให้ดินแล้งเล็กน้อยก่อนใส่'},
+    {months:[1,2,3],label:'ก.พ.–เม.ย.',stage:'ติดผล / บำรุงผล',ferts:[{n:'13-13-21',r:'1–2 กก./ต้น',c:'bt'},{n:'0-0-60',r:'0.3–0.5 กก./ต้น',c:'ba'}],freq:'1–2 ครั้ง/เดือน',gap:'ผสมพร้อมกันได้',note:'รักษาความชื้นสม่ำเสมอ'},
+    {months:[4],label:'พ.ค.',stage:'ก่อนเก็บเกี่ยว',ferts:[{n:'0-0-60',r:'0.5–1 กก./ต้น',c:'ba'}],freq:'1 ครั้ง (หยุด 45 วันก่อนเก็บ)',gap:'–',note:'หยุดก่อนเก็บ 45 วัน'},
+    {months:[5,6],label:'มิ.ย.–ก.ค.',stage:'พักต้น',ferts:[{n:'ปุ๋ยอินทรีย์',r:'5–10 กก./ต้น',c:'bg'}],freq:'1 ครั้ง',gap:'–',note:'บำรุงดิน พักฟื้นต้น'},
+  ]
+};
+const CAN={mn:{2:{mn:0.5,mx:1.5,r:0.5},5:{mn:1.5,mx:3,r:0.75},10:{mn:3,mx:5,r:1.0},20:{mn:4,mx:7,r:1.0}},du:{2:{mn:1,mx:2,r:0.6},5:{mn:2,mx:4,r:1.0},10:{mn:4,mx:7,r:1.5},20:{mn:6,mx:12,r:2.0}}};
+const FR={mn:{young:{r:0.2,f:2},grow:{r:0.5,f:2},mature:{r:0.5,f:1},flower:{r:0.3,f:1},fruit:{r:0.6,f:2},harvest:{r:0.5,f:1}},du:{young:{r:0.5,f:2},grow:{r:1.0,f:2},mature:{r:1.0,f:1},flower:{r:0.8,f:1},fruit:{r:1.5,f:2},harvest:{r:1.0,f:1}}};
+
+function sv(){try{localStorage.setItem('orch3',JSON.stringify(S));}catch(e){}}
+function fN(n){return Math.round(n).toLocaleString('th-TH');}
+function fD(d){let dt=new Date(d);return dt.getDate()+' '+MN[dt.getMonth()].slice(0,3);}
+function td(){let n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
+function gms(tp,m){return SCH[tp].filter(s=>s.months.includes(m));}
+
+function sp(id,btn){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  if(btn)btn.classList.add('on');
+  document.getElementById('ptitle').textContent=PTITLES[id]||'';
+  if(id==='dash')renderDash();if(id==='cal')renderCal();if(id==='fin')renderFin();
+  if(id==='ann')renderAnn();if(id==='prod')renderProd();if(id==='alert')renderAl();
+  if(id==='task')renderTk();if(id==='fm')renderFM();
+  if(id==='fk')calcF();if(id==='quick')renderQuick();if(id==='spray')renderSpray();
+}
+
+function saveSt(){
+  let g=id=>document.getElementById(id);
+  S.settings={mn:+g('s-mn').value||50,du:+g('s-du').value||30,ar:+g('s-ar').value||5,nm:g('s-nm').value,lc:g('s-lc').value,yr:g('s-yr').value,mnd:+g('s-mnd').value||4,dud:+g('s-dud').value||6};
+  sv();renderDash();
+}
+function initSt(){
+  let s=S.settings,g=id=>document.getElementById(id);
+  g('s-mn').value=s.mn||50;g('s-du').value=s.du||30;g('s-ar').value=s.ar||5;
+  g('s-nm').value=s.nm||'สวนของฉัน';g('s-lc').value=s.lc||'';g('s-yr').value=s.yr||'';
+  g('s-mnd').value=s.mnd||4;g('s-dud').value=s.dud||6;
+}
+
+function renderDash(){
+  let s=S.settings;
+  document.getElementById('d-mn').textContent=s.mn||50;
+  document.getElementById('d-du').textContent=s.du||30;
+  let now=new Date();let m=now.getMonth();let y=now.getFullYear();
+  let finM=S.finance.filter(f=>{let d=new Date(f.date);return d.getMonth()===m&&d.getFullYear()===y;});
+  let inc=finM.filter(f=>f.type==='income').reduce((a,b)=>a+b.amount,0);
+  let exp=finM.filter(f=>f.type==='expense').reduce((a,b)=>a+b.amount,0);
+  document.getElementById('d-inc').textContent=fN(inc)+' ฿';
+  document.getElementById('d-exp').textContent=fN(exp)+' ฿';
+  let prodM=S.produce.filter(p=>{let d=new Date(p.date);return d.getMonth()===m&&d.getFullYear()===y;});
+  document.getElementById('d-prod').textContent=fN(prodM.reduce((a,b)=>a+b.kg,0))+' กก.';
+  let ts=td();let t3=new Date();t3.setDate(t3.getDate()+3);let t3s=t3.toISOString().split('T')[0];
+  let due=S.alerts.filter(a=>a.date>=ts&&a.date<=t3s);
+  document.getElementById('d-due').textContent=due.length;
+  let tm={water:0,fert:0,spray:0};
+  S.tasks.filter(t=>{let d=new Date(t.date);return d.getMonth()===m&&d.getFullYear()===y;}).forEach(t=>{if(tm[t.type]!==undefined)tm[t.type]++;});
+  document.getElementById('d-cw').textContent=tm.water+' ครั้ง';
+  document.getElementById('d-cf').textContent=tm.fert+' ครั้ง';
+  document.getElementById('d-cs').textContent=tm.spray+' ครั้ง';
+  let todayAl=S.alerts.filter(a=>a.date===ts);
+  let aEl=document.getElementById('d-al');
+  aEl.innerHTML=todayAl.length?todayAl.map(a=>`<div class="strip sr" style="border-radius:8px;margin-bottom:5px"><i class="ti ti-bell-ringing" style="font-size:14px;color:var(--rd)"></i><div><div style="font-weight:600;font-size:12px;color:var(--rd)">${TL[a.type]||a.type}</div><div class="sb2">${a.note}</div></div></div>`).join(''):'<div class="muted">ไม่มีงานเร่งด่วนวันนี้</div>';
+  let ms=gms('mangosteen',m);let ds=gms('durian',m);let fh='';
+  if(ms.length)fh+='<div style="font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:2px">มังคุด</div>'+ms.map(s=>s.ferts.map(f=>`<span class="pill badge ${f.c}">${f.n}</span>`).join('')).join('');
+  if(ds.length)fh+='<div style="font-size:11px;font-weight:600;color:var(--tx2);margin:5px 0 2px">ทุเรียน</div>'+ds.map(s=>s.ferts.map(f=>`<span class="pill badge ${f.c}">${f.n}</span>`).join('')).join('');
+  if(!fh)fh='<div class="muted">ปุ๋ยอินทรีย์ตามปกติ</div>';
+  document.getElementById('d-fnow').innerHTML=fh;
+  let rec=[...S.tasks,...S.events].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  document.getElementById('d-rec').innerHTML=rec.length?rec.map(r=>`<div style="display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px solid var(--br)"><span class="badge ${TC[r.type]||'bgr'}">${TL[r.type]||r.type}</span><span style="font-size:13px">${r.detail||r.note||''}</span><span class="muted" style="margin-left:auto">${fD(r.date)}</span></div>`).join(''):'<div class="muted">ยังไม่มีกิจกรรม</div>';
+  let cy=new Date().getFullYear();
+  let allProd=S.produce.filter(p=>new Date(p.date).getFullYear()===cy);
+  let mnKgY=allProd.filter(p=>p.type==='mangosteen').reduce((a,b)=>a+b.kg,0);
+  let duKgY=allProd.filter(p=>p.type==='durian').reduce((a,b)=>a+b.kg,0);
+  let finY=S.finance.filter(f=>new Date(f.date).getFullYear()===cy);
+  let totalExpY=finY.filter(f=>f.type==='expense').reduce((a,b)=>a+b.amount,0);
+  let mnRevY=finY.filter(f=>f.cat==='ขายมังคุด').reduce((a,b)=>a+b.amount,0);
+  let duRevY=finY.filter(f=>f.cat==='ขายทุเรียน').reduce((a,b)=>a+b.amount,0);
+  let totalRevY=mnRevY+duRevY;
+  let mnCostPerKg='–',duCostPerKg='–';
+  if(totalRevY>0&&mnKgY>0){let mnShare=mnRevY/totalRevY;mnCostPerKg=fN(totalExpY*mnShare/mnKgY)+' ฿';}
+  else if(mnKgY>0&&totalExpY>0){mnCostPerKg=fN(totalExpY/2/mnKgY)+' ฿';}
+  if(totalRevY>0&&duKgY>0){let duShare=duRevY/totalRevY;duCostPerKg=fN(totalExpY*duShare/duKgY)+' ฿';}
+  else if(duKgY>0&&totalExpY>0){duCostPerKg=fN(totalExpY/2/duKgY)+' ฿';}
+  document.getElementById('d-cost-mn').textContent=mnCostPerKg;
+  document.getElementById('d-cost-du').textContent=duCostPerKg;
+  document.getElementById('n-dot').innerHTML=due.length?'<span class="notif"></span>':'';
+}
+
+function renderAl(){
+  let ts=td();let el=document.getElementById('al-list');
+  if(!S.alerts.length){el.innerHTML='<div class="muted">ยังไม่มี</div>';return;}
+  let sorted=[...S.alerts].sort((a,b)=>a.date.localeCompare(b.date));
+  el.innerHTML=sorted.map(a=>{
+    let ip=a.date<ts,it=a.date===ts;let cls=ip?'sa':it?'sr':'sg';
+    return`<div class="strip ${cls}" style="border-radius:8px;margin-bottom:5px">
+      <i class="ti ${ip?'ti-clock':it?'ti-bell-ringing':'ti-bell'}" style="font-size:14px;flex-shrink:0;margin-top:2px"></i>
+      <div style="flex:1"><div style="font-weight:600;font-size:13px">${fD(a.date)} ${MN[new Date(a.date).getMonth()]} — ${TL[a.type]||a.type}${a.repeat>0?` <span class="muted">(ทุก ${a.repeat} วัน)</span>`:''}</div><div class="sb2">${a.note}</div></div>
+      <button class="btn btnsm" onclick="delAl(${S.alerts.indexOf(a)})" style="flex-shrink:0"><i class="ti ti-trash"></i></button></div>`;
+  }).join('');
+}
+function addAl(){
+  let d=document.getElementById('al-d').value;if(!d){alert('กรุณาเลือกวันที่');return;}
+  let t=document.getElementById('al-t').value;let n=document.getElementById('al-n').value||TL[t];
+  let r=parseInt(document.getElementById('al-r').value)||0;
+  S.alerts.push({date:d,type:t,note:n,repeat:r});sv();renderAl();document.getElementById('al-n').value='';
+}
+function delAl(i){S.alerts.splice(i,1);sv();renderAl();}
+
+function renderCal(){
+  let y=calDate.getFullYear();let m=calDate.getMonth();
+  document.getElementById('cal-t').textContent=MN[m]+' '+(y+543);
+  document.getElementById('cal-h').innerHTML=DN.map(d=>`<div class="cal-h">${d}</div>`).join('');
+  let first=new Date(y,m,1).getDay();let days=new Date(y,m+1,0).getDate();
+  let body=document.getElementById('cal-b');body.innerHTML='';let ts=td();
+  for(let i=0;i<first;i++)body.innerHTML+='<div></div>';
+  for(let d=1;d<=days;d++){
+    let ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    let evs=S.events.filter(e=>e.date===ds);let als=S.alerts.filter(a=>a.date===ds);
+    let cls='cal-d';if(ds===ts)cls+=' today';
+    if(evs.length||als.length){let tps=[...evs.map(e=>e.type),...als.map(a=>a.type)];if(tps.includes('water'))cls+=' hd db';else if(tps.includes('fert'))cls+=' hd dam';else if(tps.includes('spray'))cls+=' hd dr';else cls+=' hd';}
+    body.innerHTML+=`<div class="${cls}" onclick="showDay('${ds}')">${d}</div>`;
+  }
+  renderEvList(y,m);
+}
+function showDay(d){
+  let evs=S.events.filter(e=>e.date===d);let als=S.alerts.filter(a=>a.date===d);let lines=[];
+  if(als.length)lines.push('แจ้งเตือน:\n'+als.map(a=>`• ${TL[a.type]}: ${a.note}`).join('\n'));
+  if(evs.length)lines.push('กิจกรรม:\n'+evs.map(e=>`• ${TL[e.type]||e.type}: ${e.note||''}`).join('\n'));
+  alert(lines.length?d+'\n\n'+lines.join('\n\n'):d+'\nไม่มีกิจกรรม');
+}
+function cm(d){calDate.setMonth(calDate.getMonth()+d);renderCal();}
+function renderEvList(y,m){
+  let evs=S.events.filter(e=>{let dt=new Date(e.date);return dt.getMonth()===m&&dt.getFullYear()===y;}).sort((a,b)=>a.date.localeCompare(b.date));
+  let el=document.getElementById('ev-list');
+  if(!evs.length){el.innerHTML='<div class="muted">ยังไม่มี</div>';return;}
+  el.innerHTML=evs.map(e=>`<div style="display:flex;align-items:center;gap:5px;padding:5px 0;border-bottom:1px solid var(--br)"><span class="muted" style="width:45px;font-size:12px">${fD(e.date)}</span><span class="badge ${TC[e.type]||'bgr'}">${TL[e.type]||e.type}</span><span style="flex:1;font-size:12px">${e.note||''}</span><button class="btn btnsm" onclick="delEv(${S.events.indexOf(e)})"><i class="ti ti-x"></i></button></div>`).join('');
+}
+function addEv(){
+  let d=document.getElementById('ev-d').value;if(!d){alert('กรุณาเลือกวันที่');return;}
+  let t=document.getElementById('ev-t').value;let n=document.getElementById('ev-n').value;
+  S.events.push({date:d,type:t,note:n||TL[t]});sv();renderCal();document.getElementById('ev-n').value='';
+}
+function delEv(i){S.events.splice(i,1);sv();renderCal();}
+
+function addTk(){
+  let d=document.getElementById('tk-d').value;if(!d){alert('กรุณาเลือกวันที่');return;}
+  let t=document.getElementById('tk-t').value;let n=document.getElementById('tk-n').value;
+  let g=document.getElementById('tk-g').value;
+  S.tasks.push({date:d,type:t,detail:n||TL[t],garden:g});sv();renderTk();document.getElementById('tk-n').value='';
+}
+function renderTk(){
+  const GL={mangosteen:'มังคุด',durian:'ทุเรียน',both:'ทั้งสองสวน'};
+  const GC={mangosteen:'bt',durian:'ba',both:'bgr'};
+  let sorted=[...S.tasks].sort((a,b)=>b.date.localeCompare(a.date));let tb=document.getElementById('tk-list');
+  tb.innerHTML=sorted.length?sorted.map(t=>`<tr><td>${fD(t.date)}</td><td><span class="badge ${GC[t.garden]||'bgr'}">${GL[t.garden]||'–'}</span></td><td><span class="badge ${TC[t.type]||'bgr'}">${TL[t.type]||t.type}</span></td><td>${t.detail}</td><td><button class="btn btnsm" onclick="delTk(${S.tasks.indexOf(t)})"><i class="ti ti-trash"></i></button></td></tr>`).join(''):'<tr><td colspan="5" class="muted" style="text-align:center;padding:14px">ยังไม่มี</td></tr>';
+}
+function delTk(i){S.tasks.splice(i,1);sv();renderTk();}
+
+function calcPR(){let kg=+document.getElementById('pr-kg').value||0;let p=+document.getElementById('pr-p').value||0;document.getElementById('pr-rv2').value=(kg*p).toFixed(0);}
+function addPr(){
+  let d=document.getElementById('pr-d').value;let tp=document.getElementById('pr-tp').value;
+  let kg=+document.getElementById('pr-kg').value||0;let p=+document.getElementById('pr-p').value||0;
+  let rv=+document.getElementById('pr-rv2').value||kg*p;let nt=document.getElementById('pr-nt').value;
+  let selM=+document.getElementById('pr-m').value;
+  if(!d||kg<=0){alert('กรุณากรอกวันที่และน้ำหนัก');return;}
+  let dateObj=new Date(d);let useY=dateObj.getFullYear();
+  let finDate=`${useY}-${String(selM+1).padStart(2,'0')}-15`;
+  S.produce.push({date:d,type:tp,kg,price:p,rev:rv,note:nt,month:selM});
+  if(rv>0){S.finance.push({type:'income',amount:rv,cat:tp==='mangosteen'?'ขายมังคุด':'ขายทุเรียน',note:`${fN(kg)} กก. @ ${fN(p)} ฿/กก.${nt?' — '+nt:''}`,date:finDate});}
+  sv();renderProd();['pr-kg','pr-p','pr-rv2','pr-nt'].forEach(id=>document.getElementById(id).value='');
+}
+function renderProd(){
+  let cy=new Date().getFullYear();let all=S.produce.filter(p=>new Date(p.date).getFullYear()===cy);
+  document.getElementById('pr-mn').textContent=fN(all.filter(p=>p.type==='mangosteen').reduce((a,b)=>a+b.kg,0))+' กก.';
+  document.getElementById('pr-du').textContent=fN(all.filter(p=>p.type==='durian').reduce((a,b)=>a+b.kg,0))+' กก.';
+  document.getElementById('pr-rv').textContent=fN(all.reduce((a,b)=>a+b.rev,0))+' ฿';
+  let tb=document.getElementById('pr-list');let sorted=[...S.produce].sort((a,b)=>b.date.localeCompare(a.date));
+  tb.innerHTML=sorted.length?sorted.map(p=>`<tr><td>${fD(p.date)}</td><td><span class="badge ${p.type==='mangosteen'?'bt':'ba'}">${p.type==='mangosteen'?'มังคุด':'ทุเรียน'}</span></td><td>${fN(p.kg)} กก.</td><td>${p.price>0?fN(p.price)+' ฿':'-'}</td><td>${p.rev>0?fN(p.rev)+' ฿':'-'}</td><td>${p.note||'-'}</td><td><button class="btn btnsm" onclick="delPr(${S.produce.indexOf(p)})"><i class="ti ti-trash"></i></button></td></tr>`).join(''):'<tr><td colspan="7" class="muted" style="text-align:center;padding:14px">ยังไม่มี</td></tr>';
+}
+function delPr(i){S.produce.splice(i,1);sv();renderProd();}
+
+function renderFin(){
+  let m=+document.getElementById('fn-m').value;let y=+document.getElementById('fn-y').value;
+  let rows=S.finance.filter(f=>{let d=new Date(f.date);return d.getMonth()===m&&d.getFullYear()===y;});
+  let inc=rows.filter(r=>r.type==='income').reduce((a,b)=>a+b.amount,0);
+  let exp=rows.filter(r=>r.type==='expense').reduce((a,b)=>a+b.amount,0);
+  document.getElementById('fn-inc').textContent=fN(inc)+' ฿';document.getElementById('fn-exp').textContent=fN(exp)+' ฿';
+  let prf=inc-exp;let pEl=document.getElementById('fn-prf');pEl.textContent=(prf>=0?'+':'')+fN(prf)+' ฿';pEl.className='mv'+(prf<0?' rd':'');
+  let tb=document.getElementById('fn-list');
+  tb.innerHTML=rows.length?rows.map(r=>`<tr><td><span class="badge ${r.type==='income'?'bg':'br-c'}">${r.type==='income'?'รายรับ':'รายจ่าย'}</span></td><td>${r.cat}</td><td style="font-weight:600">${fN(r.amount)} ฿</td><td class="muted">${r.note||''}</td><td><button class="btn btnsm" onclick="delFn(${S.finance.indexOf(r)})"><i class="ti ti-trash"></i></button></td></tr>`).join(''):'<tr><td colspan="5" class="muted" style="text-align:center;padding:14px">ยังไม่มี</td></tr>';
+}
+function addFn(){
+  let amt=+document.getElementById('fn-amt').value;if(!amt||amt<=0){alert('กรุณากรอกจำนวนเงิน');return;}
+  let tp=document.getElementById('fn-tp').value;let cat=document.getElementById('fn-cat').value;let nt=document.getElementById('fn-nt').value;
+  let m=+document.getElementById('fn-m').value;let y=+document.getElementById('fn-y').value;
+  S.finance.push({type:tp,amount:amt,cat,note:nt,date:`${y}-${String(m+1).padStart(2,'0')}-15`});sv();renderFin();
+  document.getElementById('fn-amt').value='';document.getElementById('fn-nt').value='';
+}
+function delFn(i){S.finance.splice(i,1);sv();renderFin();}
+
+function renderAnn(){
+  let y=+document.getElementById('an-y').value;
+  let finY=S.finance.filter(f=>new Date(f.date).getFullYear()===y);
+  let inc=finY.filter(f=>f.type==='income').reduce((a,b)=>a+b.amount,0);
+  let exp=finY.filter(f=>f.type==='expense').reduce((a,b)=>a+b.amount,0);
+  let prf=inc-exp;let prodY=S.produce.filter(p=>new Date(p.date).getFullYear()===y);
+  document.getElementById('an-inc').textContent=fN(inc)+' ฿';document.getElementById('an-exp').textContent=fN(exp)+' ฿';
+  let pEl=document.getElementById('an-prf');pEl.textContent=(prf>=0?'+':'')+fN(prf)+' ฿';pEl.className='mv'+(prf<0?' rd':'');
+  document.getElementById('an-kg').textContent=fN(prodY.reduce((a,b)=>a+b.kg,0))+' กก.';
+  let maxV=Math.max(...MN.map((_,i)=>{let mf=finY.filter(f=>new Date(f.date).getMonth()===i);return Math.max(mf.filter(f=>f.type==='income').reduce((a,b)=>a+b.amount,0),mf.filter(f=>f.type==='expense').reduce((a,b)=>a+b.amount,0));}),1);
+  document.getElementById('an-ch').innerHTML=MN.map((mn,i)=>{
+    let mf=finY.filter(f=>new Date(f.date).getMonth()===i);
+    let mi=mf.filter(f=>f.type==='income').reduce((a,b)=>a+b.amount,0);
+    let me=mf.filter(f=>f.type==='expense').reduce((a,b)=>a+b.amount,0);
+    let pw=Math.round(mi/maxV*100);let ew=Math.round(me/maxV*100);
+    return`<div class="cr"><div class="cl">${mn.slice(0,3)}</div><div class="ct2"><div class="sg2" style="width:${pw}%"></div><div class="sr2" style="width:${ew}%"></div></div><div class="cv">${mi>0||me>0?fN(mi-me)+' ฿':'–'}</div></div>`;
+  }).join('');
+  let mnKg=prodY.filter(p=>p.type==='mangosteen').reduce((a,b)=>a+b.kg,0);let duKg=prodY.filter(p=>p.type==='durian').reduce((a,b)=>a+b.kg,0);let maxK=Math.max(mnKg,duKg,1);
+  document.getElementById('an-pr').innerHTML=`<div class="cr"><div class="cl">มังคุด</div><div class="ct2"><div class="sg2" style="width:${Math.round(mnKg/maxK*100)}%"></div></div><div class="cv">${fN(mnKg)} กก.</div></div><div class="cr"><div class="cl">ทุเรียน</div><div class="ct2"><div class="sg2" style="width:${Math.round(duKg/maxK*100)}%;background:var(--am)"></div></div><div class="cv">${fN(duKg)} กก.</div></div>`;
+  let cats={};finY.filter(f=>f.type==='expense').forEach(f=>{cats[f.cat]=(cats[f.cat]||0)+f.amount;});
+  let catArr=Object.entries(cats).sort((a,b)=>b[1]-a[1]);let maxC=Math.max(...catArr.map(c=>c[1]),1);
+  document.getElementById('an-ex').innerHTML=catArr.length?catArr.map(([c,v])=>`<div class="cr"><div class="cl">${c}</div><div class="ct2"><div class="sr2" style="width:${Math.round(v/maxC*100)}%;border-radius:4px"></div></div><div class="cv">${fN(v)} ฿</div></div>`).join(''):'<div class="muted">ยังไม่มีข้อมูล</div>';
+}
+
+function renderFM(){
+  let m=+document.getElementById('fm-m').value;let t=document.getElementById('fm-t').value;
+  let types=t==='both'?['mangosteen','durian']:[t];
+  let names={mangosteen:'มังคุด',durian:'ทุเรียน'};let cols={mangosteen:'var(--g)','durian':'var(--am)'};
+  let html='';
+  types.forEach(tp=>{
+    let sc=gms(tp,m);html+=`<div class="card" style="border-top:3px solid ${cols[tp]}">`;
+    html+=`<div class="ct-title"><i class="ti ti-plant"></i> ${names[tp]} — ${MN[m]}</div>`;
+    if(!sc.length){html+='<div class="muted">ไม่มีการใส่ปุ๋ยพิเศษเดือนนี้ — ใส่ปุ๋ยอินทรีย์ได้ตามปกติ</div>';}
+    else sc.forEach(s=>{
+      html+=`<div class="strip sg" style="border-radius:var(--r);margin-bottom:9px"><div style="flex:1">`;
+      html+=`<div style="font-weight:600;color:var(--g-dk);margin-bottom:5px">${s.stage}</div>`;
+      html+=`<div style="margin-bottom:7px">${s.ferts.map(f=>`<span class="pill badge ${f.c}">${f.n} — ${f.r}</span>`).join('')}</div>`;
+      html+=`<div style="font-size:12px;display:flex;flex-wrap:wrap;gap:12px"><span><i class="ti ti-refresh" style="color:var(--bl)"></i> <b>ความถี่:</b> ${s.freq}</span><span><i class="ti ti-arrows-split-2" style="color:var(--am)"></i> <b>ผสม/แยก:</b> ${s.gap}</span></div>`;
+      if(s.note)html+=`<div style="font-size:12px;color:var(--g-dk);margin-top:4px"><i class="ti ti-info-circle"></i> ${s.note}</div>`;
+      html+=`</div></div>`;
+    });
+    html+='</div>';
+  });
+  html+=`<div class="card"><div class="ct-title"><i class="ti ti-calendar-month"></i> ภาพรวมทั้งปี</div><div class="tw"><table><thead><tr><th>เดือน</th><th>มังคุด</th><th>ทุเรียน</th></tr></thead><tbody>`;
+  for(let i=0;i<12;i++){
+    let mn=gms('mangosteen',i);let du=gms('durian',i);let cur=i===m;
+    html+=`<tr class="${cur?'hi':''}"><td>${MN[i].slice(0,3)}${cur?' ◀':''}</td>`;
+    html+=`<td>${mn.length?mn.map(s=>s.ferts.map(f=>`<span class="badge ${f.c}">${f.n}</span>`).join('')).join(' '):'<span class="muted">ปุ๋ยอินทรีย์</span>'}</td>`;
+    html+=`<td>${du.length?du.map(s=>s.ferts.map(f=>`<span class="badge ${f.c}">${f.n}</span>`).join('')).join(' '):'<span class="muted">ปุ๋ยอินทรีย์</span>'}</td></tr>`;
+  }
+  html+='</tbody></table></div></div>';
+  document.getElementById('fm-c').innerHTML=html;
+}
+
+function calcF(){
+  let tp=document.getElementById('cl-tp').value;let st=document.getElementById('cl-st').value;
+  let tr=+document.getElementById('cl-tr').value||50;let dm=+document.getElementById('cl-dm').value||4;
+  let ra=+document.getElementById('cl-ra').value||0.05;let fo=document.getElementById('cl-fo').value;
+  let rd=FR[tp][st];let area=Math.PI*(dm/2)*(dm/2);let byA=ra*area;let perT=Math.max(rd.r,byA);
+  let tot=perT*tr;let bags=Math.ceil(tot/50);let mkg=tot*rd.f;let mb=Math.ceil(mkg/50);
+  document.getElementById('cl-res').innerHTML=`
+    <div style="font-size:13px;font-weight:600;color:var(--g-dk);margin-bottom:11px">ผลการคำนวณ — ${fo}</div>
+    <div class="g4" style="margin-bottom:9px">
+      <div class="met"><div class="ml">พื้นที่ทรงพุ่ม/ต้น</div><div class="mv bl">${area.toFixed(1)} ตร.ม.</div></div>
+      <div class="met"><div class="ml">อัตรา/ต้น/ครั้ง</div><div class="mv">${perT.toFixed(2)} กก.</div></div>
+      <div class="met"><div class="ml">รวมทั้งสวน/ครั้ง</div><div class="mv am">${tot.toFixed(1)} กก.</div></div>
+      <div class="met"><div class="ml">กระสอบ/ครั้ง</div><div class="mv am">${bags} กระสอบ</div></div>
+      <div class="met"><div class="ml">ความถี่/เดือน</div><div class="mv bl">${rd.f} ครั้ง</div></div>
+      <div class="met"><div class="ml">กก./เดือน</div><div class="mv">${mkg.toFixed(1)} กก.</div></div>
+      <div class="met"><div class="ml">กระสอบ/เดือน</div><div class="mv rd">${mb} กระสอบ</div></div>
+    </div>
+    <div class="muted">อัตรา/ต้น = ค่าสูงสุดระหว่างอัตรามาตรฐาน (${rd.r} กก.) กับอัตราตามทรงพุ่ม (${byA.toFixed(2)} กก.)</div>`;
+}
+
+// QUICK LOG
+let qGarden='mangosteen';
+function setQG(g){
+  qGarden=g;
+  ['mn','du','both'].forEach(k=>{
+    let el=document.getElementById('qg-'+k);
+    el.style.borderColor=g===({'mn':'mangosteen','du':'durian','both':'both'}[k]||k)?'var(--g-md)':'var(--br2)';
+    el.style.fontWeight=g===({'mn':'mangosteen','du':'durian','both':'both'}[k]||k)?'600':'400';
+    el.style.color=g===({'mn':'mangosteen','du':'durian','both':'both'}[k]||k)?'var(--g-dk)':'var(--tx)';
+  });
+  const gmap={mangosteen:'mn',durian:'du',both:'both'};
+  ['mn','du','both'].forEach(k=>{
+    let el=document.getElementById('qg-'+k);
+    let match=(k==='mn'&&g==='mangosteen')||(k==='du'&&g==='durian')||(k==='both'&&g==='both');
+    el.style.borderColor=match?'var(--g-md)':'var(--br2)';
+    el.style.fontWeight=match?'600':'400';
+    el.style.color=match?'var(--g-dk)':'var(--tx)';
+  });
+}
+function quickLog(type){
+  let note=document.getElementById('q-note').value;
+  let d=td();
+  S.tasks.push({date:d,type:type,detail:note||TL[type],garden:qGarden});
+  sv();
+  let fb=document.getElementById('q-feedback');
+  const GL={mangosteen:'มังคุด',durian:'ทุเรียน',both:'ทั้งสองสวน'};
+  fb.innerHTML=`<div class="strip sg" style="border-radius:8px"><i class="ti ti-check" style="color:var(--g);font-size:16px"></i><div>บันทึกแล้ว — <b>${TL[type]}</b> สวน${GL[qGarden]} ${now.getDate()} ${MN[now.getMonth()]}</div></div>`;
+  document.getElementById('q-note').value='';
+  renderQuick();
+  setTimeout(()=>{if(fb)fb.innerHTML='';},3000);
+}
+function renderQuick(){
+  let ts2=td();
+  let todayTasks=S.tasks.filter(t=>t.date===ts2).sort((a,b)=>S.tasks.indexOf(b)-S.tasks.indexOf(a));
+  const GL={mangosteen:'มังคุด',durian:'ทุเรียน',both:'ทั้งสองสวน'};
+  const GC={mangosteen:'bt',durian:'ba',both:'bgr'};
+  let el=document.getElementById('q-today');
+  el.innerHTML=todayTasks.length?todayTasks.map(t=>`<div style="display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:1px solid var(--br)"><span class="badge ${TC[t.type]||'bgr'}">${TL[t.type]||t.type}</span><span class="badge ${GC[t.garden]||'bgr'}">${GL[t.garden]||'–'}</span><span style="flex:1;font-size:13px">${t.detail}</span><button class="btn btnsm" onclick="delTk(${S.tasks.indexOf(t)});renderQuick()"><i class="ti ti-x"></i></button></div>`).join(''):'<div class="muted">ยังไม่มีรายการวันนี้</div>';
+}
+
+// SPRAY LOG
+function addSpray(){
+  let d=document.getElementById('sp-d').value;if(!d){alert('กรุณาเลือกวันที่');return;}
+  let g=document.getElementById('sp-g').value;
+  let name=document.getElementById('sp-name').value;if(!name){alert('กรุณากรอกชื่อยา');return;}
+  let target=document.getElementById('sp-target').value;
+  let rate=document.getElementById('sp-rate').value;
+  let vol=+document.getElementById('sp-vol').value||0;
+  let cost=+document.getElementById('sp-cost').value||0;
+  let result=document.getElementById('sp-result').value;
+  let note=document.getElementById('sp-note').value;
+  if(!S.sprays)S.sprays=[];
+  S.sprays.push({date:d,garden:g,name,target,rate,vol,cost,result,note});
+  if(cost>0){let m2=new Date(d).getMonth();let y2=new Date(d).getFullYear();S.finance.push({type:'expense',amount:cost,cat:'ค่ายา',note:`${name}${target?' — '+target:''}`,date:`${y2}-${String(m2+1).padStart(2,'0')}-15`});}
+  sv();renderSpray();
+  ['sp-name','sp-target','sp-rate','sp-vol','sp-cost','sp-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('sp-result').value='';
+}
+function renderSpray(){
+  if(!S.sprays)S.sprays=[];
+  const RC={'ดีมาก':'bg','ดี':'bt','พอใช้':'ba','ไม่ได้ผล':'br-c','':`bgr`};
+  function sprayCard(s,i){
+    return`<div style="border:1px solid var(--br);border-radius:var(--r);padding:10px 12px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:6px">
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:13px;margin-bottom:3px">${s.name}</div>
+          <div class="muted" style="margin-bottom:4px">${fD(s.date)}</div>
+          ${s.target?`<div style="font-size:12px;margin-bottom:2px"><i class="ti ti-target" style="color:var(--rd)"></i> ${s.target}</div>`:''}
+          ${s.rate?`<div style="font-size:12px;margin-bottom:2px"><i class="ti ti-flask" style="color:var(--bl)"></i> ${s.rate}</div>`:''}
+          ${s.vol>0?`<div style="font-size:12px;margin-bottom:2px"><i class="ti ti-droplet"></i> ${s.vol} ล.</div>`:''}
+          ${s.cost>0?`<div style="font-size:12px;margin-bottom:2px"><i class="ti ti-coin" style="color:var(--am)"></i> ${fN(s.cost)} ฿</div>`:''}
+          ${s.result?`<span class="badge ${RC[s.result]||'bgr'}" style="margin-top:3px">${s.result}</span>`:''}
+          ${s.note?`<div style="font-size:11px;color:var(--tx3);margin-top:3px">${s.note}</div>`:''}
+        </div>
+        <button class="btn btnsm" onclick="delSpray(${S.sprays.indexOf(s)})" style="flex-shrink:0"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`;
+  }
+  let sorted=[...S.sprays].sort((a,b)=>b.date.localeCompare(a.date));
+  let du=sorted.filter(s=>s.garden==='durian'||s.garden==='both');
+  let mn=sorted.filter(s=>s.garden==='mangosteen'||s.garden==='both');
+  document.getElementById('sp-du').innerHTML=du.length?du.map(s=>sprayCard(s)):'<div class="muted">ยังไม่มีบันทึก</div>';
+  document.getElementById('sp-mn').innerHTML=mn.length?mn.map(s=>sprayCard(s)):'<div class="muted">ยังไม่มีบันทึก</div>';
+}
+function delSpray(i){S.sprays.splice(i,1);sv();renderSpray();}
+
+function importJSON(input){
+  let file=input.files[0];if(!file)return;
+  let reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      let raw=JSON.parse(e.target.result);
+      let msg=[];
+      // map sprayLog → sprays
+      if(raw.sprayLog&&raw.sprayLog.length){
+        if(!S.sprays)S.sprays=[];
+        let mapped=raw.sprayLog.map(s=>({
+          date:s.date||td(),
+          garden:s.plant==='Durian'?'durian':s.plant==='Mangosteen'?'mangosteen':'both',
+          name:s.formula||'',
+          target:s.reason||'',
+          rate:s.dose||'',
+          vol:s.tanks||0,
+          cost:0,result:'',
+          note:s.weather||s.note||''
+        }));
+        S.sprays=[...S.sprays,...mapped];
+        msg.push(`นำเข้าบันทึกพ่นยา ${mapped.length} รายการ`);
+      }
+      // map fertLog → tasks
+      if(raw.fertLog&&raw.fertLog.length){
+        let mapped=raw.fertLog.map(f=>({date:f.date||td(),type:'fert',detail:f.formula||(f.note||'ใส่ปุ๋ย'),garden:'both'}));
+        S.tasks=[...S.tasks,...mapped];
+        msg.push(`นำเข้าบันทึกปุ๋ย ${mapped.length} รายการ`);
+      }
+      // map tasks
+      if(raw.tasks&&raw.tasks.length){
+        let mapped=raw.tasks.map(t=>({date:t.date||td(),type:t.type||'other',detail:t.note||t.detail||'',garden:t.garden||'both'}));
+        S.tasks=[...S.tasks,...mapped];
+        msg.push(`นำเข้างาน ${mapped.length} รายการ`);
+      }
+      // map expense
+      if(raw.expense&&raw.expense.length){
+        let mapped=raw.expense.map(x=>({type:'expense',amount:+x.amount||0,cat:x.category||x.cat||'อื่นๆ',note:x.note||'',date:x.date||td()}));
+        S.finance=[...S.finance,...mapped];
+        msg.push(`นำเข้ารายจ่าย ${mapped.length} รายการ`);
+      }
+      // map income
+      if(raw.income&&raw.income.length){
+        let mapped=raw.income.map(x=>({type:'income',amount:+x.amount||0,cat:x.category||x.cat||'อื่นๆ',note:x.note||'',date:x.date||td()}));
+        S.finance=[...S.finance,...mapped];
+        msg.push(`นำเข้ารายรับ ${mapped.length} รายการ`);
+      }
+      // map harvest → produce
+      if(raw.harvest&&raw.harvest.length){
+        let mapped=raw.harvest.map(h=>({date:h.date||td(),type:h.plant==='Durian'?'durian':'mangosteen',kg:+h.weight||0,price:+h.price||0,rev:(+h.weight||0)*(+h.price||0),note:h.note||''}));
+        S.produce=[...S.produce,...mapped];
+        msg.push(`นำเข้าผลผลิต ${mapped.length} รายการ`);
+      }
+      sv();renderDash();renderSpray();
+      let el=document.getElementById('imp-msg');
+      el.innerHTML=`<div class="strip sg" style="border-radius:var(--r);margin-top:6px"><i class="ti ti-check" style="color:var(--g);font-size:15px"></i><div><div style="font-weight:600;color:var(--g-dk)">นำเข้าสำเร็จ</div><div class="sb2">${msg.length?msg.join(' · '):'ไม่พบข้อมูลที่รองรับ'}</div></div></div>`;
+      input.value='';
+    }catch(err){
+      document.getElementById('imp-msg').innerHTML=`<div class="strip sr" style="border-radius:var(--r);margin-top:6px"><i class="ti ti-x" style="color:var(--rd)"></i><div>ไฟล์ไม่ถูกต้อง: ${err.message}</div></div>`;
+    }
+  };
+  reader.readAsText(file);
+}
+
+// AI CHAT
+let chatOpen=false;
+let chatHistory=[];
+
+function saveKey(){
+  let k=document.getElementById('ai-key').value.trim();
+  if(k){localStorage.setItem('orch3_key',k);document.getElementById('key-status').textContent='✓ บันทึก Key แล้ว';}
+  else{localStorage.removeItem('orch3_key');document.getElementById('key-status').textContent='';}
+}
+function loadKey(){
+  let k=localStorage.getItem('orch3_key')||'';
+  let el=document.getElementById('ai-key');if(el)el.value=k;
+  if(k&&document.getElementById('key-status'))document.getElementById('key-status').textContent='✓ มี Key อยู่แล้ว';
+}
+function toggleChat(){
+  chatOpen=!chatOpen;
+  let p=document.getElementById('chat-popup');
+  p.style.display=chatOpen?'flex':'none';
+  if(chatOpen){document.getElementById('chat-input').focus();}
+}
+function buildFarmContext(){
+  let s=S.settings;
+  let now=new Date();let m=now.getMonth();
+  let mnSch=SCH.mangosteen.find(x=>x.months.includes(m));
+  let duSch=SCH.durian.find(x=>x.months.includes(m));
+  let cy=now.getFullYear();
+  let prodY=S.produce.filter(p=>new Date(p.date).getFullYear()===cy);
+  let mnKg=prodY.filter(p=>p.type==='mangosteen').reduce((a,b)=>a+b.kg,0);
+  let duKg=prodY.filter(p=>p.type==='durian').reduce((a,b)=>a+b.kg,0);
+  let recentTasks=S.tasks.slice(-5).map(t=>`${fD(t.date)}: ${TL[t.type]||t.type} (${t.detail})`).join(', ');
+  return `คุณเป็น AI ที่ปรึกษาสวนผลไม้ไทย เชี่ยวชาญมังคุดและทุเรียน ตอบเป็นภาษาไทย กระชับ ตรงประเด็น
+
+ข้อมูลสวนปัจจุบัน:
+- ชื่อสวน: ${s.nm||'ไม่ระบุ'} | พื้นที่: ${s.ar||'?'} ไร่ | จังหวัด: ${s.lc||'ไม่ระบุ'}
+- ต้นมังคุด: ${s.mn||0} ต้น | ต้นทุเรียน: ${s.du||0} ต้น
+- เดือนปัจจุบัน: ${MN[m]}
+- ช่วงมังคุดตอนนี้: ${mnSch?mnSch.stage:'พักต้น'} — ควรใส่ปุ๋ย: ${mnSch?mnSch.ferts.map(f=>f.n).join(', '):'ปุ๋ยอินทรีย์'}
+- ช่วงทุเรียนตอนนี้: ${duSch?duSch.stage:'พักต้น'} — ควรใส่ปุ๋ย: ${duSch?duSch.ferts.map(f=>f.n).join(', '):'ปุ๋ยอินทรีย์'}
+- ผลผลิตปีนี้: มังคุด ${Math.round(mnKg)} กก., ทุเรียน ${Math.round(duKg)} กก.
+${recentTasks?`- งานล่าสุด: ${recentTasks}`:''}
+
+ตอบอย่างเป็นประโยชน์ มีตัวเลขและข้อมูลเฉพาะเจาะจงเมื่อเป็นไปได้`;
+}
+async function sendChat(){
+  let input=document.getElementById('chat-input');
+  let msg=input.value.trim();if(!msg)return;
+  let key=localStorage.getItem('orch3_key')||'';
+  let noKeyEl=document.getElementById('chat-no-key');
+  if(!key){noKeyEl.style.display='block';return;}
+  noKeyEl.style.display='none';
+  let msgs=document.getElementById('chat-msgs');
+  // แสดงข้อความผู้ใช้
+  msgs.innerHTML+=`<div class="msg-user">${msg.replace(/</g,'&lt;')}</div>`;
+  input.value='';
+  document.getElementById('chat-send').disabled=true;
+  // typing indicator
+  let typingId='typing-'+Date.now();
+  msgs.innerHTML+=`<div class="msg-typing" id="${typingId}">กำลังคิด...</div>`;
+  msgs.scrollTop=msgs.scrollHeight;
+  // เพิ่มใน history
+  chatHistory.push({role:'user',content:msg});
+  try{
+    let res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:buildFarmContext(),messages:chatHistory})
+    });
+    let data=await res.json();
+    document.getElementById(typingId)?.remove();
+    if(data.content&&data.content[0]){
+      let reply=data.content[0].text;
+      chatHistory.push({role:'assistant',content:reply});
+      // จำกัด history ไว้ 10 รอบ
+      if(chatHistory.length>20)chatHistory=chatHistory.slice(-20);
+      msgs.innerHTML+=`<div class="msg-ai">${reply.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>').replace(/</g,'&lt;').replace(/&lt;br&gt;/g,'<br>').replace(/&lt;b&gt;/g,'<b>').replace(/&lt;\/b&gt;/g,'</b>')}</div>`;
+    } else if(data.error){
+      msgs.innerHTML+=`<div class="msg-ai" style="color:var(--rd)">เกิดข้อผิดพลาด: ${data.error.message}</div>`;
+    }
+  }catch(err){
+    document.getElementById(typingId)?.remove();
+    msgs.innerHTML+=`<div class="msg-ai" style="color:var(--rd)">ไม่สามารถเชื่อมต่อได้ กรุณาตรวจสอบ API Key และการเชื่อมต่ออินเทอร์เน็ต</div>`;
+  }
+  document.getElementById('chat-send').disabled=false;
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function exportD(){
+  let b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='orchard-data.json';a.click();
+}
+
+// INIT
+let now=new Date();
+document.getElementById('tdate').textContent=`${now.getDate()} ${MN[now.getMonth()]} ${now.getFullYear()+543}`;
+let ts=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+['ev-d','tk-d','al-d','pr-d','sp-d'].forEach(id=>document.getElementById(id).value=ts);
+document.getElementById('fn-m').value=now.getMonth();
+document.getElementById('fm-m').value=now.getMonth();
+document.getElementById('pr-m').value=now.getMonth();
+initSt();renderDash();renderCal();calcF();renderQuick();renderSpray();loadKey();
+</script>
+</body>
+</html>
