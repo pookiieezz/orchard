@@ -1,0 +1,2355 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Farm Manager v1.1</title>
+<style>
+/* ═══════════════════════════════════════
+   DESIGN TOKENS — AI Farm Manager v1.1
+   Spec: UI_SPEC1.md / PROJECT_SPEC1.md
+   Desktop-first layout
+═══════════════════════════════════════ */
+:root {
+  --green:#4CAF50;--green-d:#388E3C;--green-dd:#1B5E20;--green-l:#E8F5E9;--green-xl:#F1F8F1;
+  --blue:#2196F3;--blue-d:#1565C0;--blue-l:#E3F2FD;--blue-xl:#EBF5FB;
+  --orange:#FF9800;--orange-d:#E65100;--orange-l:#FFF3E0;
+  --red:#F44336;--red-d:#B71C1C;--red-l:#FFEBEE;
+  --purple:#9C27B0;--purple-d:#6A1B9A;--purple-l:#F3E5F5;
+  --gray:#9E9E9E;--gray-d:#424242;--gray-l:#F5F5F5;--gray-m:#757575;
+  --brown:#795548;--brown-l:#EFEBE9;
+  --yellow:#FFC107;--yellow-l:#FFFDE7;
+  --bg:#F0F4F0;--surface:#FFFFFF;--surface2:#FAFAFA;
+  --border:#E0E0E0;--border-s:#BDBDBD;
+  --tx:#212121;--tx-m:#616161;--tx-h:#9E9E9E;
+  --radius:12px;--radius-s:8px;--radius-xs:5px;
+  --shadow:0 2px 8px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.05);
+  --shadow-m:0 4px 20px rgba(0,0,0,.12);--shadow-l:0 8px 40px rgba(0,0,0,.18);
+  font-family:'Segoe UI','Noto Sans Thai',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  font-size:16px;color:var(--tx);background:var(--bg);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+button{font-family:inherit;cursor:pointer;border:none}
+input,select,textarea{font-family:inherit}
+
+/* ── LAYOUT: sidebar + main (desktop-first per PROJECT_SPEC1) ── */
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:240px;background:var(--green-dd);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;z-index:100;transition:width .2s}
+.main{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-shrink:0;position:relative;z-index:50}
+.topbar-left{display:flex;flex-direction:column;gap:2px}
+.topbar-title{font-size:20px;font-weight:800;color:var(--tx)}
+.topbar-sub{font-size:13px;color:var(--tx-h)}
+.topbar-right{display:flex;gap:8px;align-items:center}
+.page-area{flex:1;overflow-y:auto;overflow-x:hidden}
+.page{display:none;padding:20px 24px 28px}
+.page.active{display:block}
+
+/* ── SIDEBAR ── */
+.sb-logo{padding:20px 16px 16px;background:rgba(0,0,0,.15);display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sb-logo-mark{width:44px;height:44px;background:var(--green-l);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.sb-logo-name{color:#fff;font-size:16px;font-weight:800;line-height:1.2}
+.sb-logo-sub{color:rgba(255,255,255,.55);font-size:12px;margin-top:2px}
+.sb-sect{padding:14px 16px 5px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35)}
+.nav{display:flex;align-items:center;gap:11px;padding:10px 14px;margin:1px 8px;border-radius:var(--radius-s);color:rgba(255,255,255,.7);font-size:14.5px;font-weight:500;cursor:pointer;border:none;background:none;width:calc(100% - 16px);text-align:left;transition:all .15s;position:relative}
+.nav:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav.active{background:rgba(255,255,255,.18);color:#fff;font-weight:700}
+.nav.active::before{content:'';position:absolute;left:-8px;top:50%;transform:translateY(-50%);width:4px;height:22px;background:var(--yellow);border-radius:0 3px 3px 0}
+.nav-icon{font-size:18px;width:22px;text-align:center;flex-shrink:0}
+.nb{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;min-width:18px;text-align:center}
+.sb-bottom{margin-top:auto;padding:10px;border-top:1px solid rgba(255,255,255,.08)}
+
+/* ── COMPONENTS ── */
+.card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.card-h{padding:15px 20px 11px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-title{font-size:15px;font-weight:700;color:var(--tx);display:flex;align-items:center;gap:8px}
+.card-body{padding:20px}
+
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:14px;margin-bottom:20px}
+.stat{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;cursor:pointer;transition:all .15s;border-left:4px solid var(--accent,var(--green))}
+.stat:hover{box-shadow:var(--shadow-m);transform:translateY(-2px)}
+.stat-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--tx-h);margin-bottom:5px}
+.stat-value{font-size:26px;font-weight:800;color:var(--tx);line-height:1}
+.stat-sub{font-size:12px;color:var(--tx-h);margin-top:5px}
+
+/* Buttons — per spec: 48px height, 12px radius, 16px bold */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:0 20px;height:48px;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;transition:all .15s;border:none;white-space:nowrap}
+.btn-sm{height:36px;padding:0 14px;font-size:13px;border-radius:var(--radius-s)}
+.btn-xs{height:30px;padding:0 10px;font-size:12px;border-radius:var(--radius-xs)}
+.btn-icon{width:48px;padding:0;justify-content:center}
+.btn-icon.sm{width:36px;height:36px}
+.btn-p{background:var(--green);color:#fff}.btn-p:hover{background:var(--green-d)}
+.btn-s{background:var(--gray-l);color:var(--tx)}.btn-s:hover{background:var(--border)}
+.btn-d{background:var(--red-l);color:var(--red-d)}.btn-d:hover{background:#FFCDD2}
+.btn-o{background:var(--orange-l);color:var(--orange-d)}.btn-o:hover{background:#FFE0B2}
+.btn-b{background:var(--blue-l);color:var(--blue-d)}.btn-b:hover{background:#BBDEFB}
+.btn-g{background:none;color:var(--tx-m);border:1px solid var(--border)}.btn-g:hover{background:var(--surface2);color:var(--tx)}
+.btn-og{background:none;color:var(--green-d);border:1.5px solid var(--green)}.btn-og:hover{background:var(--green-l)}
+
+/* Forms */
+.fg{margin-bottom:14px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.fl{display:block;font-size:12px;font-weight:700;color:var(--tx-m);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
+.fi,.fs,.fta{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:var(--radius-s);background:var(--surface);color:var(--tx);font-size:15px;outline:none;transition:border-color .15s,box-shadow .15s}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(76,175,80,.15)}
+.fi.ro{background:var(--surface2);color:var(--tx-m);cursor:default}
+.fta{resize:vertical;min-height:72px}
+.fhint{font-size:12px;color:var(--tx-h);margin-top:4px}
+
+/* Toolbar */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.sw{flex:1;min-width:180px;position:relative}
+.si-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--tx-h);font-size:16px}
+.si{width:100%;padding:10px 13px 10px 36px;border:1.5px solid var(--border);border-radius:var(--radius-s);font-size:14px;background:var(--surface);color:var(--tx);outline:none}
+.si:focus{border-color:var(--green)}
+.fsel{padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-s);background:var(--surface);color:var(--tx);font-size:13px;outline:none;cursor:pointer}
+
+/* Table */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:11px 13px;background:var(--surface2);border-bottom:2px solid var(--border);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--tx-m);white-space:nowrap}
+td{padding:11px 13px;border-bottom:1px solid var(--border);font-size:14px;color:var(--tx);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr{transition:background .1s}
+tbody tr:hover td{background:var(--green-xl)}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.bg-g{background:var(--green-l);color:var(--green-d)}
+.bg-b{background:var(--blue-l);color:var(--blue-d)}
+.bg-o{background:var(--orange-l);color:var(--orange-d)}
+.bg-r{background:var(--red-l);color:var(--red-d)}
+.bg-p{background:var(--purple-l);color:var(--purple-d)}
+.bg-gray{background:var(--gray-l);color:var(--gray-d)}
+.bg-y{background:var(--yellow-l);color:#E65100}
+.bg-br{background:var(--brown-l);color:var(--brown)}
+
+/* Chips */
+.chip{padding:8px 16px;border-radius:24px;border:1.5px solid var(--border);background:var(--surface);font-size:13px;font-weight:600;color:var(--tx-m);cursor:pointer;transition:all .15s}
+.chip:hover{border-color:var(--green);color:var(--green-d)}
+.chip.on{background:var(--green);color:#fff;border-color:var(--green)}
+.cr{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+
+/* Progress */
+.prog{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;border-radius:4px;transition:width .5s ease}
+
+/* Info boxes */
+.ib{border-radius:var(--radius-xs);padding:11px 14px;margin-top:8px;font-size:13px;line-height:1.65}
+.ib-o{background:var(--orange-l);border-left:3px solid var(--orange);color:var(--orange-d)}
+.ib-b{background:var(--blue-l);border-left:3px solid var(--blue);color:var(--blue-d)}
+.ib-r{background:var(--red-l);border-left:3px solid var(--red);color:var(--red-d)}
+.ib-g{background:var(--green-l);border-left:3px solid var(--green);color:var(--green-d)}
+.ib-p{background:var(--purple-l);border-left:3px solid var(--purple);color:var(--purple-d)}
+
+/* Modal */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;padding:16px}
+.ov.open{display:flex}
+.modal{background:var(--surface);border-radius:16px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-l);animation:mi .2s ease}
+.modal.lg{max-width:680px}
+@keyframes mi{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.mh{padding:19px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:2}
+.mt{font-size:18px;font-weight:800}
+.mc{width:34px;height:34px;border-radius:8px;background:var(--gray-l);border:none;font-size:17px;color:var(--tx-m);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.mc:hover{background:var(--border)}
+.mb{padding:18px 22px}
+.mf{padding:13px 22px 18px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;position:sticky;bottom:0;background:var(--surface)}
+
+/* Toast */
+#tc{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.toast{padding:11px 18px;border-radius:var(--radius-s);font-size:14px;font-weight:600;color:#fff;box-shadow:var(--shadow-m);min-width:200px;max-width:320px;display:flex;align-items:center;gap:9px;animation:ti .22s ease}
+@keyframes ti{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+.t-s{background:var(--green-d)}.t-e{background:var(--red-d)}.t-w{background:var(--orange-d)}.t-i{background:var(--blue-d)}
+
+/* Empty state */
+.empty{text-align:center;padding:56px 24px;color:var(--tx-m)}
+.ei{font-size:52px;margin-bottom:14px}
+.et{font-size:18px;font-weight:700;margin-bottom:8px}
+.es{font-size:14px;color:var(--tx-h);margin-bottom:20px}
+
+/* Section heading */
+.sh{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx-h);margin:18px 0 10px}
+
+/* ── DASHBOARD ── */
+.wx{background:linear-gradient(135deg,var(--green-dd) 0%,var(--green-d) 100%);border-radius:var(--radius);padding:20px 24px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:20px;box-shadow:var(--shadow)}
+.wx-l{display:flex;align-items:center;gap:18px}
+.wx-temp{font-size:46px;font-weight:800;line-height:1}
+.wx-stats{display:flex;gap:26px;flex-wrap:wrap}
+.wx-stat{text-align:center}
+.wx-val{font-size:19px;font-weight:700}
+.wx-lab{font-size:11px;opacity:.6;margin-top:2px}
+.qg{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;margin-bottom:20px}
+.qa{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 10px;text-align:center;cursor:pointer;transition:all .15s;border:1.5px solid transparent}
+.qa:hover{box-shadow:var(--shadow-m);border-color:var(--green);transform:translateY(-2px)}
+.qa-icon{font-size:26px;margin-bottom:7px}
+.qa-label{font-size:12px;font-weight:600;color:var(--tx-m)}
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+
+/* ── TASKS ── */
+.tr{display:flex;align-items:flex-start;gap:11px;padding:13px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+.tr:last-child{border-bottom:none}
+.tr:hover{background:var(--green-xl);margin:0 -20px;padding:13px 20px;border-radius:var(--radius-s)}
+.tck{width:24px;height:24px;border:2px solid var(--border-s);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;cursor:pointer;transition:all .15s;margin-top:1px}
+.tck:hover{border-color:var(--green);background:var(--green-l)}
+.tck.done{background:var(--green);border-color:var(--green)}
+.tck.ov{border-color:var(--red)}
+.tdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.tti{flex:1;min-width:0}
+
+/* ── CALENDAR ── */
+.ch{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;background:var(--surface2);border-bottom:1px solid var(--border)}
+.cg{display:grid;grid-template-columns:repeat(7,1fr)}
+.cdn{text-align:center;padding:9px 0;font-size:12px;font-weight:700;color:var(--tx-h);border-bottom:1px solid var(--border)}
+.cc{min-height:84px;padding:7px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+.cc:nth-child(7n){border-right:none}
+.cc.oth{opacity:.35}.cc.tod{background:var(--green-xl)}.cc:hover{background:#f1f8e9}
+.cnum{font-size:12px;font-weight:700;color:var(--tx-m);width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:50%;margin-bottom:3px}
+.cc.tod .cnum{background:var(--green);color:#fff}
+.cev{font-size:10px;padding:1px 5px;border-radius:3px;margin-bottom:2px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+
+/* ── FERTILIZER ── */
+.fert-out{background:var(--green-xl);border:2px solid var(--green-l);border-radius:var(--radius);padding:18px;margin-top:14px}
+.fg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:11px;margin:14px 0}
+.fgs{background:var(--surface);border-radius:var(--radius-s);padding:13px;text-align:center;box-shadow:var(--shadow)}
+.fgs-v{font-size:20px;font-weight:800;color:var(--green-d)}
+.fgs-u{font-size:10px;color:var(--tx-h);margin-top:2px}
+.fgs-l{font-size:12px;font-weight:600;color:var(--tx-m);margin-top:4px}
+
+/* AI Recommendation box for fertilizer */
+.ai-rec{background:var(--purple-l);border:1.5px solid #CE93D8;border-radius:var(--radius);padding:16px;margin-top:12px}
+.air-title{font-size:13px;font-weight:700;color:var(--purple-d);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.air-row{font-size:13px;color:var(--purple-d);line-height:1.7;margin-bottom:6px}
+
+/* ── CHEMICAL SPRAY ── */
+.spray-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}
+
+/* ── REPORTS / CHARTS ── */
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+
+/* Simple canvas-less charts */
+.bar-chart{display:flex;align-items:flex-end;gap:5px;height:120px;padding:0 2px}
+.bar-g{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+.bar{width:100%;border-radius:3px 3px 0 0;min-height:4px;transition:height .5s ease;cursor:pointer}
+.bar-lbl{font-size:10px;color:var(--tx-h);text-align:center;margin-top:3px}
+
+/* Pie chart (CSS only, simple) */
+.pie-wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.pie{position:relative;width:120px;height:120px;border-radius:50%;flex-shrink:0}
+.pie-legend{flex:1;min-width:140px}
+.pie-leg-row{display:flex;align-items:center;gap:7px;margin-bottom:6px;font-size:13px}
+.pie-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+
+/* Line chart */
+.line-chart{position:relative;height:100px;overflow:hidden}
+.line-chart svg{width:100%;height:100%}
+
+/* KPIs */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{background:var(--surface2);border-radius:var(--radius-s);padding:14px;text-align:center;border:1px solid var(--border)}
+.kpi-val{font-size:22px;font-weight:800;color:var(--green-d)}
+.kpi-lbl{font-size:12px;color:var(--tx-h);margin-top:4px}
+
+/* ── INVENTORY ── */
+.ig{display:grid;grid-template-columns:repeat(auto-fill,minmax(188px,1fr));gap:13px}
+.ic{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:17px;cursor:pointer;transition:all .15s;border:1.5px solid transparent}
+.ic:hover{box-shadow:var(--shadow-m);border-color:var(--green)}
+.ic.low{border-color:var(--red)}
+.ic-name{font-size:15px;font-weight:700;margin-bottom:3px}
+.ic-cat{font-size:12px;color:var(--tx-h);margin-bottom:11px}
+.ic-qty{font-size:26px;font-weight:800}
+.ic-unit{font-size:12px;color:var(--tx-h)}
+
+/* ── AI CHAT ── */
+.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 140px)}
+.chat-qbar{display:flex;gap:8px;padding:10px 16px;overflow-x:auto;border-bottom:1px solid var(--border);background:var(--surface2);flex-shrink:0}
+.qbtn{padding:7px 14px;border-radius:20px;background:var(--green-l);color:var(--green-d);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;border:none}
+.qbtn:hover{background:var(--green);color:#fff}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:11px}
+.msg{max-width:75%;padding:11px 15px;border-radius:14px;font-size:14px;line-height:1.6}
+.msg.user{align-self:flex-end;background:var(--green);color:#fff;border-bottom-right-radius:4px}
+.msg.ai{align-self:flex-start;background:var(--surface);color:var(--tx);box-shadow:var(--shadow);border-bottom-left-radius:4px}
+.chat-bar{display:flex;gap:10px;padding:14px 16px;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0}
+
+/* ── SUM ROW ── */
+.srow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:14px}
+.srow:last-child{border-bottom:none}
+.srow .lbl{color:var(--tx-m)}
+.srow .val{font-weight:700}
+
+/* Scrollbar */
+.tree-grid-cell{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border-radius:var(--radius-s);cursor:pointer;transition:all .15s;
+  border:2px solid transparent;position:relative;user-select:none;
+  padding:6px 4px;text-align:center;min-height:72px;
+}
+.tree-grid-cell:hover{transform:translateY(-2px);box-shadow:var(--shadow-m);z-index:2;}
+.tree-grid-cell.healthy{background:#E8F5E9;border-color:#A5D6A7;}
+.tree-grid-cell.check{background:#FFF8E1;border-color:#FFD54F;}
+.tree-grid-cell.sick{background:#FFEBEE;border-color:#EF9A9A;}
+.tree-grid-cell.empty-slot{background:var(--surface2);border-color:var(--border);border-style:dashed;opacity:.5;cursor:default;}
+.tree-grid-cell.empty-slot:hover{transform:none;box-shadow:none;}
+.tgc-num{font-size:10px;font-weight:700;color:var(--tx-h);margin-bottom:2px;}
+.tgc-icon{font-size:22px;line-height:1;}
+.tgc-code{font-size:10px;font-weight:700;color:var(--tx-m);margin-top:3px;}
+.tgc-badge{font-size:9px;padding:1px 5px;border-radius:10px;margin-top:3px;font-weight:700;}
+.tgc-badge.healthy{background:var(--green-l);color:var(--green-d);}
+.tgc-badge.check{background:var(--yellow-l);color:#E65100;}
+.tgc-badge.sick{background:var(--red-l);color:var(--red-d);}
+.grid-controls{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.grid-label{font-size:13px;font-weight:600;color:var(--tx-m);}
+.grid-num-in{width:56px;padding:6px 8px;border:1.5px solid var(--border);border-radius:var(--radius-s);font-size:14px;text-align:center;outline:none;}
+.grid-num-in:focus{border-color:var(--green);}
+.tree-compass{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--tx-h);margin-bottom:8px;padding:0 2px;}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border-s);border-radius:3px}
+
+/* Responsive — mobile gets bottom bar */
+.bbar{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:200;justify-content:space-around;padding:6px 0 env(safe-area-inset-bottom,0)}
+.bbi{display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 10px;border:none;background:none;cursor:pointer;color:var(--tx-h);font-size:11px;transition:color .15s}
+.bbi.active{color:var(--green-d)}
+.bbi-icon{font-size:22px}
+@media(max-width:768px){
+  .sidebar{display:none}.bbar{display:flex}.page-area{padding-bottom:64px}
+  .page{padding:14px 14px 80px}.stat-grid{grid-template-columns:1fr 1fr}
+  .fr,.fr3{grid-template-columns:1fr}.dg{grid-template-columns:1fr}
+  .topbar{padding:10px 14px}.rg{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-mark">🌿</div>
+    <div><div class="sb-logo-name">AI Farm Manager</div><div class="sb-logo-sub" id="sb-name">สวนผลไม้</div></div>
+  </div>
+  <div class="sb-sect">หลัก</div>
+  <button class="nav active" onclick="nav('dashboard',this)"><span class="nav-icon">📊</span>Dashboard</button>
+  <button class="nav" onclick="nav('tasks',this)"><span class="nav-icon">✅</span>งานประจำวัน<span class="nb" id="nb-task" style="display:none">0</span></button>
+  <button class="nav" onclick="nav('calendar',this)"><span class="nav-icon">📅</span>ปฏิทิน</button>
+  <div class="sb-sect">สวน</div>
+  <button class="nav" onclick="nav('trees',this)"><span class="nav-icon">🌳</span>ต้นไม้</button>
+  <button class="nav" onclick="nav('fertilizer',this)"><span class="nav-icon">🧪</span>คำนวณปุ๋ย</button>
+  <button class="nav" onclick="nav('fertlog',this)"><span class="nav-icon">📋</span>ประวัติปุ๋ย</button>
+  <button class="nav" onclick="nav('chemical',this)"><span class="nav-icon">☠️</span>พ่นยา</button>
+  <button class="nav" onclick="nav('harvest',this)"><span class="nav-icon">🍈</span>ผลผลิต</button>
+  <div class="sb-sect">การเงิน</div>
+  <button class="nav" onclick="nav('income',this)"><span class="nav-icon">💰</span>รายรับ</button>
+  <button class="nav" onclick="nav('expense',this)"><span class="nav-icon">💸</span>รายจ่าย</button>
+  <div class="sb-sect">คลัง</div>
+  <button class="nav" onclick="nav('inventory',this)"><span class="nav-icon">📦</span>สต็อก<span class="nb" id="nb-inv" style="display:none">!</span></button>
+  <div class="sb-sect">อื่นๆ</div>
+  <button class="nav" onclick="nav('reports',this)"><span class="nav-icon">📈</span>รายงาน</button>
+  <button class="nav" onclick="nav('ai',this)"><span class="nav-icon">🤖</span>AI Assistant</button>
+  <div class="sb-bottom">
+    <button class="nav" onclick="nav('settings',this)"><span class="nav-icon">⚙️</span>ตั้งค่า</button>
+    <button class="nav" onclick="doExportJSON()" style="margin-top:4px"><span class="nav-icon">☁️</span>Export / Backup</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title" id="pt">Dashboard</div>
+      <div class="topbar-sub" id="ps">ภาพรวมสวนวันนี้</div>
+    </div>
+    <div class="topbar-right" id="ta"></div>
+  </div>
+  <div class="page-area">
+
+  <!-- ══ DASHBOARD ══ -->
+  <div class="page active" id="pg-dashboard">
+    <div class="wx">
+      <div class="wx-l">
+        <div style="font-size:50px" id="wx-icon">⛅</div>
+        <div>
+          <div class="wx-temp"><span id="wx-t">—</span>°C</div>
+          <div style="font-size:13px;opacity:.8;margin-top:3px" id="wx-d">กำลังโหลดสภาพอากาศ…</div>
+          <div style="font-size:12px;opacity:.5;margin-top:2px">📍 <span id="wx-loc">บางละมุง, ชลบุรี</span></div>
+        </div>
+      </div>
+      <div class="wx-stats">
+        <div class="wx-stat"><div class="wx-val" id="wx-hum">—<span style="font-size:13px">%</span></div><div class="wx-lab">ความชื้น</div></div>
+        <div class="wx-stat"><div class="wx-val" id="wx-rain">—<span style="font-size:13px">mm</span></div><div class="wx-lab">ฝนวันนี้</div></div>
+        <div class="wx-stat"><div class="wx-val" id="wx-wind">—<span style="font-size:13px">km/h</span></div><div class="wx-lab">ลม</div></div>
+        <div class="wx-stat"><div class="wx-val" id="wx-uv">—</div><div class="wx-lab">UV Index</div></div>
+      </div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat" style="--accent:var(--purple)" onclick="nav('tasks',null)"><div class="stat-label">ต้นมังคุด</div><div class="stat-value" id="d-mg">—</div><div class="stat-sub" id="d-mg-z">—</div></div>
+      <div class="stat" style="--accent:var(--orange)" onclick="nav('tasks',null)"><div class="stat-label">ต้นทุเรียน</div><div class="stat-value" id="d-du">—</div><div class="stat-sub" id="d-du-z">—</div></div>
+      <div class="stat" style="--accent:var(--green)" onclick="nav('income',null)"><div class="stat-label">รายรับปีนี้</div><div class="stat-value" id="d-inc">—</div><div class="stat-sub" id="d-inc-m">—</div></div>
+      <div class="stat" style="--accent:var(--red)" onclick="nav('expense',null)"><div class="stat-label">รายจ่ายปีนี้</div><div class="stat-value" id="d-exp">—</div><div class="stat-sub" id="d-exp-m">—</div></div>
+      <div class="stat" style="--accent:var(--blue)"><div class="stat-label">กำไรปีนี้</div><div class="stat-value" id="d-profit">—</div><div class="stat-sub" id="d-profit-m">—</div></div>
+      <div class="stat" style="--accent:var(--green)" onclick="nav('harvest',null)"><div class="stat-label">ผลผลิตรวม</div><div class="stat-value" id="d-prod">—</div><div class="stat-sub" id="d-prod-m">—</div></div>
+      <div class="stat" style="--accent:var(--orange)" onclick="nav('tasks',null)"><div class="stat-label">งานวันนี้</div><div class="stat-value" id="d-ttask">—</div><div class="stat-sub" id="d-tov">—</div></div>
+      <div class="stat" style="--accent:var(--yellow)" onclick="nav('inventory',null)"><div class="stat-label">ของใกล้หมด</div><div class="stat-value" id="d-low">—</div><div class="stat-sub">รายการต้องซื้อ</div></div>
+    </div>
+    <div class="sh">Quick Actions</div>
+    <div class="qg">
+      <div class="qa" onclick="openM('task')"><div class="qa-icon">➕</div><div class="qa-label">เพิ่มงาน</div></div>
+      <div class="qa" onclick="openM('harvest')"><div class="qa-icon">🍈</div><div class="qa-label">บันทึกผลผลิต</div></div>
+      <div class="qa" onclick="openM('income')"><div class="qa-icon">💰</div><div class="qa-label">รายรับ</div></div>
+      <div class="qa" onclick="openM('expense')"><div class="qa-icon">💸</div><div class="qa-label">รายจ่าย</div></div>
+      <div class="qa" onclick="nav('fertilizer',null)"><div class="qa-icon">🧪</div><div class="qa-label">คำนวณปุ๋ย</div></div>
+      <div class="qa" onclick="nav('calendar',null)"><div class="qa-icon">📅</div><div class="qa-label">ปฏิทิน</div></div>
+    </div>
+    <div class="dg">
+      <div class="card"><div class="card-h"><div class="card-title">✅ งานวันนี้</div><button class="btn-sm btn-og btn" onclick="nav('tasks',null)">ดูทั้งหมด</button></div><div class="card-body" style="padding:10px 20px" id="d-tasks"></div></div>
+      <div class="card"><div class="card-h"><div class="card-title">🧪 ปุ๋ยแนะนำเดือนนี้</div><button class="btn-sm btn-og btn" onclick="nav('fertilizer',null)">คำนวณ</button></div><div class="card-body" id="d-fert"></div></div>
+    </div>
+    <div class="sh">กิจกรรมล่าสุด</div>
+    <div class="card"><div class="card-body" id="d-recent"></div></div>
+  </div>
+
+  <!-- ══ TASKS ══ -->
+  <div class="page" id="pg-tasks">
+    <div class="toolbar">
+      <div class="sw"><span class="si-icon">🔍</span><input class="si" type="search" placeholder="ค้นหางาน…" oninput="rTasks()" id="tq"></div>
+      <select class="fsel" onchange="rTasks()" id="tf"><option value="">ทุกประเภท</option><option value="Watering">💧 รดน้ำ</option><option value="Fertilizing">🧪 ใส่ปุ๋ย</option><option value="Spraying">☠️ พ่นยา</option><option value="Pruning">✂️ ตัดแต่ง</option><option value="Harvest">🍈 เก็บผลผลิต</option><option value="Other">📌 อื่นๆ</option></select>
+      <select class="fsel" onchange="rTasks()" id="tpf"><option value="">ทุกพืช</option><option value="Mangosteen">🌳 มังคุด</option><option value="Durian">🌴 ทุเรียน</option></select>
+      <select class="fsel" onchange="rTasks()" id="tsf"><option value="">ทุกสถานะ</option><option value="pending">รอดำเนินการ</option><option value="overdue">เกินกำหนด</option><option value="done">เสร็จแล้ว</option></select>
+      <div class="cr" style="margin:0">
+        <div class="chip on" id="tv-l" onclick="setTV('list',this)">รายการ</div>
+        <div class="chip" id="tv-w" onclick="setTV('week',this)">สัปดาห์</div>
+        <div class="chip" id="tv-m" onclick="setTV('month',this)">เดือน</div>
+      </div>
+    </div>
+    <div id="tv-list-v"><div id="tlist"></div></div>
+    <div id="tv-week-v" style="display:none"><div class="card"><div id="wgrid"></div></div></div>
+    <div id="tv-month-v" style="display:none">
+      <div class="card"><div class="ch"><button class="btn-sm btn-g btn" onclick="cNav(-1)">← ก่อนหน้า</button><span style="font-weight:700" id="cml"></span><button class="btn-sm btn-g btn" onclick="cNav(1)">ถัดไป →</button></div><div class="cg" id="cgrid"></div></div>
+    </div>
+    <div class="sh">ประวัติที่เสร็จแล้ว</div>
+    <div class="card"><div class="card-body" id="thist"></div></div>
+  </div>
+
+  <!-- ══ CALENDAR ══ -->
+  <div class="page" id="pg-calendar">
+    <div class="toolbar">
+      <div class="cr" style="margin:0">
+        <div class="chip on" id="cv-m" onclick="setCV('month',this)">เดือน</div>
+        <div class="chip" id="cv-w" onclick="setCV('week',this)">สัปดาห์</div>
+      </div>
+    </div>
+    <div class="card"><div class="ch"><button class="btn-sm btn-g btn" onclick="cpNav(-1)">← ก่อนหน้า</button><span style="font-weight:700;font-size:16px" id="cp-label"></span><button class="btn-sm btn-g btn" onclick="cpNav(1)">ถัดไป →</button></div><div id="cp-body"></div></div>
+  </div>
+
+  <!-- ══ TREES ══ -->
+  <div class="page" id="pg-trees">
+    <div class="toolbar">
+      <div class="sw"><span class="si-icon">🔍</span><input class="si" type="search" placeholder="ค้นหาต้นไม้…" oninput="rTrees()" id="trq"></div>
+      <select class="fsel" onchange="rTrees()" id="trf"><option value="">ทุกชนิด</option><option value="Mangosteen">🌳 มังคุด</option><option value="Durian">🌴 ทุเรียน</option></select>
+      <select class="fsel" onchange="rTrees()" id="trhf"><option value="">ทุกสถานะ</option><option value="healthy">✅ ปกติ</option><option value="check">⚠️ ต้องดูแล</option><option value="sick">🔴 ป่วย</option></select>
+
+    </div>
+    <div id="tree-container"></div>
+  </div>
+
+  <!-- ══ FERT LOG ══ -->
+  <div class="page" id="pg-fertlog">
+    <div class="toolbar">
+      <div class="sw"><span class="si-icon">🔍</span><input class="si" type="search" placeholder="ค้นหา…" oninput="rFertLog()" id="flq"></div>
+      <select class="fsel" onchange="rFertLog()" id="flf"><option value="">ทุกชนิด</option><option value="Mangosteen">มังคุด</option><option value="Durian">ทุเรียน</option></select>
+      <select class="fsel" onchange="rFertLog()" id="flsf"><option value="">ทุกระยะ</option><option value="dormant">พักตัว</option><option value="maintenance">บำรุงรักษา</option><option value="leaf-flush">แตกใบ</option><option value="flower">ออกดอก</option><option value="fruit">ติดผล</option><option value="post-harvest">หลังเก็บเกี่ยว</option></select>
+    </div>
+    <div class="card tw"><table><thead><tr><th onclick="sortFL('date')" style="cursor:pointer">วันที่ ↕</th><th onclick="sortFL('plant')" style="cursor:pointer">ชนิดพืช ↕</th><th>ระยะ</th><th>ปุ๋ย</th><th>กก./ต้น</th><th>รวม (กก.)</th><th>กระสอบ</th><th>ต้นทุน (฿)</th><th>ผู้ดำเนินการ</th><th>หมายเหตุ</th><th></th></tr></thead><tbody id="fl-tbody"></tbody></table></div>
+    <div style="margin-top:16px;display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-sm btn-og" onclick="doExportFLCSV()">📊 Export CSV</button>
+    </div>
+  </div>
+
+  <!-- ══ FERTILIZER (existing) ══ -->
+  <div class="page" id="pg-fertilizer">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div>
+        <div class="card"><div class="card-h"><div class="card-title">📋 ข้อมูลต้นไม้</div></div>
+        <div class="card-body">
+          <div class="fg"><label class="fl">ชนิดพืช</label><select class="fs" id="fc-plant" onchange="calcF()"><option value="mangosteen">🌳 มังคุด (Mangosteen)</option><option value="durian">🌴 ทุเรียน (Durian)</option></select></div>
+          <div class="fr">
+            <div class="fg"><label class="fl">จำนวนต้น</label><input class="fi" type="number" id="fc-count" value="10" min="1" oninput="calcF()"></div>
+            <div class="fg"><label class="fl">อายุต้น (ปี)</label><input class="fi" type="number" id="fc-age" value="5" min="1" oninput="calcF()"></div>
+          </div>
+          <div class="fr">
+            <div class="fg"><label class="fl">ทรงพุ่ม (เมตร) <span style="font-weight:400;text-transform:none">(ไม่บังคับ)</span></label><input class="fi" type="number" id="fc-canopy" value="4" step="0.5" oninput="calcF()"></div>
+            <div class="fg"><label class="fl">ระยะการเจริญ</label>
+              <select class="fs" id="fc-stage" onchange="calcF()">
+                <option value="dormant">😴 พักตัว (Dormant)</option>
+                <option value="maintenance">🌿 บำรุงรักษา</option>
+                <option value="leaf-flush">🌱 แตกใบอ่อน</option>
+                <option value="flower">🌸 ออกดอก</option>
+                <option value="fruit">🍊 ติดผล</option>
+                <option value="post-harvest">🍂 หลังเก็บเกี่ยว</option>
+              </select>
+            </div>
+          </div>
+
+
+        </div></div>
+      </div>
+      <div>
+        <div class="card"><div class="card-h"><div class="card-title">📊 ผลการคำนวณ</div><div style="display:flex;gap:6px"><button class="btn btn-sm btn-b" id="btn-fc-task" onclick="saveFCtoTask()">📋 สร้างงาน</button><button class="btn btn-sm btn-o" id="btn-fc-hist" onclick="saveFCtoLog()">📜 บันทึกประวัติ</button><button class="btn btn-sm btn-p" id="btn-fc-save" onclick="saveFC()">💾 บันทึก</button></div></div>
+        <div class="card-body">
+          <div id="fc-fname" style="font-size:16px;font-weight:800;color:var(--green-d);margin-bottom:4px">กำลังคำนวณ…</div>
+          <div id="fc-sname" style="font-size:13px;color:var(--tx-m);margin-bottom:14px"></div>
+          <div id="fc-grid"></div>
+          <div id="fc-mix" style="display:none"></div>
+          <div id="fc-timing" style="display:none"></div>
+          <div id="fc-method" style="display:none"></div>
+          <div id="fc-warn" style="display:none"></div>
+          <div id="fc-ai-rec" style="display:none"></div>
+        </div></div>
+        <div class="sh">ประวัติการคำนวณ</div>
+        <div id="fc-hist"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CHEMICAL / SPRAY ══ -->
+  <div class="page" id="pg-chemical">
+    <div class="spray-stats">
+      <div class="stat" style="--accent:var(--red)"><div class="stat-label">พ่นครั้งล่าสุด</div><div class="stat-value" id="sp-last">—</div></div>
+      <div class="stat" style="--accent:var(--orange)"><div class="stat-label">พ่นเดือนนี้</div><div class="stat-value" id="sp-month">— ครั้ง</div></div>
+      <div class="stat" style="--accent:var(--blue)"><div class="stat-label">สารเคมีในสต็อก</div><div class="stat-value" id="sp-stock">— รายการ</div></div>
+    </div>
+    <div class="toolbar">
+      <div class="sw"><span class="si-icon">🔍</span><input class="si" placeholder="ค้นหา…" oninput="rChem()" id="chq"></div>
+      <select class="fsel" onchange="rChem()" id="chf"><option value="">ทุกชนิดพืช</option><option>Mangosteen</option><option>Durian</option></select>
+    </div>
+    <div class="card tw"><table><thead><tr><th>วันที่</th><th>ชนิดพืช</th><th>สูตรสาร</th><th>อัตราผสม</th><th>ถัง</th><th>เหตุผล</th><th>สภาพอากาศ</th><th>ระยะหยุด</th><th>หมายเหตุ</th><th></th></tr></thead><tbody id="ch-tbody"></tbody></table></div>
+    <div class="sh">สารเคมีในคลัง</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+  <span style="font-size:13px;color:var(--tx-m)">เรียงตาม:</span>
+  <div class="cr" style="margin:0;gap:6px" id="stock-sort-chips">
+    <div class="chip on" data-sort="lastUsed-desc" onclick="setStockSort('lastUsed-desc',this)">ใช้ล่าสุด ↓</div>
+    <div class="chip" data-sort="lastUsed-asc" onclick="setStockSort('lastUsed-asc',this)">ใช้ล่าสุด ↑</div>
+    <div class="chip" data-sort="name-asc" onclick="setStockSort('name-asc',this)">ชื่อ A-Z</div>
+    <div class="chip" data-sort="manual" onclick="setStockSort('manual',this)">จัดเอง ↕</div>
+  </div>
+</div>
+<div class="card tw"><table><thead><tr><th></th><th>ชื่อสาร</th><th>ประเภท</th><th>สต็อก</th><th>ระยะหยุดก่อนเก็บ</th><th>ใช้ล่าสุด</th><th>สถานะ</th><th></th></tr></thead><tbody id="stock-tbody"></tbody></table></div>
+  </div>
+
+  <!-- ══ HARVEST ══ -->
+  <div class="page" id="pg-harvest">
+    <div class="stat-grid" style="margin-bottom:20px">
+      <div class="stat" style="--accent:var(--purple)"><div class="stat-label">🌳 มังคุด (ปีนี้)</div><div class="stat-value" id="hv-mg">0 กก.</div><div class="stat-sub" id="hv-mg-r">฿0</div></div>
+      <div class="stat" style="--accent:var(--orange)"><div class="stat-label">🌴 ทุเรียน (ปีนี้)</div><div class="stat-value" id="hv-du">0 กก.</div><div class="stat-sub" id="hv-du-r">฿0</div></div>
+      <div class="stat" style="--accent:var(--green)"><div class="stat-label">รวมปีนี้</div><div class="stat-value" id="hv-tot">0 กก.</div><div class="stat-sub" id="hv-tot-r">฿0</div></div>
+      <div class="stat" style="--accent:var(--blue)"><div class="stat-label">เดือนนี้</div><div class="stat-value" id="hv-mo">0 กก.</div><div class="stat-sub" id="hv-mo-r">฿0</div></div>
+    </div>
+    <div class="toolbar">
+      <div class="sw"><span class="si-icon">🔍</span><input class="si" placeholder="ค้นหา…" oninput="rHarv()" id="hvq"></div>
+      <select class="fsel" onchange="rHarv()" id="hvf"><option value="">ทุกชนิด</option><option>Mangosteen</option><option>Durian</option></select>
+      <select class="fsel" onchange="rHarv()" id="hvg"><option value="">ทุกเกรด</option><option value="มันรวม">มันรวม</option><option value="ทีรวม">ทีรวม</option><option value="ตกไซส์">ตกไซส์</option></select>
+      <input class="fsel" type="date" id="hv-from" onchange="rHarv()" title="จากวันที่">
+      <input class="fsel" type="date" id="hv-to" onchange="rHarv()" title="ถึงวันที่">
+      <select class="fsel" onchange="rHarv()" id="hv-sort"><option value="date-desc">วันที่ ↓</option><option value="date-asc">วันที่ ↑</option><option value="weight-desc">น้ำหนัก ↓</option><option value="total-desc">รวมเงิน ↓</option></select>
+    </div>
+    <div class="card tw"><table><thead><tr><th>วันที่</th><th>ชนิด</th><th>เกรด</th><th>น้ำหนัก (กก.)</th><th>ราคา/กก. ฿</th><th>รวม ฿</th><th>ลูกค้า</th><th>หมายเหตุ</th><th></th></tr></thead><tbody id="hv-tbody"></tbody></table></div>
+  </div>
+
+  <!-- ══ INCOME ══ -->
+  <div class="page" id="pg-income">
+    <div class="stat-grid" style="margin-bottom:20px">
+      <div class="stat" style="--accent:var(--green)"><div class="stat-label">เดือนนี้</div><div class="stat-value" id="inc-m">฿0</div></div>
+      <div class="stat" style="--accent:var(--green)"><div class="stat-label">ปีนี้</div><div class="stat-value" id="inc-y">฿0</div></div>
+      <div class="stat" style="--accent:var(--purple)"><div class="stat-label">รายการ</div><div class="stat-value" id="inc-cnt">0</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px">
+      <div>
+        <div class="toolbar">
+          <div class="sw"><span class="si-icon">🔍</span><input class="si" placeholder="ค้นหา…" oninput="rInc()" id="incq"></div>
+          <select class="fsel" onchange="rInc()" id="incf"><option value="">ทุกหมวด</option><option>ผลไม้</option><option>อื่นๆ</option></select>
+          <input class="fsel" type="date" id="inc-from" onchange="rInc()" title="จากวันที่">
+          <input class="fsel" type="date" id="inc-to" onchange="rInc()" title="ถึงวันที่">
+          <select class="fsel" onchange="rInc()" id="inc-sort"><option value="date-desc">วันที่ ↓</option><option value="date-asc">วันที่ ↑</option><option value="amount-desc">จำนวน ↓</option></select>
+        </div>
+        <div class="card tw"><table><thead><tr><th>วันที่</th><th>รายละเอียด</th><th>หมวด</th><th>จำนวน ฿</th><th>หมายเหตุ</th><th></th></tr></thead><tbody id="inc-tbody"></tbody></table></div>
+      </div>
+      <div>
+        <div class="card"><div class="card-h"><div class="card-title">📊 สัดส่วนรายรับ</div></div><div class="card-body" id="inc-pie"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ EXPENSE ══ -->
+  <div class="page" id="pg-expense">
+    <div class="stat-grid" style="margin-bottom:20px">
+      <div class="stat" style="--accent:var(--red)"><div class="stat-label">วันนี้</div><div class="stat-value" id="exp-td">฿0</div></div>
+      <div class="stat" style="--accent:var(--red)"><div class="stat-label">เดือนนี้</div><div class="stat-value" id="exp-m">฿0</div></div>
+      <div class="stat" style="--accent:var(--orange)"><div class="stat-label">ปีนี้</div><div class="stat-value" id="exp-y">฿0</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
+      <div>
+        <div class="toolbar">
+          <div class="sw"><span class="si-icon">🔍</span><input class="si" placeholder="ค้นหา…" oninput="rExp()" id="expq"></div>
+          <select class="fsel" onchange="rExp()" id="expf"><option value="">ทุกหมวด</option><option>ปุ๋ย</option><option>สารเคมี</option><option>แรงงาน</option><option>น้ำมัน</option><option>อุปกรณ์</option><option>อื่นๆ</option></select>
+          <input class="fsel" type="date" id="exp-from" onchange="rExp()" title="จากวันที่">
+          <input class="fsel" type="date" id="exp-to" onchange="rExp()" title="ถึงวันที่">
+          <select class="fsel" onchange="rExp()" id="exp-sort"><option value="date-desc">วันที่ ↓</option><option value="date-asc">วันที่ ↑</option><option value="amount-desc">จำนวน ↓</option></select>
+        </div>
+        <div class="card tw"><table><thead><tr><th>วันที่</th><th>รายละเอียด</th><th>หมวด</th><th>จำนวน ฿</th><th>หมายเหตุ</th><th></th></tr></thead><tbody id="exp-tbody"></tbody></table></div>
+      </div>
+      <div>
+        <div class="card"><div class="card-h"><div class="card-title">📊 รายจ่ายตามหมวด</div></div><div class="card-body" id="exp-pie"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ INVENTORY ══ -->
+  <div class="page" id="pg-inventory">
+    <div class="toolbar">
+      <div class="cr" style="margin:0">
+        <div class="chip on" onclick="fInv('',this)">ทั้งหมด</div>
+        <div class="chip" onclick="fInv('ปุ๋ย',this)">ปุ๋ย</div>
+        <div class="chip" onclick="fInv('สารเคมี',this)">สารเคมี</div>
+        <div class="chip" onclick="fInv('อุปกรณ์',this)">อุปกรณ์</div>
+      </div>
+    </div>
+    <div class="ig" id="inv-grid"></div>
+    <div class="sh">รายการต้องซื้อ</div>
+    <div class="card"><div class="card-body" id="buy-list"></div></div>
+  </div>
+
+  <!-- ══ REPORTS ══ -->
+  <div class="page" id="pg-reports">
+    <div class="toolbar">
+      <select class="fsel" onchange="rRep()" id="rep-yr"></select>
+      <button class="btn btn-sm btn-og" onclick="doExportJSON()">📥 Export JSON</button>
+      <button class="btn btn-sm btn-og" onclick="doExportCSV()">📊 Export CSV</button>
+    </div>
+    <div class="rg">
+      <div class="card"><div class="card-h"><div class="card-title">💰 รายรับ vs รายจ่าย รายเดือน</div></div><div class="card-body"><div class="bar-chart" id="rep-bar"></div><div style="display:flex;gap:5px;margin-top:5px" id="rep-bar-lbl"></div></div></div>
+      <div class="card"><div class="card-h"><div class="card-title">📊 รายจ่ายตามหมวด</div></div><div class="card-body" id="rep-exp-pie"></div></div>
+    </div>
+    <div class="rg">
+      <div class="card"><div class="card-h"><div class="card-title">📈 แนวโน้มผลผลิต</div></div><div class="card-body"><svg id="rep-line-harv" viewBox="0 0 400 100" style="width:100%;height:100px"><text x="50%" y="50%" text-anchor="middle" fill="#9E9E9E" font-size="13" id="rep-line-harv-txt">ไม่มีข้อมูล</text></svg></div></div>
+      <div class="card"><div class="card-h"><div class="card-title">📈 แนวโน้มกำไร</div></div><div class="card-body"><svg id="rep-line-profit" viewBox="0 0 400 100" style="width:100%;height:100px"><text x="50%" y="50%" text-anchor="middle" fill="#9E9E9E" font-size="13" id="rep-line-profit-txt">ไม่มีข้อมูล</text></svg></div></div>
+    </div>
+    <div class="card" style="margin-bottom:16px"><div class="card-h"><div class="card-title">🎯 KPIs</div></div><div class="card-body" id="rep-kpi"></div></div>
+    <div class="card"><div class="card-h"><div class="card-title">📋 สรุปทั้งปี</div></div><div class="card-body" id="rep-summary"></div></div>
+  </div>
+
+  <!-- ══ AI ══ -->
+  <div class="page" id="pg-ai" style="padding:0">
+    <div class="chat-wrap">
+      <div class="chat-qbar">
+        <button class="qbtn" onclick="askAI('วันนี้ต้องทำอะไร')">วันนี้ต้องทำอะไร?</button>
+        <button class="qbtn" onclick="askAI('ควรใส่ปุ๋ยอะไร')">ควรใส่ปุ๋ยอะไร?</button>
+        <button class="qbtn" onclick="askAI('เหลือปุ๋ยกี่กระสอบ')">เหลือปุ๋ยกี่กระสอบ?</button>
+        <button class="qbtn" onclick="askAI('รายรับเดือนนี้')">รายรับเดือนนี้?</button>
+        <button class="qbtn" onclick="askAI('งานค้างมีอะไรบ้าง')">งานค้าง?</button>
+        <button class="qbtn" onclick="askAI('กำไรปีนี้')">กำไรปีนี้?</button>
+        <button class="qbtn" onclick="askAI('ขายมังคุดได้กี่กิโล')">มังคุดปีนี้?</button>
+        <button class="qbtn" onclick="askAI('ต้นทุนต่อกิโลกรัม')">ต้นทุน/กก.?</button>
+      </div>
+      <div class="chat-msgs" id="chat-msgs">
+        <div class="msg ai">สวัสดีครับ! ผมคือ AI Farm Manager 🌿<br><br>ถามผมได้เลยครับ เช่น วันนี้ต้องทำอะไร มีงานค้างอะไรบ้าง เหลือปุ๋ยกี่กระสอบ หรือสรุปรายรับรายจ่าย</div>
+      </div>
+      <div class="chat-bar">
+        <input class="fi" id="chat-in" placeholder="พิมพ์คำถาม…" onkeydown="if(event.key==='Enter')sendChat()" style="flex:1">
+        <button class="btn btn-p btn-icon" onclick="sendChat()">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SETTINGS ══ -->
+  <div class="page" id="pg-settings">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div>
+        <div class="card"><div class="card-h"><div class="card-title">🏡 ข้อมูลสวน</div></div><div class="card-body">
+          <div class="fg"><label class="fl">ชื่อสวน</label><input class="fi" id="set-fn" placeholder="สวนผลไม้"></div>
+          <div class="fg"><label class="fl">เจ้าของ</label><input class="fi" id="set-own" placeholder="ชื่อ-นามสกุล"></div>
+          <div class="fg"><label class="fl">ที่ตั้ง</label><input class="fi" id="set-loc" placeholder="บางละมุง, ชลบุรี"></div>
+          <div class="fg"><label class="fl">พื้นที่ (ไร่)</label><input class="fi" type="number" id="set-area"></div>
+          <div class="fg"><label class="fl">สกุลเงิน</label><select class="fs" id="set-cur"><option value="฿">฿ บาท</option><option value="$">$ USD</option></select></div>
+          <div class="fg"><label class="fl">ขนาดกระสอบเริ่มต้น</label><select class="fs" id="set-bag"><option value="25">25 กก.</option><option value="50">50 กก.</option></select></div>
+          <button class="btn btn-p" style="width:100%" onclick="saveSett()">💾 บันทึก</button>
+        </div></div>
+      </div>
+      <div>
+        <div class="card"><div class="card-h"><div class="card-title">💾 จัดการข้อมูล</div></div><div class="card-body">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <button class="btn btn-og" style="width:100%;justify-content:center" onclick="doExportJSON()">📥 Export ทั้งหมด (JSON)</button>
+            <button class="btn btn-og" style="width:100%;justify-content:center" onclick="doExportCSV()">📊 Export CSV (Google Sheets)</button>
+            <label class="btn btn-g" style="width:100%;justify-content:center;cursor:pointer">📤 Import JSON<input type="file" accept=".json" onchange="doImport(this)" style="display:none"></label>
+            <button class="btn btn-d" style="width:100%;justify-content:center" onclick="doClear()">🗑️ ล้างข้อมูลทั้งหมด</button>
+          </div>
+          <div class="ib ib-b" style="margin-top:14px"><strong>Google Sheets (Version 2):</strong> Export CSV แล้ว Import เข้า Google Sheets ได้เลย รองรับ Auto-Sync ในเวอร์ชันถัดไป</div>
+        </div></div>
+        <div class="card" style="margin-top:14px"><div class="card-h"><div class="card-title">📊 สรุปข้อมูล</div></div><div class="card-body" id="data-sum"></div></div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- end page-area -->
+</div><!-- end main -->
+</div><!-- end app -->
+
+<!-- BOTTOM BAR (mobile) -->
+<nav class="bbar">
+  <button class="bbi active" onclick="nav('dashboard',this)"><span class="bbi-icon">📊</span>หน้าหลัก</button>
+  <button class="bbi" onclick="nav('tasks',this)"><span class="bbi-icon">✅</span>งาน</button>
+  <button class="bbi" onclick="nav('harvest',this)"><span class="bbi-icon">🍈</span>ผลผลิต</button>
+  <button class="bbi" onclick="nav('income',this)"><span class="bbi-icon">💰</span>เงิน</button>
+  <button class="bbi" onclick="nav('ai',this)"><span class="bbi-icon">🤖</span>AI</button>
+</nav>
+<!-- MODALS -->
+<!-- Task -->
+<div class="ov" id="m-task"><div class="modal">
+  <div class="mh"><div class="mt" id="mt-title">เพิ่มงาน</div><button class="mc" onclick="closeM('task')">✕</button></div>
+  <div class="mb">
+    <input type="hidden" id="t-id">
+    <div class="fg"><label class="fl">ชื่องาน</label><input class="fi" id="t-name" placeholder="เช่น พ่นยาป้องกันโรค แปลง B"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">ประเภท</label><select class="fs" id="t-type"><option value="Watering">💧 รดน้ำ</option><option value="Fertilizing">🧪 ใส่ปุ๋ย</option><option value="Spraying">☠️ พ่นยา</option><option value="Pruning">✂️ ตัดแต่ง</option><option value="Harvest">🍈 เก็บผลผลิต</option><option value="Other">📌 อื่นๆ</option></select></div>
+      <div class="fg"><label class="fl">ความสำคัญ</label><select class="fs" id="t-pri"><option value="high">🔴 สูง</option><option value="medium" selected>🟡 กลาง</option><option value="low">🟢 ต่ำ</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">วันที่เริ่ม</label><input class="fi" type="date" id="t-date"></div>
+      <div class="fg"><label class="fl">ชนิดพืช</label><select class="fs" id="t-plant"><option value="">— ทั้งหมด —</option><option value="Mangosteen">🌳 มังคุด</option><option value="Durian">🌴 ทุเรียน</option></select></div>
+      <div class="fg"><label class="fl">พื้นที่/ต้น</label><input class="fi" id="t-zone" placeholder="เช่น แปลง A"></div>
+    </div>
+    <div class="fg">
+      <label class="fl">ทำซ้ำ</label>
+      <div class="cr" id="recur-c">
+        <div class="chip on" data-r="none" onclick="selR('none')">ครั้งเดียว</div>
+        <div class="chip" data-r="daily" onclick="selR('daily')">ทุกวัน</div>
+        <div class="chip" data-r="every-x" onclick="selR('every-x')">ทุก X วัน</div>
+        <div class="chip" data-r="weekly" onclick="selR('weekly')">ทุกสัปดาห์</div>
+        <div class="chip" data-r="monthly" onclick="selR('monthly')">ทุกเดือน</div>
+      </div>
+      <div id="rx-w" style="display:none;margin-top:8px;align-items:center;gap:8px"><input class="fi" type="number" id="t-iv" placeholder="จำนวนวัน" min="1" style="width:150px"><span style="color:var(--tx-m)">วัน</span></div>
+    </div>
+    <div class="fg"><label class="fl">หมายเหตุ</label><textarea class="fta" id="t-notes" style="min-height:60px"></textarea></div>
+    <!-- Postpone — new in v1.1 -->
+    <div class="fg" id="postpone-row" style="display:none;background:var(--yellow-l);padding:12px;border-radius:var(--radius-s);border:1px solid var(--yellow)">
+      <label class="fl">เลื่อนกำหนดเป็น</label>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <input class="fi" type="date" id="t-postpone-date" style="flex:1">
+        <button class="btn btn-sm btn-o" onclick="doPostpone()">⏩ เลื่อนกำหนด</button>
+      </div>
+    </div>
+  </div>
+  <div class="mf">
+    <button class="btn btn-g" onclick="closeM('task')">ยกเลิก</button>
+    <button class="btn btn-o btn-sm" id="postpone-btn" onclick="togglePostpone()" style="display:none">⏩ เลื่อนกำหนด</button>
+    <button class="btn btn-p" id="btn-task-save" onclick="saveTask()">💾 บันทึกงาน</button>
+  </div>
+</div></div>
+
+<!-- Task Detail -->
+<div class="ov" id="m-task-detail"><div class="modal">
+  <div class="mh"><div class="mt">รายละเอียดงาน</div><button class="mc" onclick="closeM('task-detail')">✕</button></div>
+  <div class="mb" id="td-body"></div>
+  <div class="mf" id="td-footer"></div>
+</div></div>
+
+<!-- Harvest -->
+<div class="ov" id="m-harvest"><div class="modal">
+  <div class="mh"><div class="mt">บันทึกผลผลิต</div><button class="mc" onclick="closeM('harvest')">✕</button></div>
+  <div class="mb">
+    <input type="hidden" id="h-id">
+    <div class="fr">
+      <div class="fg"><label class="fl">วันที่ขาย</label><input class="fi" type="date" id="h-date"></div>
+      <div class="fg"><label class="fl">ชนิด</label><select class="fs" id="h-type"><option>Mangosteen</option><option>Durian</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">เกรด</label><select class="fs" id="h-grade"><option value="มันรวม">มันรวม</option><option value="ทีรวม">ทีรวม</option><option value="ตกไซส์">ตกไซส์</option></select></div>
+      <div class="fg"><label class="fl">น้ำหนัก (กก.)</label><input class="fi" type="number" id="h-wt" oninput="calcHR()"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">ราคา/กก. (฿)</label><input class="fi" type="number" id="h-price" oninput="calcHR()"></div>
+      <div class="fg"><label class="fl">รวมเงิน (฿) อัตโนมัติ</label><input class="fi ro" id="h-total" readonly></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">ลูกค้า</label><input class="fi" id="h-cust" placeholder="ชื่อผู้รับซื้อ"></div>
+      <div class="fg"><label class="fl">หมายเหตุ</label><input class="fi" id="h-rem"></div>
+    </div>
+  </div>
+  <div class="mf">
+    <button class="btn btn-g" onclick="closeM('harvest')">ยกเลิก</button>
+    <button class="btn btn-d btn-sm" id="h-del-btn" onclick="delHarv()" style="display:none">🗑️ ลบ</button>
+    <button class="btn btn-s btn-sm" onclick="clearHarvForm()">🔄 ล้างข้อมูล</button>
+    <button class="btn btn-p" id="btn-harv-save" onclick="saveHarv()">💾 บันทึก + รายรับ</button>
+  </div>
+</div></div>
+
+<!-- Chemical Spray — full SprayRecord fields per DATABASE_SPEC1 -->
+<div class="ov" id="m-chemical"><div class="modal lg">
+  <div class="mh"><div class="mt" id="ch-mt">บันทึกการพ่นยา</div><button class="mc" onclick="closeM('chemical')">✕</button></div>
+  <div class="mb">
+    <input type="hidden" id="ch-id">
+    <div class="fr">
+      <div class="fg"><label class="fl">วันที่</label><input class="fi" type="date" id="ch-date"></div>
+      <div class="fg"><label class="fl">ชนิดพืช</label><select class="fs" id="ch-plant"><option>Mangosteen</option><option>Durian</option><option>ทั้งหมด</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">สูตรสาร / ชื่อสาร</label><input class="fi" id="ch-formula" placeholder="เช่น เมทาแลกซิล 25%"></div>
+      <div class="fg"><label class="fl">อัตราการผสม</label><input class="fi" id="ch-dose" placeholder="เช่น 30 มล./น้ำ 20 ลิตร"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">จำนวนถัง</label><input class="fi" type="number" id="ch-tanks" placeholder="เช่น 3 ถัง" min="1"></div>
+      <div class="fg"><label class="fl">สภาพอากาศ</label><select class="fs" id="ch-weather"><option value="แดด">☀️ แดด</option><option value="เมฆ">⛅ เมฆ</option><option value="ก่อนฝน">🌥️ ก่อนฝน</option><option value="หลังฝน">🌦️ หลังฝน</option><option value="เช้าเย็น">🌅 เช้า/เย็น</option></select></div>
+    </div>
+    <div class="fg"><label class="fl">เหตุผลในการพ่น</label><input class="fi" id="ch-reason" placeholder="เช่น ป้องกันโรครากเน่า, พบเพลี้ย"></div>
+    <div class="fg"><label class="fl">ระยะหยุดก่อนเก็บผลผลิต (วัน)</label><input class="fi" type="number" id="ch-wait" placeholder="0"></div>
+    <div class="fg"><label class="fl">หมายเหตุ</label><textarea class="fta" id="ch-note" style="min-height:56px"></textarea></div>
+  </div>
+  <div class="mf"><button class="btn btn-g" onclick="closeM('chemical')">ยกเลิก</button><button class="btn btn-p" id="btn-chem-save" onclick="saveChem()">💾 บันทึก</button></div>
+</div></div>
+
+<!-- Chemical Stock -->
+<div class="ov" id="m-chem-stock"><div class="modal">
+  <div class="mh"><div class="mt" id="cs-mt">เพิ่มสารเคมีในคลัง</div><button class="mc" onclick="closeM('chem-stock')">✕</button></div>
+  <div class="mb">
+    <input type="hidden" id="cs-id">
+    <div class="fr">
+      <div class="fg"><label class="fl">ชื่อสาร</label><input class="fi" id="cs-name" placeholder="เมทาแลกซิล 25%"></div>
+      <div class="fg"><label class="fl">ประเภท</label><select class="fs" id="cs-type"><option>ยาฆ่าเชื้อรา</option><option>ยาฆ่าแมลง</option><option>ยากำจัดวัชพืช</option><option>ฮอร์โมน</option><option>สาหร่าย</option><option>กรดอะมิโน</option><option>ฮิวมิก</option><option>อื่นๆ</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">สต็อก (ลิตร/กก.)</label><input class="fi" type="number" id="cs-stock"></div>
+      <div class="fg"><label class="fl">ระยะหยุดก่อนเก็บ (วัน)</label><input class="fi" type="number" id="cs-wait"></div>
+    </div>
+    <div class="fg"><label class="fl">ใช้ล่าสุด</label><input class="fi" type="date" id="cs-last"></div>
+    <div class="fg"><label class="fl">คำเตือน / ข้อควรระวัง</label><textarea class="fta" id="cs-notes" style="min-height:56px"></textarea></div>
+  </div>
+  <div class="mf"><button class="btn btn-g" onclick="closeM('chem-stock')">ยกเลิก</button><button class="btn btn-p" onclick="saveChemStock()">💾 บันทึก</button></div>
+</div></div>
+
+<!-- Income -->
+<div class="ov" id="m-income"><div class="modal">
+  <div class="mh"><div class="mt">เพิ่มรายรับ</div><button class="mc" onclick="closeM('income')">✕</button></div>
+  <div class="mb">
+    <input type="hidden" id="inc-id">
+    <div class="fr"><div class="fg"><label class="fl">วันที่</label><input class="fi" type="date" id="inc-date"></div><div class="fg"><label class="fl">หมวด</label><select class="fs" id="inc-cat"><option>ผลไม้</option><option>อื่นๆ</option></select></div></div>
+    <div class="fg"><label class="fl">รายละเอียด</label><input class="fi" id="inc-desc" placeholder="เช่น ขายมังคุด 300 กก."></div>
+    <div class="fr"><div class="fg"><label class="fl">ผลไม้</label><select class="fs" id="inc-fruit"><option value="">—</option><option>Mangosteen</option><option>Durian</option><option>อื่นๆ</option></select></div><div class="fg"><label class="fl">จำนวนเงิน (฿)</label><input class="fi" type="number" id="inc-amt"></div></div>
+    <div class="fg"><label class="fl">หมายเหตุ</label><textarea class="fta" id="inc-notes" style="min-height:50px"></textarea></div>
+  </div>
+  <div class="mf"><button class="btn btn-g" onclick="closeM('income')">ยกเลิก</button><button class="btn btn-p" id="btn-inc-save" onclick="saveInc()">💾 บันทึก</button></div>
+</div></div>
+
+<!-- Expense -->
+<div class="ov" id="m-expense"><div class="modal">
+  <div class="mh"><div class="mt">เพิ่มรายจ่าย</div><button class="mc" onclick="closeM('expense')">✕</button></div>
+  <div class="mb">
+    <input type="hidden" id="exp-id">
+    <div class="fr"><div class="fg"><label class="fl">วันที่</label><input class="fi" type="date" id="exp-date"></div><div class="fg"><label class="fl">หมวด</label><select class="fs" id="exp-cat"><option>ปุ๋ย</option><option>สารเคมี</option><option>แรงงาน</option><option>น้ำมัน</option><option>อุปกรณ์</option><option>อื่นๆ</option></select></div></div>
+    <div class="fg"><label class="fl">รายละเอียด</label><input class="fi" id="exp-desc" placeholder="เช่น ซื้อปุ๋ย 21-0-0 4 กระสอบ"></div>
+    <div class="fg"><label class="fl">จำนวนเงิน (฿)</label><input class="fi" type="number" id="exp-amt"></div>
+    <div class="fg"><label class="fl">หมายเหตุ</label><textarea class="fta" id="exp-notes" style="min-height:50px"></textarea></div>
+  </div>
+  <div class="mf"><button class="btn btn-g" onclick="closeM('expense')">ยกเลิก</button><button class="btn btn-p" id="btn-exp-save" onclick="saveExp()">💾 บันทึก</button></div>
+</div></div>
+
+<!-- Inventory -->
+<div class="ov" id="m-inventory"><div class="modal">
+  <div class="mh"><div class="mt" id="inv-mt">เพิ่มรายการสต็อก</div><button class="mc" onclick="closeM('inventory')">✕</button></div>
+  <div class="mb">
+    <input type="hidden" id="inv-id">
+    <div class="fr"><div class="fg"><label class="fl">ชื่อรายการ</label><input class="fi" id="inv-name" placeholder="เช่น ปุ๋ย 21-0-0"></div><div class="fg"><label class="fl">หมวด</label><select class="fs" id="inv-cat"><option>ปุ๋ย</option><option>สารเคมี</option><option>อุปกรณ์</option><option>อื่นๆ</option></select></div></div>
+    <div class="fr"><div class="fg"><label class="fl">คงเหลือ</label><input class="fi" type="number" id="inv-qty"></div><div class="fg"><label class="fl">หน่วย</label><select class="fs" id="inv-unit"><option>กก.</option><option>ลิตร</option><option>กระสอบ</option><option>ชิ้น</option><option>กล่อง</option></select></div></div>
+    <div class="fr"><div class="fg"><label class="fl">สต็อกขั้นต่ำ</label><input class="fi" type="number" id="inv-min" placeholder="0"></div><div class="fg"><label class="fl">ราคา/หน่วย (฿)</label><input class="fi" type="number" id="inv-cost"></div></div>
+    <div class="fg"><label class="fl">หมายเหตุ</label><textarea class="fta" id="inv-notes" style="min-height:48px"></textarea></div>
+  </div>
+  <div class="mf"><button class="btn btn-g" onclick="closeM('inventory')">ยกเลิก</button><button class="btn btn-p" onclick="saveInv()">💾 บันทึก</button></div>
+</div></div>
+
+<!-- Tree Modal -->
+<div class="ov" id="m-tree"><div class="modal">
+  <div class="mh"><div class="mt" id="tree-mt">เพิ่มต้นไม้</div><button class="mc" onclick="closeM('tree')">✕</button></div>
+  <div class="mb">
+    <input type="hidden" id="tr-id">
+    <div class="fr"><div class="fg"><label class="fl">รหัสต้น</label><input class="fi" id="tr-code" placeholder="MG-007"></div><div class="fg"><label class="fl">ชนิด</label><select class="fs" id="tr-type"><option value="Mangosteen">🌳 มังคุด</option><option value="Durian">🌴 ทุเรียน</option></select></div></div>
+    <div class="fr"><div class="fg"><label class="fl">แปลง / โซน</label><input class="fi" id="tr-zone" placeholder="แปลง A"></div><div class="fg"><label class="fl">สถานะ</label><select class="fs" id="tr-health"><option value="healthy">✅ ปกติ</option><option value="check">⚠️ ต้องดูแล</option><option value="sick">🔴 ป่วย</option></select></div></div>
+    <div class="fg"><label class="fl">ระยะการเจริญปัจจุบัน</label><select class="fs" id="tr-stage"><option value="dormant">😴 พักตัว</option><option value="maintenance">🌿 บำรุงรักษา</option><option value="leaf-flush">🌱 แตกใบ</option><option value="flower">🌸 ออกดอก</option><option value="fruit">🍊 ติดผล</option><option value="post-harvest">🍂 หลังเก็บเกี่ยว</option></select></div>
+    <div class="fg"><label class="fl">หมายเหตุ</label><textarea class="fta" id="tr-notes" style="min-height:56px"></textarea></div>
+  </div>
+  <div class="mf"><button class="btn btn-g" onclick="closeM('tree')">ยกเลิก</button><button class="btn btn-p" id="btn-tree-save" onclick="saveTree()">💾 บันทึก</button></div>
+</div></div>
+
+<!-- Fert Log Modal (FertilizerApplication) -->
+<div class="ov" id="m-fertlog"><div class="modal">
+  <div class="mh"><div class="mt" id="fl-mt">บันทึกประวัติการใส่ปุ๋ย</div><button class="mc" onclick="closeM('fertlog')">✕</button></div>
+  <div class="mb">
+    <input type="hidden" id="fl-id">
+    <div class="fr"><div class="fg"><label class="fl">วันที่</label><input class="fi" type="date" id="fl-date"></div><div class="fg"><label class="fl">ชนิดพืช</label><select class="fs" id="fl-plant"><option value="Mangosteen">มังคุด</option><option value="Durian">ทุเรียน</option><option value="ทั้งหมด">ทั้งหมด</option></select></div></div>
+    <div class="fr"><div class="fg"><label class="fl">ระยะการเจริญ</label><select class="fs" id="fl-stage"><option value="maintenance">บำรุงรักษา</option><option value="leaf-flush">แตกใบ</option><option value="flower">ออกดอก</option><option value="fruit">ติดผล</option><option value="post-harvest">หลังเก็บเกี่ยว</option><option value="dormant">พักตัว</option></select></div><div class="fg"><label class="fl">ชื่อปุ๋ย / สูตร</label><input class="fi" id="fl-fert" placeholder="เช่น 21-0-0, 15-15-15"></div></div>
+    <div class="fr3"><div class="fg"><label class="fl">กก./ต้น</label><input class="fi" type="number" id="fl-kgpt" step="0.01" oninput="calcFLTotal()"></div><div class="fg"><label class="fl">จำนวนต้น</label><input class="fi" type="number" id="fl-trees" oninput="calcFLTotal()"></div><div class="fg"><label class="fl">รวม กก. (อัตโนมัติ)</label><input class="fi ro" id="fl-total" readonly></div></div>
+    <div class="fr"><div class="fg"><label class="fl">กระสอบที่ใช้</label><input class="fi" type="number" id="fl-bags"></div><div class="fg"><label class="fl">ต้นทุน (฿)</label><input class="fi" type="number" id="fl-cost"></div></div>
+    <div class="fg"><label class="fl">ผู้ดำเนินการ</label><input class="fi" id="fl-operator" placeholder="ชื่อผู้ใส่ปุ๋ย"></div>
+    <div class="fg"><label class="fl">หมายเหตุ</label><textarea class="fta" id="fl-note" style="min-height:56px"></textarea></div>
+  </div>
+  <div class="mf"><button class="btn btn-g" onclick="closeM('fertlog')">ยกเลิก</button><button class="btn btn-p" id="btn-fl-save" onclick="saveFertLog()">💾 บันทึก</button></div>
+</div></div>
+
+<div id="tc"></div>
+<script>
+// ════════════════════════════════════════════════════
+// AI Farm Manager — Full JS
+// Implements: FUNCTIONAL_SPEC.md + PROJECT_SPEC1.md
+// + DATABASE_SPEC1.md + UI_SPEC1.md
+// ════════════════════════════════════════════════════
+
+// ── DB ──
+const DB={
+  trees:[],tasks:[],harvest:[],sprayLog:[],chemStock:[],
+  income:[],expense:[],inventory:[],fertCalcs:[],fertLog:[],
+  settings:{farmName:'สวนผลไม้',owner:'',location:'บางละมุง, ชลบุรี',area:'',currency:'฿',bagDefault:25}
+};
+const LS='ai_farm_v3';
+const dbL=()=>{try{const r=localStorage.getItem(LS);if(r){const d=JSON.parse(r);Object.keys(DB).forEach(k=>{if(d[k]!==undefined)DB[k]=d[k];});}}catch(e){}};
+const dbS=()=>{try{localStorage.setItem(LS,JSON.stringify(DB));}catch(e){}};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+const today=()=>new Date().toISOString().split('T')[0];
+const thisM=()=>new Date().toISOString().slice(0,7);
+const thisY=()=>new Date().getFullYear().toString();
+const fmt=(d)=>{if(!d)return'—';const[y,m,day]=d.split('-');return`${day}/${m}/${y}`;};
+const cur=()=>DB.settings.currency||'฿';
+const money=(n)=>cur()+Number(n||0).toLocaleString('th-TH');
+const dOff=(o=0)=>{const dt=new Date();dt.setDate(dt.getDate()+o);return dt.toISOString().split('T')[0];};
+const mOff=(m=0)=>{const dt=new Date();dt.setMonth(dt.getMonth()-m);return dt.toISOString().split('T')[0];};
+
+// ── DISABLE/ENABLE button while saving (per FUNCTIONAL_SPEC: Disable action buttons while saving) ──
+function setBusy(btnId,busy){
+  const b=document.getElementById(btnId);if(!b)return;
+  b.disabled=busy;b.style.opacity=busy?'0.6':'1';
+}
+
+// ── Seed ──
+function seed(){
+  if(DB.trees.length)return;
+  DB.trees=[
+    {id:uid(),code:'MG-001',type:'Mangosteen',zone:'แปลง A',year:2014,health:'healthy',yieldAvg:38,stage:'maintenance',notes:'ต้นเดิม'},
+    {id:uid(),code:'MG-002',type:'Mangosteen',zone:'แปลง A',year:2015,health:'healthy',yieldAvg:42,stage:'maintenance',notes:''},
+    {id:uid(),code:'MG-003',type:'Mangosteen',zone:'แปลง B',year:2016,health:'check',yieldAvg:25,stage:'maintenance',notes:'ใบเหลือง'},
+    {id:uid(),code:'MG-004',type:'Mangosteen',zone:'แปลง B',year:2017,health:'healthy',yieldAvg:36,stage:'leaf-flush',notes:''},
+    {id:uid(),code:'MG-005',type:'Mangosteen',zone:'แปลง C',year:2018,health:'healthy',yieldAvg:30,stage:'maintenance',notes:''},
+    {id:uid(),code:'MG-006',type:'Mangosteen',zone:'แปลง C',year:2020,health:'healthy',yieldAvg:18,stage:'dormant',notes:'ต้นเล็ก'},
+    {id:uid(),code:'DU-001',type:'Durian',zone:'แปลง D',year:2012,health:'healthy',yieldAvg:130,stage:'post-harvest',notes:'หมอนทอง'},
+    {id:uid(),code:'DU-002',type:'Durian',zone:'แปลง D',year:2013,health:'healthy',yieldAvg:145,stage:'post-harvest',notes:'ผลดี'},
+    {id:uid(),code:'DU-003',type:'Durian',zone:'แปลง E',year:2015,health:'sick',yieldAvg:60,stage:'maintenance',notes:'รากเน่า'},
+    {id:uid(),code:'DU-004',type:'Durian',zone:'แปลง E',year:2015,health:'healthy',yieldAvg:128,stage:'maintenance',notes:''},
+    {id:uid(),code:'DU-005',type:'Durian',zone:'แปลง F',year:2017,health:'healthy',yieldAvg:110,stage:'maintenance',notes:''},
+    {id:uid(),code:'DU-006',type:'Durian',zone:'แปลง F',year:2019,health:'check',yieldAvg:75,stage:'maintenance',notes:'ใบห้อย'},
+  ];
+  DB.tasks=[
+    {id:uid(),name:'พ่นยาป้องกันโรค DU-003',type:'Spraying',priority:'high',date:dOff(1),zone:'แปลง E',recur:'none',interval:0,notes:'รากเน่า',done:false,doneAt:null,history:[]},
+    {id:uid(),name:'ตรวจระบบน้ำ',type:'Watering',priority:'medium',date:dOff(0),zone:'แปลง C',recur:'weekly',interval:7,notes:'',done:false,doneAt:null,history:[]},
+    {id:uid(),name:'ใส่ปุ๋ยมังคุด แปลง A',type:'Fertilizing',priority:'medium',date:dOff(3),zone:'แปลง A',recur:'monthly',interval:30,notes:'K-Sulfate',done:false,doneAt:null,history:[]},
+    {id:uid(),name:'ตรวจใบ MG-003',type:'Other',priority:'high',date:dOff(-1),zone:'แปลง B',recur:'none',interval:0,notes:'ใบเหลือง',done:false,doneAt:null,history:[]},
+    {id:uid(),name:'ตัดแต่งทุเรียน แปลง D',type:'Pruning',priority:'low',date:dOff(7),zone:'แปลง D',recur:'none',interval:0,notes:'',done:false,doneAt:null,history:[]},
+    {id:uid(),name:'รดน้ำต้นอ่อน',type:'Watering',priority:'high',date:dOff(0),zone:'เรือนเพาะ',recur:'daily',interval:1,notes:'เช้า',done:false,doneAt:null,history:[]},
+    {id:uid(),name:'สั่งซื้อปุ๋ย',type:'Other',priority:'medium',date:mOff(0),zone:'',recur:'none',interval:0,notes:'',done:true,doneAt:mOff(0),history:[{doneAt:mOff(0)}]},
+  ];
+  DB.harvest=[
+    {id:uid(),date:mOff(0),type:'Mangosteen',grade:'มันรวม',weight:38,price:80,total:3040,customer:'ตลาดในเมือง',remark:''},
+    {id:uid(),date:mOff(0),type:'Durian',grade:'มันรวม',weight:120,price:180,total:21600,customer:'สมชาย Trader',remark:'คุณภาพดี'},
+    {id:uid(),date:mOff(0),type:'Mangosteen',grade:'มันรวม',weight:42,price:80,total:3360,customer:'ตลาดในเมือง',remark:''},
+    {id:uid(),date:mOff(0),type:'Durian',grade:'ทีรวม',weight:145,price:160,total:23200,customer:'สมชาย Trader',remark:''},
+    {id:uid(),date:mOff(1),type:'Mangosteen',grade:'มันรวม',weight:85,price:95,total:8075,customer:'ผู้ส่งออก',remark:''},
+    {id:uid(),date:mOff(1),type:'Durian',grade:'ทีรวม',weight:128,price:160,total:20480,customer:'สมชาย Trader',remark:''},
+    {id:uid(),date:mOff(2),type:'Mangosteen',grade:'ตกไซส์',weight:61,price:65,total:3965,customer:'ตลาดนัด',remark:''},
+    {id:uid(),date:mOff(2),type:'Durian',grade:'มันรวม',weight:110,price:200,total:22000,customer:'ผู้ส่งออก',remark:''},
+  ];
+  DB.sprayLog=[
+    {id:uid(),date:mOff(2),plant:'Durian',formula:'เมทาแลกซิล 25%',dose:'30 มล./20ลิตร',tanks:3,weather:'เมฆ',reason:'ป้องกันรากเน่า',wait:14,note:'DU-003'},
+    {id:uid(),date:mOff(1),plant:'Mangosteen',formula:'คาร์เบนดาซิม 50%',dose:'15 กรัม/20ลิตร',tanks:2,weather:'เช้าเย็น',reason:'โรคแอนแทรคโนส',wait:7,note:'แปลง B'},
+    {id:uid(),date:mOff(0),plant:'ทั้งหมด',formula:'คลอร์ไพริฟอส 40%',dose:'20 มล./20ลิตร',tanks:4,weather:'แดด',reason:'พบเพลี้ย',wait:21,note:'ระวัง PHI'},
+  ];
+  DB.chemStock=[
+    {id:uid(),name:'เมทาแลกซิล 25%',type:'ยาฆ่าเชื้อรา',stock:2.5,wait:14,lastUsed:mOff(2),notes:'สวมถุงมือ'},
+    {id:uid(),name:'คลอร์ไพริฟอส 40%',type:'ยาฆ่าแมลง',stock:5,wait:21,lastUsed:mOff(0),notes:'PHI 21 วัน'},
+    {id:uid(),name:'คาร์เบนดาซิม 50%',type:'ยาฆ่าเชื้อรา',stock:1.2,wait:7,lastUsed:mOff(1),notes:''},
+  ];
+  DB.income=[
+    {id:uid(),date:mOff(0),cat:'ผลไม้',desc:'ขายมังคุด 80 กก.',fruit:'Mangosteen',amount:6400,notes:''},
+    {id:uid(),date:mOff(0),cat:'ผลไม้',desc:'ส่งออกทุเรียน 265 กก.',fruit:'Durian',amount:44800,notes:''},
+    {id:uid(),date:mOff(1),cat:'ผลไม้',desc:'ส่งออกมังคุด 85 กก.',fruit:'Mangosteen',amount:8075,notes:''},
+    {id:uid(),date:mOff(1),cat:'ผลไม้',desc:'ขายทุเรียน 128 กก.',fruit:'Durian',amount:20480,notes:''},
+    {id:uid(),date:mOff(2),cat:'ผลไม้',desc:'มังคุดตลาดนัด',fruit:'Mangosteen',amount:3965,notes:''},
+    {id:uid(),date:mOff(2),cat:'ผลไม้',desc:'ส่งออกทุเรียนพรีเมียม',fruit:'Durian',amount:22000,notes:''},
+  ];
+  DB.expense=[
+    {id:uid(),date:mOff(0),cat:'สารเคมี',desc:'ยาป้องกันรากเน่า',amount:1200,notes:''},
+    {id:uid(),date:mOff(0),cat:'ปุ๋ย',desc:'โพแทสเซียมซัลเฟต 50 กก.',amount:2800,notes:''},
+    {id:uid(),date:mOff(1),cat:'แรงงาน',desc:'ช่วยเก็บผลผลิต 2 วัน',amount:3000,notes:''},
+    {id:uid(),date:mOff(1),cat:'อุปกรณ์',desc:'ซ่อมท่อน้ำ แปลง E',amount:950,notes:''},
+    {id:uid(),date:mOff(1),cat:'น้ำมัน',desc:'น้ำมันรถ',amount:600,notes:''},
+    {id:uid(),date:mOff(2),cat:'ปุ๋ย',desc:'ยูเรีย 46-0-0 x4 กระสอบ',amount:1600,notes:''},
+    {id:uid(),date:mOff(2),cat:'แรงงาน',desc:'ตัดแต่งกิ่ง แปลง D',amount:1500,notes:''},
+  ];
+  DB.inventory=[
+    {id:uid(),name:'ปุ๋ย 21-0-0',cat:'ปุ๋ย',qty:150,unit:'กก.',minQty:50,cost:12,notes:''},
+    {id:uid(),name:'ปุ๋ย 0-0-60',cat:'ปุ๋ย',qty:80,unit:'กก.',minQty:40,cost:18,notes:''},
+    {id:uid(),name:'ปุ๋ย 15-15-15',cat:'ปุ๋ย',qty:25,unit:'กก.',minQty:50,cost:22,notes:'ใกล้หมด!'},
+    {id:uid(),name:'Metalaxyl',cat:'สารเคมี',qty:2.5,unit:'ลิตร',minQty:1,cost:350,notes:''},
+    {id:uid(),name:'Chlorpyrifos',cat:'สารเคมี',qty:5,unit:'ลิตร',minQty:2,cost:280,notes:''},
+    {id:uid(),name:'ถังเก็บผลผลิต',cat:'อุปกรณ์',qty:40,unit:'ชิ้น',minQty:20,cost:35,notes:''},
+  ];
+  DB.fertLog=[];
+  dbS();
+}
+
+// ════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════
+const PM={
+  dashboard:{title:'Dashboard',sub:'ภาพรวมสวนวันนี้'},
+  trees:{title:'ต้นไม้',sub:'ทะเบียนต้นไม้และระยะการเจริญ',add:'tree'},
+  tasks:{title:'งานประจำวัน',sub:'ติดตามและจัดการงาน',add:'task'},
+  calendar:{title:'ปฏิทิน',sub:'งานทั้งหมดในรูปแบบปฏิทิน'},
+  fertilizer:{title:'คำนวณปุ๋ย',sub:'คำนวณปุ๋ยอัตโนมัติตามระยะพัฒนา'},
+  fertlog:{title:'ประวัติการใส่ปุ๋ย',sub:'FertilizerApplication บันทึกทุกครั้ง',add:'fertlog'},
+  chemical:{title:'บันทึกพ่นยา',sub:'SprayRecord + สต็อกสารเคมี',add:'chemical'},
+  harvest:{title:'ผลผลิต',sub:'บันทึกและติดตามผลผลิต',add:'harvest'},
+  income:{title:'รายรับ',sub:'รายรับทั้งหมด',add:'income'},
+  expense:{title:'รายจ่าย',sub:'รายจ่ายทั้งหมด',add:'expense'},
+  inventory:{title:'สต็อก',sub:'วัสดุอุปกรณ์คงเหลือ',add:'inventory'},
+  reports:{title:'รายงาน',sub:'สรุปผลการดำเนินงาน'},
+  ai:{title:'AI Assistant',sub:'ผู้ช่วยจัดการสวน'},
+  settings:{title:'ตั้งค่า',sub:'ข้อมูลสวนและจัดการข้อมูล'},
+};
+let _p='dashboard';
+function nav(name,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.bbi').forEach(b=>b.classList.remove('active'));
+  const pg=document.getElementById('pg-'+name);if(pg)pg.classList.add('active');
+  if(el)el.classList.add('active');
+  else document.querySelectorAll('.nav,.bbi').forEach(b=>{const oc=b.getAttribute('onclick')||'';if(oc.includes("'"+name+"'"))b.classList.add('active');});
+  _p=name;
+  const m=PM[name]||{};
+  document.getElementById('pt').textContent=m.title||name;
+  document.getElementById('ps').textContent=m.sub||'';
+  const ta=document.getElementById('ta');ta.innerHTML='';
+  if(m.add){
+    const b=document.createElement('button');b.className='btn btn-p';
+    b.innerHTML='+ เพิ่มรายการ';b.onclick=()=>openM(m.add);ta.appendChild(b);
+  }
+  if(name==='chemical'){
+    const b2=document.createElement('button');b2.className='btn btn-sm btn-s';
+    b2.innerHTML='+ สารเคมีในคลัง';b2.style.marginLeft='8px';b2.onclick=()=>openM('chem-stock');ta.appendChild(b2);
+  }
+  if(name==='reports'){
+    const be=document.createElement('button');be.className='btn btn-sm btn-og';
+    be.innerHTML='📄 Export PDF';be.style.marginLeft='8px';be.onclick=doExportPDF;ta.appendChild(be);
+    const bx=document.createElement('button');bx.className='btn btn-sm btn-og';
+    bx.innerHTML='📊 Export Excel';bx.style.marginLeft='8px';bx.onclick=doExportExcel;ta.appendChild(bx);
+  }
+  rPage(name);
+}
+function rPage(n){
+  const m={dashboard:rDash,trees:rTrees,tasks:rTasks,calendar:rCal,fertilizer:initF,fertlog:rFertLog,chemical:rChem,harvest:rHarv,income:rInc,expense:rExp,inventory:rInv,reports:rRep,settings:rSett};
+  m[n]?.();
+}
+// Auto-refresh dashboard on any data change
+function afterSave(pages=[]){dbS();[...new Set(['dashboard',...pages])].forEach(p=>{if(_p===p)rPage(p);else if(p==='dashboard')rDash();});badge();}
+
+// ════════════════════════════════════════
+// MODALS
+// ════════════════════════════════════════
+function openM(type,data){
+  const now=today();
+  if(type==='tree'){
+    document.getElementById('tr-id').value=data?.id||'';
+    document.getElementById('tree-mt').textContent=data?'แก้ไขต้นไม้':'เพิ่มต้นไม้';
+    document.getElementById('tr-code').value=data?.code||'';
+    document.getElementById('tr-type').value=data?.type||'Mangosteen';
+    document.getElementById('tr-zone').value=data?.zone||'';
+    document.getElementById('tr-health').value=data?.health||'healthy';
+    document.getElementById('tr-stage').value=data?.stage||'maintenance';
+    document.getElementById('tr-notes').value=data?.notes||'';
+  }else if(type==='task'){
+    document.getElementById('t-id').value=data?.id||'';
+    document.getElementById('mt-title').textContent=data?'แก้ไขงาน':'เพิ่มงาน';
+    document.getElementById('t-name').value=data?.name||'';
+    document.getElementById('t-type').value=data?.type||'Watering';
+    document.getElementById('t-pri').value=data?.priority||'medium';
+    document.getElementById('t-date').value=data?.date||now;
+    document.getElementById('t-zone').value=data?.zone||'';
+    document.getElementById('t-plant').value=data?.plant||'';
+    document.getElementById('t-notes').value=data?.notes||'';
+    selR(data?.recur||'none');
+    document.getElementById('t-iv').value=data?.interval||'';
+    document.getElementById('postpone-btn').style.display=data?'inline-flex':'none';
+    document.getElementById('postpone-row').style.display='none';
+    document.getElementById('t-postpone-date').value=data?.date||now;
+  }else if(type==='harvest'){
+    document.getElementById('h-id').value=data?.id||'';
+    document.getElementById('h-date').value=data?.date||now;
+    document.getElementById('h-type').value=data?.type||'Mangosteen';
+    document.getElementById('h-grade').value=data?.grade||'มันรวม';
+    document.getElementById('h-wt').value=data?.weight||'';
+    document.getElementById('h-price').value=data?.price||'';
+    document.getElementById('h-total').value=data?.total||'';
+    document.getElementById('h-cust').value=data?.customer||'';
+    document.getElementById('h-rem').value=data?.remark||'';
+    document.getElementById('h-del-btn').style.display=data?'inline-flex':'none';
+    document.getElementById('h-del-btn').dataset.id=data?.id||'';
+  }else if(type==='chemical'){
+    document.getElementById('ch-id').value=data?.id||'';
+    document.getElementById('ch-mt').textContent=data?'แก้ไขบันทึก':'บันทึกการพ่นยา';
+    document.getElementById('ch-date').value=data?.date||now;
+    document.getElementById('ch-plant').value=data?.plant||'Mangosteen';
+    document.getElementById('ch-formula').value=data?.formula||'';
+    document.getElementById('ch-dose').value=data?.dose||'';
+    document.getElementById('ch-tanks').value=data?.tanks||'';
+    document.getElementById('ch-weather').value=data?.weather||'แดด';
+    document.getElementById('ch-reason').value=data?.reason||'';
+    document.getElementById('ch-wait').value=data?.wait||'';
+    document.getElementById('ch-note').value=data?.note||'';
+  }else if(type==='chem-stock'){
+    document.getElementById('cs-id').value=data?.id||'';
+    document.getElementById('cs-mt').textContent=data?'แก้ไขสารเคมี':'เพิ่มสารเคมีในคลัง';
+    document.getElementById('cs-name').value=data?.name||'';
+    document.getElementById('cs-type').value=data?.type||'ยาฆ่าเชื้อรา';
+    document.getElementById('cs-stock').value=data?.stock||'';
+    document.getElementById('cs-wait').value=data?.wait||'';
+    document.getElementById('cs-last').value=data?.lastUsed||now;
+    document.getElementById('cs-notes').value=data?.notes||'';
+  }else if(type==='income'){
+    document.getElementById('inc-id').value=data?.id||'';
+    document.getElementById('inc-date').value=data?.date||now;
+    document.getElementById('inc-cat').value=data?.cat||'ผลไม้';
+    document.getElementById('inc-desc').value=data?.desc||'';
+    document.getElementById('inc-fruit').value=data?.fruit||'';
+    document.getElementById('inc-amt').value=data?.amount||'';
+    document.getElementById('inc-notes').value=data?.notes||'';
+  }else if(type==='expense'){
+    document.getElementById('exp-id').value=data?.id||'';
+    document.getElementById('exp-date').value=data?.date||now;
+    document.getElementById('exp-cat').value=data?.cat||'ปุ๋ย';
+    document.getElementById('exp-desc').value=data?.desc||'';
+    document.getElementById('exp-amt').value=data?.amount||'';
+    document.getElementById('exp-notes').value=data?.notes||'';
+  }else if(type==='inventory'){
+    document.getElementById('inv-id').value=data?.id||'';
+    document.getElementById('inv-mt').textContent=data?'แก้ไขรายการ':'เพิ่มรายการสต็อก';
+    document.getElementById('inv-name').value=data?.name||'';
+    document.getElementById('inv-cat').value=data?.cat||'ปุ๋ย';
+    document.getElementById('inv-qty').value=data?.qty||'';
+    document.getElementById('inv-unit').value=data?.unit||'กก.';
+    document.getElementById('inv-min').value=data?.minQty||'';
+    document.getElementById('inv-cost').value=data?.cost||'';
+    document.getElementById('inv-notes').value=data?.notes||'';
+  }else if(type==='fertlog'){
+    document.getElementById('fl-id').value=data?.id||'';
+    document.getElementById('fl-mt').textContent=data?'แก้ไขประวัติ':'บันทึกประวัติการใส่ปุ๋ย';
+    document.getElementById('fl-date').value=data?.date||now;
+    document.getElementById('fl-plant').value=data?.plant||'Mangosteen';
+    document.getElementById('fl-stage').value=data?.stage||'maintenance';
+    document.getElementById('fl-fert').value=data?.fertilizer||'';
+    document.getElementById('fl-kgpt').value=data?.kgPerTree||'';
+    document.getElementById('fl-trees').value=data?.treeCount||'';
+    document.getElementById('fl-total').value=data?.totalKg||'';
+    document.getElementById('fl-bags').value=data?.bags||'';
+    document.getElementById('fl-cost').value=data?.cost||'';
+    document.getElementById('fl-operator').value=data?.operator||'';
+    document.getElementById('fl-note').value=data?.note||'';
+  }
+  document.getElementById('m-'+type).classList.add('open');
+}
+function closeM(t){document.getElementById('m-'+t).classList.remove('open');}
+document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.ov.open').forEach(o=>o.classList.remove('open'));});
+let _recur='none';
+function selR(v){_recur=v;document.querySelectorAll('#recur-c .chip').forEach(c=>c.classList.toggle('on',c.dataset.r===v));const w=document.getElementById('rx-w');w.style.display=v==='every-x'?'flex':'none';}
+function togglePostpone(){const row=document.getElementById('postpone-row');row.style.display=row.style.display==='none'?'block':'none';}
+function doPostpone(){const id=document.getElementById('t-id').value;const nd=document.getElementById('t-postpone-date').value;if(!id||!nd){toast('กรุณาระบุวันที่','w');return;}const t=DB.tasks.find(t=>t.id===id);if(t){t.date=nd;afterSave(['tasks']);closeM('task');toast('เลื่อนกำหนดเป็น '+fmt(nd));}}
+
+// ════════════════════════════════════════
+// SAVES — All CUD operations per FUNCTIONAL_SPEC
+// ════════════════════════════════════════
+function saveTree(){
+  const id=document.getElementById('tr-id').value;
+  const code=document.getElementById('tr-code').value.trim();
+  if(!code){toast('กรุณาใส่รหัสต้น','w');return;}
+  // Prevent duplicate code
+  const dup=DB.trees.find(t=>t.code===code&&t.id!==id);
+  if(dup){toast('รหัสต้นนี้มีอยู่แล้ว','e');return;}
+  setBusy('btn-tree-save',true);
+  const o={id:id||uid(),code,type:document.getElementById('tr-type').value,zone:document.getElementById('tr-zone').value.trim(),health:document.getElementById('tr-health').value,stage:document.getElementById('tr-stage').value,notes:document.getElementById('tr-notes').value.trim()};
+  if(id){const i=DB.trees.findIndex(t=>t.id===id);if(i>-1)DB.trees[i]=o;}else DB.trees.push(o);
+  setBusy('btn-tree-save',false);
+  afterSave(['trees']);closeM('tree');toast(id?'อัปเดตต้นไม้แล้ว':'เพิ่มต้นไม้แล้ว');
+}
+function delTree(id){
+  if(!confirm('ลบต้นไม้นี้?'))return;
+  DB.trees=DB.trees.filter(t=>t.id!==id);
+  afterSave(['trees']);toast('ลบแล้ว','w');
+}
+function updateTreeStage(id,stage){
+  const t=DB.trees.find(t=>t.id===id);if(!t)return;
+  t.stage=stage;afterSave(['trees']);toast('อัปเดตระยะแล้ว');
+}
+
+function saveTask(){
+  const id=document.getElementById('t-id').value;
+  const name=document.getElementById('t-name').value.trim();
+  if(!name){toast('กรุณาใส่ชื่องาน','w');return;}
+  setBusy('btn-task-save',true);
+  const o={id:id||uid(),name,type:document.getElementById('t-type').value,priority:document.getElementById('t-pri').value,date:document.getElementById('t-date').value,zone:document.getElementById('t-zone').value.trim(),plant:document.getElementById('t-plant').value,recur:_recur,interval:parseInt(document.getElementById('t-iv').value)||0,notes:document.getElementById('t-notes').value.trim(),done:false,doneAt:null,history:[]};
+  if(id){const i=DB.tasks.findIndex(t=>t.id===id);if(i>-1){o.done=DB.tasks[i].done;o.doneAt=DB.tasks[i].doneAt;o.history=DB.tasks[i].history;DB.tasks[i]=o;}}else DB.tasks.push(o);
+  setBusy('btn-task-save',false);
+  afterSave(['tasks']);closeM('task');toast(id?'อัปเดตงานแล้ว':'เพิ่มงานแล้ว');
+}
+function toggleT(id){
+  const t=DB.tasks.find(t=>t.id===id);if(!t)return;
+  t.done=!t.done;t.doneAt=t.done?today():null;
+  if(t.done){
+    t.history.push({doneAt:today()});
+    if(t.recur!=='none'){
+      const iv=t.recur==='daily'?1:t.recur==='weekly'?7:t.recur==='monthly'?30:t.interval;
+      const nx=new Date(t.date||today());nx.setDate(nx.getDate()+iv);
+      DB.tasks.push({...t,id:uid(),done:false,doneAt:null,date:nx.toISOString().split('T')[0],history:[]});
+      toast('เสร็จ ✓ · ครั้งต่อไป '+fmt(DB.tasks[DB.tasks.length-1].date));
+    }else toast('ทำเสร็จแล้ว ✓');
+  }else toast('เปิดงานใหม่');
+  afterSave(['tasks']);
+}
+function delTask(id){if(!confirm('ลบงานนี้?'))return;DB.tasks=DB.tasks.filter(t=>t.id!==id);afterSave(['tasks']);toast('ลบแล้ว','w');}
+
+function saveHarv(){
+  const id=document.getElementById('h-id').value;
+  const w=parseFloat(document.getElementById('h-wt').value)||0;
+  const p=parseFloat(document.getElementById('h-price').value)||0;
+  if(!document.getElementById('h-date').value||!w){toast('กรุณาใส่วันที่และน้ำหนัก','w');return;}
+  setBusy('btn-harv-save',true);
+  const total=w*p;
+  const o={id:id||uid(),date:document.getElementById('h-date').value,type:document.getElementById('h-type').value,grade:document.getElementById('h-grade').value,weight:w,price:p,total,customer:document.getElementById('h-cust').value.trim(),remark:document.getElementById('h-rem').value.trim()};
+  if(id){
+    const i=DB.harvest.findIndex(h=>h.id===id);
+    if(i>-1){
+      // Recalculate total on edit per FUNCTIONAL_SPEC
+      o.total=o.weight*o.price;
+      DB.harvest[i]=o;
+    }
+  }else{
+    DB.harvest.push(o);
+    // Auto-add income per FUNCTIONAL_SPEC: Save harvest → Update dashboard
+    if(o.total>0)DB.income.push({id:uid(),date:o.date,cat:'ผลไม้',desc:`${o.type==='Mangosteen'?'มังคุด':'ทุเรียน'} – ${o.weight}กก. (${o.customer||'ตลาด'})`,fruit:o.type,amount:o.total,notes:`เกรด ${o.grade}`,fromHarvest:true,harvestId:o.id});
+  }
+  setBusy('btn-harv-save',false);
+  afterSave(['harvest','income']);closeM('harvest');
+  toast(id?'อัปเดตผลผลิตแล้ว':'บันทึกผลผลิต + เพิ่มรายรับแล้ว ✓');
+}
+function calcHR(){const w=parseFloat(document.getElementById('h-wt').value)||0;const p=parseFloat(document.getElementById('h-price').value)||0;document.getElementById('h-total').value=(w*p).toFixed(0);}
+function clearHarvForm(){['h-wt','h-price','h-total','h-cust','h-rem'].forEach(i=>{document.getElementById(i).value='';});document.getElementById('h-id').value='';}
+function delHarv(){
+  const id=document.getElementById('h-del-btn').dataset.id;
+  if(!id||!confirm('ลบบันทึกผลผลิต?'))return;
+  DB.harvest=DB.harvest.filter(h=>h.id!==id);
+  afterSave(['harvest']);closeM('harvest');toast('ลบแล้ว','w');
+}
+
+function saveChem(){
+  const id=document.getElementById('ch-id').value;
+  if(!document.getElementById('ch-formula').value.trim()){toast('กรุณาใส่ชื่อสาร','w');return;}
+  setBusy('btn-chem-save',true);
+  const o={id:id||uid(),date:document.getElementById('ch-date').value,plant:document.getElementById('ch-plant').value,formula:document.getElementById('ch-formula').value.trim(),dose:document.getElementById('ch-dose').value.trim(),tanks:parseInt(document.getElementById('ch-tanks').value)||1,weather:document.getElementById('ch-weather').value,reason:document.getElementById('ch-reason').value.trim(),wait:parseInt(document.getElementById('ch-wait').value)||0,note:document.getElementById('ch-note').value.trim()};
+  if(id){const i=DB.sprayLog.findIndex(r=>r.id===id);if(i>-1)DB.sprayLog[i]=o;}else DB.sprayLog.push(o);
+  setBusy('btn-chem-save',false);
+  afterSave(['chemical']);closeM('chemical');toast('บันทึกการพ่นยาแล้ว');
+}
+function saveChemStock(){
+  const id=document.getElementById('cs-id').value;
+  if(!document.getElementById('cs-name').value.trim()){toast('กรุณาใส่ชื่อสาร','w');return;}
+  const o={id:id||uid(),name:document.getElementById('cs-name').value.trim(),type:document.getElementById('cs-type').value,stock:parseFloat(document.getElementById('cs-stock').value)||0,wait:parseInt(document.getElementById('cs-wait').value)||0,lastUsed:document.getElementById('cs-last').value,notes:document.getElementById('cs-notes').value.trim()};
+  if(id){const i=DB.chemStock.findIndex(r=>r.id===id);if(i>-1)DB.chemStock[i]=o;}else DB.chemStock.push(o);
+  afterSave(['chemical']);closeM('chem-stock');toast('บันทึกสารเคมีแล้ว');
+}
+function delSpray(id){if(!confirm('ลบ?'))return;DB.sprayLog=DB.sprayLog.filter(r=>r.id!==id);afterSave(['chemical']);toast('ลบแล้ว','w');}
+function delCS(id){if(!confirm('ลบ?'))return;DB.chemStock=DB.chemStock.filter(c=>c.id!==id);afterSave(['chemical']);toast('ลบแล้ว','w');}
+
+function saveInc(){
+  const id=document.getElementById('inc-id').value;
+  const desc=document.getElementById('inc-desc').value.trim();
+  const amt=parseFloat(document.getElementById('inc-amt').value)||0;
+  if(!desc||!amt){toast('กรุณากรอกรายละเอียดและจำนวน','w');return;}
+  setBusy('btn-inc-save',true);
+  const o={id:id||uid(),date:document.getElementById('inc-date').value,cat:document.getElementById('inc-cat').value,desc,fruit:document.getElementById('inc-fruit').value,amount:amt,notes:document.getElementById('inc-notes').value.trim()};
+  if(id){const i=DB.income.findIndex(r=>r.id===id);if(i>-1)DB.income[i]=o;}else DB.income.push(o);
+  setBusy('btn-inc-save',false);
+  afterSave(['income']);closeM('income');toast('บันทึกรายรับแล้ว');
+}
+function saveExp(){
+  const id=document.getElementById('exp-id').value;
+  const desc=document.getElementById('exp-desc').value.trim();
+  const amt=parseFloat(document.getElementById('exp-amt').value)||0;
+  if(!desc||!amt){toast('กรุณากรอกรายละเอียดและจำนวน','w');return;}
+  setBusy('btn-exp-save',true);
+  const o={id:id||uid(),date:document.getElementById('exp-date').value,cat:document.getElementById('exp-cat').value,desc,amount:amt,notes:document.getElementById('exp-notes').value.trim()};
+  if(id){const i=DB.expense.findIndex(r=>r.id===id);if(i>-1)DB.expense[i]=o;}else DB.expense.push(o);
+  setBusy('btn-exp-save',false);
+  afterSave(['expense']);closeM('expense');toast('บันทึกรายจ่ายแล้ว');
+}
+function delRec(t,id){if(!confirm('ลบรายการนี้?'))return;DB[t]=DB[t].filter(r=>r.id!==id);afterSave([t==='income'?'income':'expense']);toast('ลบแล้ว','w');}
+
+function saveInv(){
+  const id=document.getElementById('inv-id').value;
+  if(!document.getElementById('inv-name').value.trim()){toast('กรุณาใส่ชื่อรายการ','w');return;}
+  const o={id:id||uid(),name:document.getElementById('inv-name').value.trim(),cat:document.getElementById('inv-cat').value,qty:parseFloat(document.getElementById('inv-qty').value)||0,unit:document.getElementById('inv-unit').value,minQty:parseFloat(document.getElementById('inv-min').value)||0,cost:parseFloat(document.getElementById('inv-cost').value)||0,notes:document.getElementById('inv-notes').value.trim()};
+  if(id){const i=DB.inventory.findIndex(r=>r.id===id);if(i>-1)DB.inventory[i]=o;}else DB.inventory.push(o);
+  afterSave(['inventory']);closeM('inventory');toast('บันทึกแล้ว');
+}
+function saveSett(){
+  DB.settings.farmName=document.getElementById('set-fn').value;
+  DB.settings.owner=document.getElementById('set-own').value;
+  DB.settings.location=document.getElementById('set-loc').value;
+  DB.settings.area=document.getElementById('set-area').value;
+  DB.settings.currency=document.getElementById('set-cur').value;
+  DB.settings.bagDefault=parseInt(document.getElementById('set-bag').value)||25;
+  dbS();
+  document.getElementById('sb-name').textContent=DB.settings.farmName;
+  document.getElementById('wx-loc').textContent=DB.settings.location;
+  toast('บันทึกการตั้งค่าแล้ว');
+}
+
+// Fert Log CRUD
+function calcFLTotal(){const k=parseFloat(document.getElementById('fl-kgpt').value)||0;const n=parseInt(document.getElementById('fl-trees').value)||0;document.getElementById('fl-total').value=(k*n).toFixed(2);}
+function saveFertLog(){
+  const id=document.getElementById('fl-id').value;
+  if(!document.getElementById('fl-fert').value.trim()){toast('กรุณาใส่ชื่อปุ๋ย','w');return;}
+  setBusy('btn-fl-save',true);
+  const kgpt=parseFloat(document.getElementById('fl-kgpt').value)||0;
+  const trees=parseInt(document.getElementById('fl-trees').value)||0;
+  const o={id:id||uid(),date:document.getElementById('fl-date').value,plant:document.getElementById('fl-plant').value,stage:document.getElementById('fl-stage').value,fertilizer:document.getElementById('fl-fert').value.trim(),kgPerTree:kgpt,treeCount:trees,totalKg:(kgpt*trees),bags:parseInt(document.getElementById('fl-bags').value)||0,cost:parseFloat(document.getElementById('fl-cost').value)||0,operator:document.getElementById('fl-operator').value.trim(),note:document.getElementById('fl-note').value.trim()};
+  if(id){const i=DB.fertLog.findIndex(r=>r.id===id);if(i>-1)DB.fertLog[i]=o;}else DB.fertLog.push(o);
+  setBusy('btn-fl-save',false);
+  afterSave(['fertlog']);closeM('fertlog');toast('บันทึกประวัติปุ๋ยแล้ว');
+}
+function delFertLog(id){if(!confirm('ลบ?'))return;DB.fertLog=DB.fertLog.filter(r=>r.id!==id);afterSave(['fertlog']);toast('ลบแล้ว','w');}
+
+// ════════════════════════════════════════
+// TASK / CALENDAR HELPERS
+// ════════════════════════════════════════
+function tCol(t){return{Watering:'#2196F3',Fertilizing:'#FF9800',Spraying:'#F44336',Harvest:'#4CAF50',Pruning:'#795548',Other:'#9E9E9E'}[t]||'#9E9E9E';}
+function tLbl(t){return{Watering:'💧 รดน้ำ',Fertilizing:'🧪 ใส่ปุ๋ย',Spraying:'☠️ พ่นยา',Harvest:'🍈 เก็บผลผลิต',Pruning:'✂️ ตัดแต่ง',Other:'📌 อื่นๆ'}[t]||t;}
+function badge(){
+  const ov=DB.tasks.filter(t=>!t.done&&t.date&&t.date<today()).length;
+  const nb=document.getElementById('nb-task');nb.style.display=ov?'inline-block':'none';nb.textContent=ov;
+  const low=DB.inventory.filter(i=>i.qty<=i.minQty).length;
+  const ni=document.getElementById('nb-inv');ni.style.display=low?'inline-block':'none';ni.textContent=low;
+}
+
+// ════════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════════
+function rDash(){
+  const h=new Date().getHours();
+  document.getElementById('pt').textContent=h<12?'อรุณสวัสดิ์ 👋':h<17?'สวัสดีตอนบ่าย ☀️':'สวัสดีตอนเย็น 🌙';
+  document.getElementById('ps').textContent=new Date().toLocaleDateString('th-TH',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const mg=DB.trees.filter(t=>t.type==='Mangosteen');const du=DB.trees.filter(t=>t.type==='Durian');
+  document.getElementById('d-mg').textContent=mg.length+' ต้น';
+  document.getElementById('d-mg-z').textContent=[...new Set(mg.map(t=>t.zone))].join(', ')||'—';
+  document.getElementById('d-du').textContent=du.length+' ต้น';
+  document.getElementById('d-du-z').textContent=[...new Set(du.map(t=>t.zone))].join(', ')||'—';
+  const yr=thisY();const mo=thisM();const td=today();
+  const incY=DB.income.filter(r=>(r.date||'').startsWith(yr)).reduce((s,r)=>s+r.amount,0);
+  const expY=DB.expense.filter(r=>(r.date||'').startsWith(yr)).reduce((s,r)=>s+r.amount,0);
+  document.getElementById('d-inc').textContent=money(incY);
+  document.getElementById('d-inc-m').textContent='เดือนนี้: '+money(DB.income.filter(r=>(r.date||'').startsWith(mo)).reduce((s,r)=>s+r.amount,0));
+  document.getElementById('d-exp').textContent=money(expY);
+  document.getElementById('d-exp-m').textContent='เดือนนี้: '+money(DB.expense.filter(r=>(r.date||'').startsWith(mo)).reduce((s,r)=>s+r.amount,0));
+  const profit=incY-expY;
+  document.getElementById('d-profit').textContent=money(profit);
+  document.getElementById('d-profit').style.color=profit>=0?'var(--green-d)':'var(--red-d)';
+  document.getElementById('d-profit-m').textContent=profit>=0?'กำไรปีนี้ 📈':'ขาดทุน';
+  const totKg=DB.harvest.reduce((s,h)=>s+h.weight,0);
+  document.getElementById('d-prod').textContent=totKg.toLocaleString()+' กก.';
+  document.getElementById('d-prod-m').textContent='เดือนนี้: '+DB.harvest.filter(h=>(h.date||'').startsWith(mo)).reduce((s,h)=>s+h.weight,0).toLocaleString()+' กก.';
+  const todayTasks=DB.tasks.filter(t=>!t.done&&t.date===td);
+  const ovT=DB.tasks.filter(t=>!t.done&&t.date&&t.date<td);
+  document.getElementById('d-ttask').textContent=todayTasks.length+' งาน';
+  document.getElementById('d-tov').textContent=ovT.length?`⚠️ ค้าง ${ovT.length} งาน`:'ไม่มีงานค้าง ✓';
+  document.getElementById('d-low').textContent=DB.inventory.filter(i=>i.qty<=i.minQty).length||0;
+  // Task list
+  const upcom=[...DB.tasks].filter(t=>!t.done).sort((a,b)=>{const ao=a.date&&a.date<td;const bo=b.date&&b.date<td;if(ao!==bo)return ao?-1:1;return(a.date||'').localeCompare(b.date||'');}).slice(0,6);
+  document.getElementById('d-tasks').innerHTML=!upcom.length?'<div style="color:var(--tx-h);text-align:center;padding:18px">🌿 ไม่มีงานค้างรอ</div>':
+  upcom.map(t=>{const ov=t.date&&t.date<td;const tc=tCol(t.type);
+  return`<div class="tr" onclick="showTD('${t.id}')"><div class="tdot" style="background:${tc}"></div><div class="tck${ov?' ov':''}" onclick="event.stopPropagation();toggleT('${t.id}')"></div><div class="tti"><div style="font-size:14px;font-weight:500">${t.name}</div><div style="font-size:12px;color:var(--tx-h)">${tLbl(t.type)}${t.zone?' · '+t.zone:''}</div></div><div>${ov?'<span class="badge bg-r">เกินกำหนด</span>':`<span style="font-size:12px;color:var(--tx-h)">${fmt(t.date)}</span>`}</div></div>`;}).join('');
+  // Fert rec
+  const month=new Date().getMonth();
+  const isMg=month>=4&&month<=8;const isDu=month>=5&&month<=9;
+  document.getElementById('d-fert').innerHTML=`<div style="font-size:14px;color:var(--tx-m);line-height:1.8">
+${isMg?'<div style="color:var(--purple-d);font-weight:700;margin-bottom:5px">🌳 มังคุด — ระยะติดผล</div><div>แนะนำ <strong>0-0-60 K-Sulfate</strong> 200 กรัม/ต้น</div>':'<div style="color:var(--purple-d);font-weight:700;margin-bottom:5px">🌳 มังคุด — บำรุงรักษา</div><div>แนะนำ <strong>21-0-0</strong> 300 กรัม/ต้น/เดือน</div>'}
+<div style="margin-top:10px">${isDu?'<div style="color:var(--orange-d);font-weight:700;margin-bottom:5px">🌴 ทุเรียน — ระยะออกดอก</div><div>แนะนำ <strong>15-15-15 NPK</strong> 500 กรัม/ต้น</div>':'<div style="color:var(--orange-d);font-weight:700;margin-bottom:5px">🌴 ทุเรียน — บำรุงรักษา</div><div>แนะนำ <strong>21-0-0</strong> 500 กรัม/ต้น</div>'}
+</div></div>`;
+  // Recent activity (per FUNCTIONAL_SPEC: Refresh dashboard whenever data changes)
+  const rec=[];
+  [...DB.harvest].slice(-3).forEach(h=>rec.push({date:h.date,text:`เก็บ${h.type==='Mangosteen'?'มังคุด':'ทุเรียน'} ${h.weight}กก. เกรด${h.grade}`,icon:'🍈'}));
+  [...DB.income].slice(-2).forEach(r=>rec.push({date:r.date,text:`รายรับ: ${r.desc} ${money(r.amount)}`,icon:'💰'}));
+  [...DB.expense].slice(-2).forEach(r=>rec.push({date:r.date,text:`รายจ่าย: ${r.desc} ${money(r.amount)}`,icon:'💸'}));
+  [...DB.fertLog].slice(-2).forEach(r=>rec.push({date:r.date,text:`ใส่ปุ๋ย: ${r.fertilizer} ${r.totalKg}กก. (${r.plant})`,icon:'🧪'}));
+  rec.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  document.getElementById('d-recent').innerHTML=!rec.length?'<div style="color:var(--tx-h);text-align:center;padding:14px">ยังไม่มีกิจกรรม</div>':
+  rec.slice(0,6).map(r=>`<div class="srow"><span>${r.icon} ${r.text}</span><span style="color:var(--tx-h);font-size:13px">${fmt(r.date)}</span></div>`).join('');
+  badge();
+}
+
+// ════════════════════════════════════════
+// TREES
+// ════════════════════════════════════════
+const STAGE_NAMES={dormant:'😴 พักตัว',maintenance:'🌿 บำรุงรักษา','leaf-flush':'🌱 แตกใบ',flower:'🌸 ออกดอก',fruit:'🍊 ติดผล','post-harvest':'🍂 หลังเก็บเกี่ยว'};
+const HEALTH_BADGE={healthy:'<span class="badge bg-g">✅ ปกติ</span>',check:'<span class="badge bg-o">⚠️ ดูแล</span>',sick:'<span class="badge bg-r">🔴 ป่วย</span>'};
+// ════════════════════════════════════════
+// TREES — ผังสวน + Card รวมกัน
+// ════════════════════════════════════════
+function rTrees(){
+  const q=(document.getElementById('trq')?.value||'').toLowerCase();
+  const tf=document.getElementById('trf')?.value||'';
+  const hf=document.getElementById('trhf')?.value||'';
+  const trees=DB.trees.filter(t=>{
+    const mq=!q||t.code.toLowerCase().includes(q)||(t.zone||'').toLowerCase().includes(q)||t.type.toLowerCase().includes(q);
+    return mq&&(!tf||t.type===tf)&&(!hf||t.health===hf);
+  });
+  const cont=document.getElementById('tree-container');
+  if(!trees.length){
+    cont.innerHTML=`<div class="empty"><div class="ei">🌳</div><div class="et">ไม่พบต้นไม้</div><div class="es">เพิ่มต้นไม้หรือปรับตัวกรอง</div></div>`;
+    return;
+  }
+  const zones=[...new Set(trees.map(t=>t.zone))].sort();
+  if(!DB.settings.treeGrids) DB.settings.treeGrids={};
+
+  let html='';
+  for(const zone of zones){
+    const zt=trees.filter(t=>t.zone===zone);
+    const g=DB.settings.treeGrids[zone]||{};
+    const cols=g.cols||Math.ceil(Math.sqrt(zt.length));
+    const rows=g.rows||Math.ceil(zt.length/cols);
+    const zid='z'+zone.replace(/[^a-zA-Z0-9]/g,'_');
+
+    html+=`<div style="margin-bottom:32px">
+<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap">
+  <div style="font-size:17px;font-weight:800;color:var(--tx)">📍 ${zone}</div>
+  <div style="font-size:13px;color:var(--tx-h)">${zt.length} ต้น</div>
+  <div style="display:flex;align-items:center;gap:6px;margin-left:auto">
+    <span style="font-size:13px;color:var(--tx-m)">ผัง:</span>
+    <input class="grid-num-in" type="number" min="1" max="30" value="${cols}" id="gc-c-${zid}" title="คอลัมน์">
+    <span style="font-size:13px;color:var(--tx-m)">×</span>
+    <input class="grid-num-in" type="number" min="1" max="30" value="${rows}" id="gc-r-${zid}" title="แถว">
+    <button class="btn btn-sm btn-og" data-apply-grid="${zone}" data-zid="${zid}">✓</button>
+    <span style="font-size:12px;color:var(--tx-h)">${cols}×${rows}</span>
+  </div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:8px">
+${Array.from({length:cols*rows},(_,i)=>{
+  const t=zt[i];
+  if(!t) return`<div style="background:var(--surface2);border:2px dashed var(--border);border-radius:10px;min-height:100px;display:flex;align-items:center;justify-content:center;color:var(--border-s);font-size:11px">#${i+1}</div>`;
+  const hc={healthy:'#E8F5E9',check:'#FFF8E1',sick:'#FFEBEE'}[t.health]||'#fff';
+  const bc={healthy:'#81C784',check:'#FFD54F',sick:'#E57373'}[t.health]||'#ccc';
+  const ic=t.type==='Mangosteen'?'🌳':'🌴';
+  const sLabel=STAGE_NAMES[t.stage]||t.stage||'';
+  return`<div data-open-tree="${t.id}" style="background:${hc};border:2px solid ${bc};border-radius:10px;padding:10px 8px;cursor:pointer;transition:all .15s;position:relative;min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:3px" title="${t.code} · ${sLabel}">
+  <div style="position:absolute;top:5px;left:7px;font-size:10px;font-weight:700;color:#888">#${i+1}</div>
+  <div style="position:absolute;top:4px;right:4px;display:flex;gap:2px">
+    <button data-edit-tree="${t.id}" style="width:20px;height:20px;border-radius:4px;border:none;background:rgba(255,255,255,.7);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:.6">✏️</button>
+    <button data-del-tree="${t.id}" style="width:20px;height:20px;border-radius:4px;border:none;background:rgba(255,255,255,.7);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#c62828;font-weight:700;opacity:.6">✕</button>
+  </div>
+  <div style="font-size:26px;line-height:1">${ic}</div>
+  <div style="font-size:13px;font-weight:800;color:#1a1a1a;margin-top:2px">${t.code}</div>
+  <div style="font-size:13px;color:#444;font-weight:700;margin-top:1px">${sLabel}</div>
+  ${t.notes?`<div style="font-size:12px;color:#555;font-style:italic;margin-top:3px;line-height:1.4">${t.notes.slice(0,28)}</div>`:''}
+</div>`;
+}).join('')}
+</div>
+<div style="margin-top:10px;display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--tx-m)">
+  <span>🌳 ${zt.filter(t=>t.type==='Mangosteen').length}</span>
+  <span>🌴 ${zt.filter(t=>t.type==='Durian').length}</span>
+  <span style="color:var(--green-d)">✅ ปกติ ${zt.filter(t=>t.health==='healthy').length}</span>
+  ${zt.filter(t=>t.health==='check').length?`<span style="color:#E65100">⚠️ ดูแล ${zt.filter(t=>t.health==='check').length}</span>`:''}
+  ${zt.filter(t=>t.health==='sick').length?`<span style="color:var(--red-d)">🔴 ป่วย ${zt.filter(t=>t.health==='sick').length}</span>`:''}
+  <div style="margin-left:auto;display:flex;gap:8px;align-items:center;font-size:11px">
+    <div style="display:flex;align-items:center;gap:3px"><div style="width:12px;height:12px;background:#E8F5E9;border:2px solid #81C784;border-radius:3px"></div>ปกติ</div>
+    <div style="display:flex;align-items:center;gap:3px"><div style="width:12px;height:12px;background:#FFF8E1;border:2px solid #FFD54F;border-radius:3px"></div>ดูแล</div>
+    <div style="display:flex;align-items:center;gap:3px"><div style="width:12px;height:12px;background:#FFEBEE;border:2px solid #E57373;border-radius:3px"></div>ป่วย</div>
+  </div>
+</div>
+</div>`;
+  }
+
+  cont.innerHTML=html;
+
+  // hover effect
+  cont.querySelectorAll('[data-open-tree]').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{ el.style.transform='translateY(-2px)'; el.style.boxShadow='0 4px 16px rgba(0,0,0,.12)'; });
+    el.addEventListener('mouseleave',()=>{ el.style.transform=''; el.style.boxShadow=''; });
+    // show buttons on hover
+    const btns=el.querySelectorAll('button');
+    el.addEventListener('mouseenter',()=>btns.forEach(b=>b.style.opacity='1'));
+    el.addEventListener('mouseleave',()=>btns.forEach(b=>b.style.opacity='.6'));
+  });
+
+  // event delegation
+  cont.querySelectorAll('[data-del-tree]').forEach(btn=>{
+    btn.addEventListener('click',e=>{ e.stopPropagation(); delTree(btn.dataset.delTree); });
+  });
+  cont.querySelectorAll('[data-edit-tree]').forEach(btn=>{
+    btn.addEventListener('click',e=>{ e.stopPropagation(); const t=DB.trees.find(t=>t.id===btn.dataset.editTree); if(t) openM('tree',t); });
+  });
+  cont.querySelectorAll('[data-open-tree]').forEach(el=>{
+    el.addEventListener('click',e=>{ if(e.target.closest('[data-del-tree],[data-edit-tree]'))return; const t=DB.trees.find(t=>t.id===el.dataset.openTree); if(t) openM('tree',t); });
+  });
+  cont.querySelectorAll('[data-apply-grid]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const zone=btn.dataset.applyGrid; const zid=btn.dataset.zid;
+      const c=parseInt(document.getElementById('gc-c-'+zid)?.value)||6;
+      const r=parseInt(document.getElementById('gc-r-'+zid)?.value)||5;
+      if(!DB.settings.treeGrids) DB.settings.treeGrids={};
+      DB.settings.treeGrids[zone]={cols:c,rows:r};
+      dbS(); rTrees();
+    });
+  });
+}
+
+
+let _tv='list';let _cd=new Date();
+function setTV(v,el){
+  _tv=v;
+  document.querySelectorAll('#tv-l,#tv-w,#tv-m').forEach(c=>c.classList.remove('on'));
+  document.getElementById('tv-'+v)?.classList.add('on');
+  ['list','week','month'].forEach(n=>document.getElementById('tv-'+n+'-v').style.display=n===v?'block':'none');
+  if(v==='month')rCalGrid();if(v==='week')rWeek();
+}
+function cNav(d){_cd.setMonth(_cd.getMonth()+d);rCalGrid();}
+function showTD(id){
+  const t=DB.tasks.find(t=>t.id===id);if(!t)return;
+  const ov=!t.done&&t.date&&t.date<today();const tc=tCol(t.type);
+  const tS=encodeURIComponent(JSON.stringify(t));
+  document.getElementById('td-body').innerHTML=`
+<div style="display:flex;align-items:center;gap:11px;margin-bottom:14px"><div style="width:13px;height:13px;border-radius:50%;background:${tc};flex-shrink:0"></div><div style="font-size:18px;font-weight:700">${t.name}</div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:14px">
+<div><div class="fl">ประเภท</div><div>${tLbl(t.type)}</div></div>
+<div><div class="fl">ความสำคัญ</div><div>${t.priority==='high'?'🔴 สูง':t.priority==='medium'?'🟡 กลาง':'🟢 ต่ำ'}</div></div>
+<div><div class="fl">วันที่</div><div style="color:${ov?'var(--red)':'var(--tx)'}">${fmt(t.date)}${ov?' ⚠️ เกินกำหนด':''}</div></div>
+<div><div class="fl">พื้นที่</div><div>${t.zone||'—'}</div></div>
+<div><div class="fl">ทำซ้ำ</div><div>${t.recur==='none'?'ครั้งเดียว':t.recur==='every-x'?`ทุก ${t.interval} วัน`:t.recur==='daily'?'ทุกวัน':t.recur==='weekly'?'ทุกสัปดาห์':'ทุกเดือน'}</div></div>
+<div><div class="fl">สถานะ</div><div>${t.done?'✅ เสร็จแล้ว':'⏳ รอดำเนินการ'}</div></div>
+</div>
+${t.notes?`<div class="ib ib-b">${t.notes}</div>`:''}
+${t.history.length?`<div class="sh" style="margin-top:12px">ประวัติ</div><div style="font-size:13px;color:var(--tx-m)">${t.history.map(h=>'✓ '+fmt(h.doneAt)).join(' · ')}</div>`:''}`;
+  document.getElementById('td-footer').innerHTML=`
+<button class="btn btn-g" onclick="closeM('task-detail')">ปิด</button>
+<button class="btn btn-s btn-sm" onclick="closeM('task-detail');openM('task',JSON.parse(decodeURIComponent('${tS}')))">✏️ แก้ไข</button>
+<button class="btn btn-p" onclick="closeM('task-detail');toggleT('${t.id}')">${t.done?'↩ เปิดใหม่':'✓ ทำเสร็จแล้ว'}</button>`;
+  document.getElementById('m-task-detail').classList.add('open');
+}
+function rTasks(){
+  const q=(document.getElementById('tq')?.value||'').toLowerCase();
+  const tf=document.getElementById('tf')?.value||'';
+  const sf=document.getElementById('tsf')?.value||'';
+  const td=today();
+  const pf=document.getElementById('tpf')?.value||'';
+  let tasks=[...DB.tasks].filter(t=>{
+    const ov=!t.done&&t.date&&t.date<td;
+    const mq=!q||t.name.toLowerCase().includes(q)||(t.zone||'').toLowerCase().includes(q);
+    const mt=!tf||t.type===tf;
+    const mp=!pf||t.plant===pf;
+    const ms=!sf||(sf==='pending'&&!t.done&&!ov)||(sf==='overdue'&&ov)||(sf==='done'&&t.done);
+    return mq&&mt&&mp&&ms;
+  }).sort((a,b)=>{if(a.done!==b.done)return a.done?1:-1;const ao=a.date&&a.date<td;const bo=b.date&&b.date<td;if(ao!==bo)return ao?-1:1;return(a.date||'').localeCompare(b.date||'');});
+  const pending=tasks.filter(t=>!t.done);
+  const ovC=pending.filter(t=>t.date&&t.date<td).length;
+  const row=t=>{
+    const ov=!t.done&&t.date&&t.date<td;const tc=tCol(t.type);
+    const recL=t.recur==='none'?'ครั้งเดียว':t.recur==='every-x'?`ทุก ${t.interval} วัน`:t.recur==='daily'?'ทุกวัน':t.recur==='weekly'?'ทุกสัปดาห์':'ทุกเดือน';
+    return`<div class="task-row-item" data-task-id="${t.id}" style="display:flex;align-items:flex-start;gap:11px;padding:12px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s" onmouseenter="this.style.background='var(--green-xl)'" onmouseleave="this.style.background=''">
+<div style="width:11px;height:11px;border-radius:50%;background:${tc};flex-shrink:0;margin-top:4px"></div>
+<div class="tck${t.done?' done':ov?' ov':''}" data-check-id="${t.id}" style="${t.done?'background:var(--green);border-color:var(--green)':''}">${t.done?'✓':''}</div>
+<div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:500;${t.done?'text-decoration:line-through;color:var(--tx-h)':''}">${t.name}</div>
+<div style="font-size:12px;color:var(--tx-h);margin-top:2px">${tLbl(t.type)}${t.plant?` · ${t.plant==='Mangosteen'?'🌳 มังคุด':'🌴 ทุเรียน'}`:''}${t.zone?' · '+t.zone:''} · ${recL}</div></div>
+<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
+${ov?'<span class="badge bg-r">เกินกำหนด</span>':t.done?'<span class="badge bg-g">เสร็จ</span>':`<span style="font-size:12px;color:var(--tx-h)">${fmt(t.date)}</span>`}
+<span class="badge ${t.priority==='high'?'bg-r':t.priority==='medium'?'bg-o':'bg-g'}">${t.priority==='high'?'สูง':t.priority==='medium'?'กลาง':'ต่ำ'}</span>
+</div>
+<div style="display:flex;gap:4px;margin-left:4px">
+<button class="btn btn-xs btn-s" data-edit-task="${t.id}">✏️</button>
+<button class="btn btn-xs btn-d" data-del-task="${t.id}">✕</button>
+</div></div>`;
+  };
+  const cont=document.getElementById('tlist');
+  cont.innerHTML=!tasks.length?`<div class="empty"><div class="ei">✅</div><div class="et">ไม่พบงาน</div><div class="es">เพิ่มงานหรือปรับตัวกรอง</div></div>`:
+  `${ovC?`<div style="padding:9px 18px;background:var(--red-l);border-bottom:1px solid #FFCDD2;font-size:13px;font-weight:700;color:var(--red-d)">⚠️ มีงานเกินกำหนด ${ovC} รายการ</div>`:''}
+<div class="card" style="overflow:hidden">${pending.map(row).join('')}${!pending.length?'<div style="text-align:center;padding:20px;color:var(--tx-h)">ไม่มีงานค้างรอ ✓</div>':''}</div>`;
+  // event delegation — ปุ่มทั้งหมดใช้ data attribute
+  cont.querySelectorAll('[data-del-task]').forEach(btn=>{
+    btn.addEventListener('click',e=>{e.stopPropagation();delTask(btn.dataset.delTask);});
+  });
+  cont.querySelectorAll('[data-edit-task]').forEach(btn=>{
+    btn.addEventListener('click',e=>{e.stopPropagation();const t=DB.tasks.find(t=>t.id===btn.dataset.editTask);if(t)openM('task',t);});
+  });
+  cont.querySelectorAll('[data-check-id]').forEach(el=>{
+    el.addEventListener('click',e=>{e.stopPropagation();toggleT(el.dataset.checkId);});
+  });
+  cont.querySelectorAll('.task-row-item').forEach(el=>{
+    el.addEventListener('click',()=>showTD(el.dataset.taskId));
+  });
+  const done=DB.tasks.filter(t=>t.done).slice(0,8);
+  document.getElementById('thist').innerHTML=!done.length?'<div style="color:var(--tx-h);text-align:center;padding:14px">ยังไม่มีงานที่เสร็จแล้ว</div>':
+  done.map(t=>`<div style="display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--border)"><span style="color:var(--green)">✓</span><span style="flex:1;text-decoration:line-through;color:var(--tx-h);font-size:13px">${t.name}</span><span style="font-size:12px;color:var(--tx-h)">${fmt(t.doneAt)}</span><span class="badge bg-gray">${tLbl(t.type)}</span></div>`).join('');
+  if(_tv==='month')rCalGrid();if(_tv==='week')rWeek();badge();
+}
+function rCalGrid(){
+  const y=_cd.getFullYear();const m=_cd.getMonth();
+  document.getElementById('cml').textContent=_cd.toLocaleString('th-TH',{month:'long',year:'numeric'});
+  const first=new Date(y,m,1).getDay();const days=new Date(y,m+1,0).getDate();const prev=new Date(y,m,0).getDate();
+  const dns=['อา','จ','อ','พ','พฤ','ศ','ส'];
+  const grid=document.getElementById('cgrid');
+  grid.innerHTML=dns.map(d=>`<div class="cdn">${d}</div>`).join('');
+  const td=today();
+  for(let i=first-1;i>=0;i--)grid.innerHTML+=`<div class="cc oth"><div class="cnum">${prev-i}</div></div>`;
+  for(let day=1;day<=days;day++){
+    const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const ts=DB.tasks.filter(t=>t.date===ds&&!t.done);
+    const cell=document.createElement('div');cell.className='cc'+(ds===td?' tod':'');
+    cell.innerHTML=`<div class="cnum">${day}</div>`+
+    ts.slice(0,3).map(t=>`<div class="cev" style="background:${tCol(t.type)}22;color:${tCol(t.type)}">${t.name.slice(0,11)}</div>`).join('')+
+    (ts.length>3?`<div style="font-size:10px;color:var(--tx-h)">+${ts.length-3}</div>`:'');
+    cell.onclick=()=>ts.length&&showTD(ts[0].id);grid.appendChild(cell);
+  }
+}
+function rWeek(){
+  const now=new Date();const start=new Date(now);start.setDate(now.getDate()-now.getDay());
+  const days=Array.from({length:7},(_,i)=>{const dt=new Date(start);dt.setDate(start.getDate()+i);return dt;});
+  const dns=['อา','จ','อ','พ','พฤ','ศ','ส'];
+  document.getElementById('wgrid').innerHTML=`
+<div style="display:grid;grid-template-columns:repeat(7,1fr)">${days.map((d,i)=>{const isT=d.toISOString().split('T')[0]===today();return`<div style="padding:9px;text-align:center;border-right:1px solid var(--border);${i===6?'border-right:none':''}${isT?';background:var(--green-xl)':''}"><div style="font-size:12px;color:var(--tx-h)">${dns[i]}</div><div style="font-size:18px;font-weight:700;${isT?'color:var(--green-d)':''}">${d.getDate()}</div></div>`;}).join('')}</div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);min-height:200px">${days.map(d=>{const ds=d.toISOString().split('T')[0];const ts=DB.tasks.filter(t=>t.date===ds&&!t.done);return`<div style="padding:7px;border-right:1px solid var(--border)">${ts.map(t=>`<div onclick="showTD('${t.id}')" style="background:${tCol(t.type)}18;border-left:3px solid ${tCol(t.type)};border-radius:0 4px 4px 0;padding:4px 6px;margin-bottom:4px;font-size:11px;cursor:pointer">${t.name.slice(0,14)}</div>`).join('')}</div>`;}).join('')}</div>`;
+}
+
+// ════════════════════════════════════════
+// CALENDAR PAGE
+// ════════════════════════════════════════
+let _cpd=new Date();let _cpv='month';
+function setCV(v,el){_cpv=v;document.querySelectorAll('#cv-m,#cv-w').forEach(c=>c.classList.remove('on'));document.getElementById('cv-'+v)?.classList.add('on');rCal();}
+function cpNav(d){_cpd.setMonth(_cpd.getMonth()+d);rCal();}
+function rCal(){
+  document.getElementById('cp-label').textContent=_cpd.toLocaleString('th-TH',{month:'long',year:'numeric'});
+  const y=_cpd.getFullYear();const m=_cpd.getMonth();const body=document.getElementById('cp-body');
+  if(_cpv==='month'){
+    const first=new Date(y,m,1).getDay();const days=new Date(y,m+1,0).getDate();const prev=new Date(y,m,0).getDate();
+    const dns=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์'];
+    body.innerHTML=`<div class="cg">${dns.map(d=>`<div class="cdn">${d}</div>`).join('')}</div>`;
+    const grid=body.querySelector('.cg');const td=today();
+    for(let i=first-1;i>=0;i--)grid.innerHTML+=`<div class="cc oth"><div class="cnum">${prev-i}</div></div>`;
+    for(let day=1;day<=days;day++){
+      const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      const ts=DB.tasks.filter(t=>t.date===ds);
+      const cell=document.createElement('div');cell.className='cc'+(ds===td?' tod':'');
+      cell.innerHTML=`<div class="cnum">${day}</div>`+
+      ts.slice(0,3).map(t=>`<div class="cev" style="background:${tCol(t.type)}22;color:${tCol(t.type)}">${(t.done?'✓ ':'')+t.name.slice(0,10)}</div>`).join('')+
+      (ts.length>3?`<div style="font-size:10px;color:var(--tx-h)">+${ts.length-3}</div>`:'');
+      cell.onclick=()=>ts.length&&showTD(ts[0].id);grid.appendChild(cell);
+    }
+  }else{
+    const now=new Date(_cpd);const start=new Date(now);start.setDate(now.getDate()-now.getDay());
+    const days=Array.from({length:7},(_,i)=>{const dt=new Date(start);dt.setDate(start.getDate()+i);return dt;});
+    const dns=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์'];
+    body.innerHTML=`<div style="display:grid;grid-template-columns:repeat(7,1fr)">${days.map((d,i)=>{const isT=d.toISOString().split('T')[0]===today();return`<div style="padding:10px;text-align:center;border-right:1px solid var(--border);${i===6?'border-right:none':''}${isT?';background:var(--green-xl)':''}"><div style="font-size:12px;color:var(--tx-h)">${dns[i]}</div><div style="font-size:19px;font-weight:700;${isT?'color:var(--green-d)':''}">${d.getDate()}</div></div>`;}).join('')}</div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);min-height:260px">${days.map(d=>{const ds=d.toISOString().split('T')[0];const ts=DB.tasks.filter(t=>t.date===ds);return`<div style="padding:8px;border-right:1px solid var(--border)">${ts.map(t=>`<div onclick="showTD('${t.id}')" style="background:${tCol(t.type)}20;border-left:3px solid ${tCol(t.type)};border-radius:0 5px 5px 0;padding:5px 7px;margin-bottom:5px;font-size:12px;cursor:pointer;${t.done?'opacity:.5':''}">${t.name.slice(0,13)}</div>`).join('')}</div>`;}).join('')}</div>`;
+  }
+}
+
+// ════════════════════════════════════════
+// FERTILIZER — with Save to Task + Save to History
+// ════════════════════════════════════════
+let _lastFC={};
+const FD={
+  mangosteen:{dormant:{name:'พักตัว',n:0,p:0,k:100},maintenance:{name:'บำรุงรักษา',n:200,p:150,k:200},'leaf-flush':{name:'แตกใบ',n:400,p:200,k:150},flower:{name:'ออกดอก',n:100,p:300,k:400},fruit:{name:'ติดผล',n:50,p:200,k:500},'post-harvest':{name:'หลังเก็บเกี่ยว',n:500,p:250,k:200}},
+  durian:{dormant:{name:'พักตัว',n:0,p:0,k:150},maintenance:{name:'บำรุงรักษา',n:400,p:250,k:400},'leaf-flush':{name:'แตกใบ',n:800,p:300,k:300},flower:{name:'ออกดอก',n:200,p:600,k:700},fruit:{name:'ติดผล',n:100,p:400,k:900},'post-harvest':{name:'หลังเก็บเกี่ยว',n:900,p:500,k:400}},
+};
+const SI={
+  dormant:{timing:'ช่วงพักตัว ลด N รอให้ต้นฟื้นตัว',method:'ให้ K ต่ำเสริมรากเท่านั้น',warning:'ห้ามให้ N สูงในช่วงพักตัว'},
+  maintenance:{timing:'ให้ได้ตลอด รดน้ำหลังใส่ทันที',method:'หว่านรอบโคนบริเวณทรงพุ่ม',warning:'ระวัง N สูงช่วงแล้ง'},
+  'leaf-flush':{timing:'ใส่เมื่อใบอ่อน 20-30% ทำซ้ำหลัง 3 สัปดาห์',method:'แบ่งใส่ครึ่งหนึ่งตอนแตกใบ อีกครึ่งหลัง 2 สัปดาห์',warning:'อย่าใส่ช่วงฝนตกหนัก'},
+  flower:{timing:'ใส่ก่อนดอกบาน 2 สัปดาห์',method:'ฉีดพ่นรอบโคนหรือละลายน้ำรด',warning:'⚠️ จำกัด N จนกว่าผลจะติด'},
+  fruit:{timing:'ใส่เมื่อผลขนาด 2-3 ซม.',method:'ให้ปุ๋ยทางน้ำดีที่สุด',warning:'⚠️ ห้ามใช้ปุ๋ยฐานคลอไรด์'},
+  'post-harvest':{timing:'ใส่ภายใน 2 สัปดาห์หลังเก็บ',method:'ฝังโคนดินลึก 30-50 ซม.',warning:'โภชนาการหลังเก็บวิกฤตต่อดอกปีหน้า'},
+};
+const AI_REC={
+  mangosteen:{dormant:'ระยะพักตัว — งด N/P ให้เฉพาะ K\n**สูตรทางเลือก:** 0-0-60 50-100 กรัม/ต้น\n**ช่วงเหมาะ:** หลังฝนสุดท้าย',maintenance:'สูตร N:P:K สมดุล 1:0.75:1\n**สูตรทางเลือก:** 16-8-16 หรือ 15-15-15 NPK\n**ช่วงเหมาะ:** เช้าตรู่หรือช่วงเย็น','leaf-flush':'ต้องการ N สูงมากสร้างใบใหม่\n**สูตรทางเลือก:** 21-0-0 แอมโมเนียมซัลเฟต 350 กรัม/ต้น\n**ช่วงเหมาะ:** เมื่อเห็นใบอ่อน 20-30%',flower:'K สูงช่วยดอกสมบูรณ์\n**สูตรทางเลือก:** 0-0-60 ร่วมกับ 13-13-21\n**ช่วงเหมาะ:** 14-21 วันก่อนดอกบาน',fruit:'K สูงสุดเพื่อขนาดผลและความหวาน\n**สูตรทางเลือก:** ปุ๋ยหมัก + 13-13-21\n**ช่วงเหมาะ:** เมื่อผลขนาดลูกปิงปอง','post-harvest':'N สูงฟื้นฟูใบ P-K สะสมพลังงาน\n**สูตรทางเลือก:** อินทรีย์ + 15-15-15\n**ช่วงเหมาะ:** 1-2 สัปดาห์หลังเก็บ'},
+  durian:{dormant:'K สูงสะสมพลังงานเตรียมออกดอก\n**สูตรทางเลือก:** 0-0-60 ร่วมกับโบรอน\n**ช่วงเหมาะ:** หลังฝนหยุด 2-3 สัปดาห์',maintenance:'ทุเรียนใช้ปุ๋ยมากกว่ามังคุด 2 เท่า\n**สูตรทางเลือก:** 16-16-16 + ปุ๋ยอินทรีย์ 5 กก./ต้น\n**ช่วงเหมาะ:** ทุก 45-60 วัน','leaf-flush':'N มากในแต่ละรอบแตกใบ\n**สูตรทางเลือก:** 46-0-0 ยูเรีย 250 กรัม + DAP 150 กรัม/ต้น\n**ช่วงเหมาะ:** ก่อนใบแตกออก',flower:'P และ K สูงช่วย pollination\n**สูตรทางเลือก:** 0-46-0 + 0-0-60 อัตรา 2:3\n**ช่วงเหมาะ:** 21 วันก่อนดอกบาน',fruit:'K สูงสุดในรอบปีเพื่อขนาดผล\n**สูตรทางเลือก:** 13-13-21 + 0-0-60 ทางน้ำ\n**ช่วงเหมาะ:** สัปดาห์ที่ 4-14 หลังติดผล','post-harvest':'N ช่วยฟื้นฟู P-K สะสมพลัง\n**สูตรทางเลือก:** ปุ๋ยชีวภาพ + 15-15-15 + มูลไก่\n**ช่วงเหมาะ:** ภายใน 2 สัปดาห์หลังเก็บ'},
+};
+function initF(){calcF();rFcHist();}
+function calcF(){
+  const plant  = document.getElementById('fc-plant')?.value || 'mangosteen';
+  const count  = parseInt(document.getElementById('fc-count')?.value)  || 0;
+  const age    = parseInt(document.getElementById('fc-age')?.value)    || 1;
+  const canopy = parseFloat(document.getElementById('fc-canopy')?.value) || 3;
+  const stage  = document.getElementById('fc-stage')?.value || 'maintenance';
+
+  // ตัวคูณตามอายุ + ทรงพุ่ม
+  const ageFactor    = Math.min(2.5, 0.5 + age * 0.15);
+  const canopyFactor = canopy ? Math.min(2.0, canopy / 3.0) : 1.0;
+  const factor       = (ageFactor + canopyFactor) / 2;
+
+  // ──────────────────────────────────────────────────────────────────
+  // ฐานข้อมูลสูตรปุ๋ย: อัตรา (กก./ต้น base), เหตุผล, ช่วงเวลา, คำเตือน
+  // ──────────────────────────────────────────────────────────────────
+  const RECS = {
+    mangosteen: {
+      dormant: [{
+        f:'0-0-60', name:'โพแทสเซียมซัลเฟต', kgPT:0.08,
+        reason:'ช่วงพักตัว ต้นไม่ต้องการ N และ P แต่ต้องการ K เพื่อสะสมพลังงานในราก เตรียมพร้อมออกดอกครั้งต่อไป',
+        timing:'หลังฝนหยุดตก 2–3 สัปดาห์ เมื่อดินเริ่มแห้ง',
+        warning:'ห้ามให้ N ในช่วงนี้ กระตุ้นใบแทนดอก'
+      }],
+      maintenance: [
+        { f:'21-0-0', name:'แอมโมเนียมซัลเฟต', kgPT:0.20,
+          reason:'N สูงช่วยสร้างใบเขียว คลอโรฟิลล์ และกระตุ้นการเจริญเติบโตทั่วไป เหมาะสำหรับระยะบำรุงรักษาระหว่างฤดู',
+          timing:'ทุก 45–60 วัน ตลอดฤดูฝน รดน้ำหลังใส่ทันที', warning:null },
+        { f:'0-18-0', name:'ซูเปอร์ฟอสเฟต', kgPT:0.10,
+          reason:'P ช่วยพัฒนาระบบราก เสริมการดูดซึม N และเตรียมพร้อมสำหรับการออกดอก',
+          timing:'ใส่พร้อมกับ N หรือห่างกัน 1 สัปดาห์', warning:null },
+        { f:'0-0-60', name:'โพแทสเซียมซัลเฟต', kgPT:0.12,
+          reason:'K เสริมความแข็งแรงของลำต้นและผนังเซลล์ ป้องกันโรค เพิ่มคุณภาพผลในอนาคต',
+          timing:'ใส่หลัง N 2 สัปดาห์', warning:null }
+      ],
+      'leaf-flush': [
+        { f:'46-0-0', name:'ยูเรีย', kgPT:0.18,
+          reason:'N ความเข้มข้นสูงสุด เร่งการแตกใบใหม่อย่างรวดเร็ว ยูเรียละลายเร็วและดูดซึมดีในช่วงต้นแตกใบ',
+          timing:'ใส่เมื่อเห็นตาใบพอง 20–30% ทำซ้ำหลัง 3 สัปดาห์', warning:'อย่าใส่ช่วงฝนตกหนัก ชะล้างสูง' },
+        { f:'18-46-0', name:'DAP ไดแอมโมเนียมฟอสเฟต', kgPT:0.10,
+          reason:'P สูงช่วยให้รากดูดซึม N ได้ดีขึ้น เสริมการสร้างเซลล์ใบใหม่ให้แข็งแรงและเขียวเร็ว',
+          timing:'ใส่พร้อมยูเรียหรือหลัง 1 สัปดาห์', warning:null }
+      ],
+      flower: [
+        { f:'0-0-60', name:'โพแทสเซียมซัลเฟต', kgPT:0.25,
+          reason:'K สูงเป็นหัวใจของระยะออกดอก กระตุ้นการสร้างตาดอก เพิ่มความสมบูรณ์ของดอก ห้ามใช้ KCl เพราะ Cl⁻ ทำลายดอกมังคุด',
+          timing:'ก่อนดอกบาน 14–21 วัน ห้ามใส่หลังดอกบาน', warning:'ลด N ให้น้อยที่สุด N สูงทำดอกร่วง' },
+        { f:'0-46-0', name:'TSP ซูเปอร์ฟอสเฟตสามชั้น', kgPT:0.10,
+          reason:'P ช่วยการถ่ายละอองเรณู (pollination) และการติดผล เสริม K ให้ดอกสมบูรณ์',
+          timing:'ใส่พร้อม K หรือก่อนหน้า 1 สัปดาห์', warning:null }
+      ],
+      fruit: [{
+        f:'0-0-60', name:'โพแทสเซียมซัลเฟต', kgPT:0.35,
+        reason:'K สูงสุดในรอบปี เพิ่มขนาดผล ความหวาน เนื้อแน่น และสีผิวสวย ต้องใช้รูปซัลเฟตเท่านั้น เพราะมังคุดไวต่อ Cl⁻ มาก',
+        timing:'เมื่อผลขนาดเท่าลูกปิงปอง ทำซ้ำทุก 2–3 สัปดาห์',
+        warning:'ห้ามใช้ KCl (โพแทสเซียมคลอไรด์) เด็ดขาด Cl⁻ ทำผลแตกและรสขม'
+      }],
+      'post-harvest': [
+        { f:'46-0-0', name:'ยูเรีย', kgPT:0.25,
+          reason:'หลังเก็บเกี่ยว ต้นสูญเสียพลังงานมาก N สูงช่วยฟื้นฟูใบ เร่งสังเคราะห์แสง สะสมอาหารสำหรับออกดอกปีหน้า',
+          timing:'ภายใน 2 สัปดาห์หลังเก็บครั้งสุดท้าย ก่อนฤดูแล้ง', warning:null },
+        { f:'15-15-15', name:'NPK สมดุล', kgPT:0.20,
+          reason:'เติมครบ N-P-K พร้อมกัน ฟื้นฟูสมดุลธาตุอาหารในดิน เตรียมต้นให้แข็งแรงก่อนเข้าฤดูแล้ง',
+          timing:'ใส่หลังยูเรีย 2 สัปดาห์', warning:'โภชนาการหลังเก็บเกี่ยวสำคัญที่สุดต่อดอกปีหน้า ห้ามข้าม' }
+      ]
+    },
+    durian: {
+      dormant: [{
+        f:'0-0-60', name:'โพแทสเซียมซัลเฟต', kgPT:0.15,
+        reason:'ทุเรียนช่วงพักตัวต้องการ K เพื่อสะสมพลังงาน เสริมความแข็งแรงรากและลำต้น เตรียมพร้อมสำหรับการออกดอกในฤดูถัดไป',
+        timing:'หลังฝนหยุด 2–3 สัปดาห์ ร่วมกับโบรอน 50 กรัม/ต้น',
+        warning:'ห้ามให้ N กระตุ้นใบแทนดอก'
+      }],
+      maintenance: [
+        { f:'21-0-0', name:'แอมโมเนียมซัลเฟต', kgPT:0.35,
+          reason:'ทุเรียนต้องการ N มากกว่ามังคุด 1.5–2 เท่า เนื่องจากทรงพุ่มใหญ่และผลหนัก N ช่วยสร้างใบ กิ่ง และสะสมโปรตีนในผล',
+          timing:'ทุก 45–60 วัน ตลอดปี รดน้ำก่อนและหลังใส่ทันที', warning:null },
+        { f:'0-18-0', name:'ซูเปอร์ฟอสเฟต', kgPT:0.20,
+          reason:'P เสริมระบบรากทุเรียนซึ่งต้องการรากลึกเพื่อดูดน้ำ ช่วยพัฒนาตาดอกและเพิ่มประสิทธิภาพการดูดซึม N',
+          timing:'ใส่พร้อม N หรือก่อน 1 สัปดาห์', warning:null },
+        { f:'0-0-60', name:'โพแทสเซียมซัลเฟต', kgPT:0.25,
+          reason:'K เสริมความแข็งแรงลำต้น ป้องกันโรค และช่วยให้เนื้อทุเรียนแห้ง เหนียว รสชาติดี',
+          timing:'ใส่หลัง N 2 สัปดาห์', warning:null }
+      ],
+      'leaf-flush': [
+        { f:'46-0-0', name:'ยูเรีย', kgPT:0.35,
+          reason:'ทุเรียนแตกใบปีละ 2–3 รอบ แต่ละรอบต้องการ N สูงมาก ยูเรียดูดซึมเร็วผ่านใบและราก เหมาะที่สุดในระยะนี้',
+          timing:'เมื่อตาใบเริ่มพองบวม ก่อนใบคลี่ออก', warning:null },
+        { f:'18-46-0', name:'DAP ไดแอมโมเนียมฟอสเฟต', kgPT:0.15,
+          reason:'P สูงช่วยเร่งการสร้างเซลล์ใบใหม่ให้หนาและเขียวแข็งแรง เสริมฤทธิ์ N ให้ทำงานได้เต็มประสิทธิภาพ',
+          timing:'ใส่พร้อมหรือหลังยูเรีย 1 สัปดาห์', warning:null }
+      ],
+      flower: [
+        { f:'0-46-0', name:'TSP ซูเปอร์ฟอสเฟตสามชั้น', kgPT:0.25,
+          reason:'P สูงสุดในระยะออกดอก กระตุ้นการสร้างตาดอก เพิ่มความสมบูรณ์ของละอองเรณู ช่วยให้ดอกติดดีและไม่ร่วง',
+          timing:'ก่อนดอกบาน 21 วัน', warning:'ลด N ให้น้อยที่สุด N สูงทำดอกร่วง ผลไม่ติด' },
+        { f:'0-0-60', name:'โพแทสเซียมซัลเฟต', kgPT:0.40,
+          reason:'K สูงช่วยให้ดอกแข็งแรง ทนทานต่อสภาพอากาศ เพิ่มอัตราการติดผลและลดการหลุดร่วง',
+          timing:'ใส่พร้อม TSP หรือก่อนหน้า 1 สัปดาห์', warning:null }
+      ],
+      fruit: [
+        { f:'13-13-21', name:'NPK สูตรผล', kgPT:0.45,
+          reason:'N ช่วยพัฒนาเนื้อ P ช่วยรากดูดซึม K สูงเพิ่มขนาดผล ความหนาเนื้อ และกลิ่น ซึ่งเป็นคุณลักษณะสำคัญของทุเรียนพรีเมียม',
+          timing:'เมื่อผลอายุ 4–14 สัปดาห์ ทำซ้ำทุก 2–3 สัปดาห์', warning:null },
+        { f:'0-0-60', name:'โพแทสเซียมซัลเฟต (เสริม)', kgPT:0.25,
+          reason:'เสริม K เพิ่มเติมเพื่อเพิ่มน้ำหนักผล ความหวานน้ำตาล และลดกลิ่นแอมโมเนีย ใช้รูปซัลเฟตเท่านั้น',
+          timing:'สลับกับ 13-13-21 ทุก 2 สัปดาห์', warning:'ห้ามใช้ KCl ทำรสชาติผิดเพี้ยน' }
+      ],
+      'post-harvest': [
+        { f:'46-0-0', name:'ยูเรีย', kgPT:0.50,
+          reason:'หลังเก็บทุเรียน ต้นสูญเสียพลังงานมหาศาล N สูงเร่งการแตกใบฟื้นฟูทรงพุ่ม เพิ่มพื้นที่สังเคราะห์แสง สะสมอาหารสำหรับออกดอกปีถัดไป',
+          timing:'ภายใน 2 สัปดาห์หลังเก็บเกี่ยวครั้งสุดท้าย', warning:null },
+        { f:'15-15-15', name:'NPK สมดุล', kgPT:0.35,
+          reason:'เติมครบ N-P-K สมดุล ฟื้นฟูธาตุอาหารในดินที่ถูกดึงไปกับผลผลิต เตรียมต้นให้แข็งแรงก่อนพักตัวในฤดูแล้ง',
+          timing:'ใส่หลังยูเรีย 2 สัปดาห์ คลุมด้วยฟางหลังใส่',
+          warning:'การบำรุงหลังเก็บเกี่ยวสำคัญที่สุดต่อคุณภาพผลปีหน้า ห้ามข้าม' }
+      ]
+    }
+  };
+
+  const recs = RECS[plant]?.[stage] || [];
+  _lastFC = { plant, count, age, canopy, stage,
+    totKg: recs.reduce((s,r) => s + r.kgPT * count * factor, 0), recs };
+
+  const stageTH = { dormant:'😴 พักตัว', maintenance:'🌿 บำรุงรักษา',
+    'leaf-flush':'🌱 แตกใบ', flower:'🌸 ออกดอก',
+    fruit:'🍊 ติดผล', 'post-harvest':'🍂 หลังเก็บเกี่ยว' }[stage] || stage;
+  const plantTH = plant === 'mangosteen' ? '🌳 มังคุด' : '🌴 ทุเรียน';
+
+  document.getElementById('fc-fname').textContent = `${plantTH} — ${stageTH}`;
+  document.getElementById('fc-sname').textContent = `${count} ต้น · อายุ ${age} ปี · ทรงพุ่ม ${canopy} ม.`;
+
+  const el = document.getElementById('fc-grid');
+  if(!el){ console.error('fc-grid not found'); return; }
+
+  if(!recs.length){
+    el.innerHTML = '<div class="ib ib-o">ระยะพักตัว — งดปุ๋ย N และ P ให้เฉพาะ K เล็กน้อยเสริมราก</div>';
+    return;
+  }
+
+  const colors = ['#1B5E20','#0D47A1','#4A148C','#BF360C','#006064','#33691E'];
+  el.innerHTML = recs.map((r, idx) => {
+    const kgPerTree = (r.kgPT * factor).toFixed(2);
+    const kgTotal   = (r.kgPT * count * factor).toFixed(1);
+    const c = colors[idx % colors.length];
+    return `<div style="background:#fff;border:2px solid ${c}33;border-left:5px solid ${c};border-radius:10px;padding:18px;margin-bottom:16px">
+  <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <span style="font-size:24px;font-weight:900;color:${c};font-family:monospace;letter-spacing:1px">${r.f}</span>
+    <span style="font-size:15px;font-weight:700;color:#444">${r.name}</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+    <div style="background:${c}12;border-radius:8px;padding:14px;text-align:center">
+      <div style="font-size:28px;font-weight:900;color:${c};line-height:1">${kgPerTree}</div>
+      <div style="font-size:13px;color:#555;margin-top:5px;font-weight:600">กก. ต่อต้น</div>
+    </div>
+    <div style="background:${c}12;border-radius:8px;padding:14px;text-align:center">
+      <div style="font-size:28px;font-weight:900;color:${c};line-height:1">${kgTotal}</div>
+      <div style="font-size:13px;color:#555;margin-top:5px;font-weight:600">กก. รวม (${count} ต้น)</div>
+    </div>
+  </div>
+  <div style="margin-bottom:10px">
+    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:${c};margin-bottom:6px">🤖 เหตุผลที่แนะนำ</div>
+    <div style="font-size:14px;color:#222;line-height:1.75">${r.reason}</div>
+  </div>
+  <div style="background:#E3F2FD;border-radius:7px;padding:10px 13px;margin-bottom:${r.warning?'8px':'0'}">
+    <span style="font-size:12px;font-weight:700;color:#1565C0">📅 ช่วงที่เหมาะสม  </span>
+    <span style="font-size:14px;color:#1565C0">${r.timing}</span>
+  </div>
+  ${r.warning ? `<div style="background:#FFEBEE;border-radius:7px;padding:10px 13px;border-left:4px solid #E53935"><span style="font-size:12px;font-weight:700;color:#B71C1C">⚠️ คำเตือน  </span><span style="font-size:14px;color:#B71C1C">${r.warning}</span></div>` : ''}
+</div>`;
+  }).join('');
+}
+
+function saveFC(){
+  DB.fertCalcs=DB.fertCalcs||[];
+  DB.fertCalcs.push({id:uid(),plant:_lastFC.plant,count:_lastFC.count,age:_lastFC.age,stage:_lastFC.stage,bagSize:_bag,savedAt:today()});
+  dbS();rFcHist();toast('บันทึกการคำนวณแล้ว');
+}
+// Save to Task (FUNCTIONAL_SPEC: Fertilizer Calculator → Save to Task)
+function saveFCtoTask(){
+  if(!_lastFC.plant){toast('คำนวณก่อนบันทึก','w');return;}
+  const f=FD[_lastFC.plant]?.[_lastFC.stage];
+  const taskName=`ใส่ปุ๋ย ${_lastFC.plant==='mangosteen'?'มังคุด':'ทุเรียน'} — ${f?.name||_lastFC.stage} (${_lastFC.totKg?.toFixed(1)||0} กก.)`;
+  DB.tasks.push({id:uid(),name:taskName,type:'Fertilizing',priority:'medium',date:today(),zone:'',recur:'none',interval:0,notes:`${_lastFC.count||0} ต้น · ${_lastFC.kpt?.toFixed(2)||0} กก./ต้น · ${_lastFC.bags||0} กระสอบ · ประมาณการ ${money(_lastFC.cost||0)}`,done:false,doneAt:null,history:[]});
+  afterSave(['tasks']);toast('สร้างงานใส่ปุ๋ยแล้ว → ดูที่ "งานประจำวัน"');
+}
+// Save to History (FUNCTIONAL_SPEC: Fertilizer Calculator → Save to History)
+function saveFCtoLog(){
+  if(!_lastFC.plant){toast('คำนวณก่อนบันทึก','w');return;}
+  const f=FD[_lastFC.plant]?.[_lastFC.stage];
+  DB.fertLog.push({id:uid(),date:today(),plant:_lastFC.plant==='mangosteen'?'Mangosteen':'Durian',stage:_lastFC.stage,fertilizer:`N-P-K (${f?.name||_lastFC.stage})`,kgPerTree:_lastFC.kpt||0,treeCount:_lastFC.count||0,totalKg:_lastFC.totKg||0,bags:_lastFC.bags||0,cost:_lastFC.cost||0,operator:'',note:'จากเครื่องคำนวณ'});
+  afterSave(['fertlog']);toast('บันทึกประวัติปุ๋ยแล้ว → ดูที่ "ประวัติปุ๋ย"');
+}
+function rFcHist(){
+  const el=document.getElementById('fc-hist');if(!el)return;
+  const calcs=DB.fertCalcs||[];
+  if(!calcs.length){el.innerHTML='<div style="color:var(--tx-h);font-size:13px;text-align:center;padding:14px">ยังไม่มีประวัติ</div>';return;}
+  el.innerHTML=calcs.slice(-5).reverse().map(c=>`<div class="card" style="padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:14px;font-weight:600">${c.plant==='mangosteen'?'มังคุด':'ทุเรียน'} — ${c.count} ต้น — ${FD[c.plant]?.[c.stage]?.name||c.stage}</div><div style="font-size:12px;color:var(--tx-h)">${fmt(c.savedAt)}</div></div><button class="btn btn-xs btn-d" onclick="delFC('${c.id}')">✕</button></div>`).join('');
+}
+function delFC(id){DB.fertCalcs=(DB.fertCalcs||[]).filter(c=>c.id!==id);dbS();rFcHist();toast('ลบแล้ว','w');}
+
+// ════════════════════════════════════════
+// FERT LOG PAGE
+// ════════════════════════════════════════
+let _flSort='date-desc';
+function sortFL(field){_flSort=field+'-desc';rFertLog();}
+function rFertLog(){
+  const q=(document.getElementById('flq')?.value||'').toLowerCase();
+  const pf=document.getElementById('flf')?.value||'';
+  const sf=document.getElementById('flsf')?.value||'';
+  let rows=[...DB.fertLog].filter(r=>(!q||(r.fertilizer||'').toLowerCase().includes(q)||(r.plant||'').toLowerCase().includes(q))&&(!pf||r.plant===pf)&&(!sf||r.stage===sf));
+  const[sk,sd]=_flSort.split('-');
+  rows.sort((a,b)=>{const av=a[sk]||0;const bv=b[sk]||0;return sd==='desc'?(bv>av?1:bv<av?-1:0):(av>bv?1:av<bv?-1:0);});
+  const tbody=document.getElementById('fl-tbody');
+  tbody.innerHTML=!rows.length?`<tr><td colspan="11" style="text-align:center;padding:36px;color:var(--tx-h)">ยังไม่มีประวัติการใส่ปุ๋ย<br><small>คลิก "บันทึกประวัติ" ในเครื่องคำนวณปุ๋ย หรือกด "+ เพิ่มรายการ"</small></td></tr>`:
+  rows.map(r=>{const rS=encodeURIComponent(JSON.stringify(r));return`<tr><td>${fmt(r.date)}</td><td>${r.plant}</td><td>${FD.mangosteen[r.stage]?.name||r.stage||'—'}</td><td>${r.fertilizer||'—'}</td><td>${r.kgPerTree?.toFixed(2)||'—'}</td><td>${r.totalKg?.toFixed(1)||'—'}</td><td>${r.bags||'—'}</td><td style="color:var(--green-d);font-weight:700">${r.cost?money(r.cost):'—'}</td><td>${r.operator||'—'}</td><td style="font-size:12px">${r.note||'—'}</td><td><button class="btn btn-xs btn-s" onclick="openM('fertlog',JSON.parse(decodeURIComponent('${rS}')))">✏️</button><button class="btn btn-xs btn-d" onclick="delFertLog('${r.id}')">✕</button></td></tr>`;}).join('');
+}
+
+// ════════════════════════════════════════
+// CHEMICAL / SPRAY
+// ════════════════════════════════════════
+function rChem(){
+  const q=(document.getElementById('chq')?.value||'').toLowerCase();
+  const pf=document.getElementById('chf')?.value||'';
+  const mo=thisM();
+  const lastSpray=[...DB.sprayLog].sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
+  document.getElementById('sp-last').textContent=lastSpray?fmt(lastSpray.date):'—';
+  document.getElementById('sp-month').textContent=DB.sprayLog.filter(r=>(r.date||'').startsWith(mo)).length+' ครั้ง';
+  document.getElementById('sp-stock').textContent=DB.chemStock.length+' รายการ';
+  const rows=[...DB.sprayLog].filter(r=>(!q||(r.formula||'').toLowerCase().includes(q)||(r.reason||'').toLowerCase().includes(q))&&(!pf||r.plant===pf)).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const wx={แดด:'☀️',เมฆ:'⛅',ก่อนฝน:'🌥️',หลังฝน:'🌦️',เช้าเย็น:'🌅'};
+  document.getElementById('ch-tbody').innerHTML=!rows.length?`<tr><td colspan="10" style="text-align:center;padding:28px;color:var(--tx-h)">ยังไม่มีบันทึกการพ่นยา</td></tr>`:
+  rows.map(r=>{const rS=encodeURIComponent(JSON.stringify(r));return`<tr><td>${fmt(r.date)}</td><td>${r.plant||'—'}</td><td><strong>${r.formula||'—'}</strong></td><td>${r.dose||'—'}</td><td>${r.tanks||'—'} ถัง</td><td>${r.reason||'—'}</td><td>${(wx[r.weather]||'')+' '+(r.weather||'—')}</td><td><span style="font-weight:700;color:${(r.wait||0)>14?'var(--red-d)':'var(--tx)'}">${r.wait||0} วัน</span></td><td>${r.note||'—'}</td><td><button class="btn btn-xs btn-s" onclick="openM('chemical',JSON.parse(decodeURIComponent('${rS}')))">✏️</button><button class="btn btn-xs btn-d" onclick="delSpray('${r.id}')">✕</button></td></tr>`;}).join('');
+  rStockTable();
+}
+
+let _stockSort='lastUsed-desc';
+function setStockSort(s,el){
+  _stockSort=s;
+  document.querySelectorAll('#stock-sort-chips .chip').forEach(c=>c.classList.remove('on'));
+  el?.classList.add('on');
+  rStockTable();
+}
+function moveStock(id,dir){
+  const idx=DB.chemStock.findIndex(c=>c.id===id);
+  if(idx<0)return;
+  const target=idx+dir;
+  if(target<0||target>=DB.chemStock.length)return;
+  [DB.chemStock[idx],DB.chemStock[target]]=[DB.chemStock[target],DB.chemStock[idx]];
+  dbS();rStockTable();
+}
+function rStockTable(){
+  const tbody=document.getElementById('stock-tbody');
+  if(!DB.chemStock.length){
+    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:18px;color:var(--tx-h)">ยังไม่มีสารเคมีในคลัง</td></tr>';
+    return;
+  }
+  let sorted=[...DB.chemStock];
+  if(_stockSort==='lastUsed-desc') sorted.sort((a,b)=>(b.lastUsed||'').localeCompare(a.lastUsed||''));
+  else if(_stockSort==='lastUsed-asc') sorted.sort((a,b)=>(a.lastUsed||'').localeCompare(b.lastUsed||''));
+  else if(_stockSort==='name-asc') sorted.sort((a,b)=>(a.name||'').localeCompare(b.name||'','th'));
+  // manual = ใช้ลำดับใน DB.chemStock ตรงๆ
+  const isManual=_stockSort==='manual';
+  const list=isManual?DB.chemStock:sorted;
+  tbody.innerHTML=list.map((c,i)=>{
+    const ld=c.lastUsed?new Date(c.lastUsed):null;
+    const we=ld?new Date(ld.getTime()+c.wait*86400000):null;
+    const cd=we?we.toISOString().split('T')[0]:null;
+    const safe=!cd||cd<today();
+    const cS=encodeURIComponent(JSON.stringify(c));
+    const realIdx=DB.chemStock.findIndex(x=>x.id===c.id);
+    return`<tr>
+<td style="padding:8px 6px;white-space:nowrap">
+  ${isManual?`<div style="display:flex;flex-direction:column;gap:2px">
+    <button class="btn btn-xs btn-s" onclick="moveStock('${c.id}',-1)" ${realIdx===0?'disabled style="opacity:.3"':''} title="ขึ้น">↑</button>
+    <button class="btn btn-xs btn-s" onclick="moveStock('${c.id}',1)" ${realIdx===DB.chemStock.length-1?'disabled style="opacity:.3"':''} title="ลง">↓</button>
+  </div>`:`<span style="font-size:12px;color:var(--tx-h);font-weight:700">${i+1}</span>`}
+</td>
+<td><strong>${c.name}</strong></td>
+<td><span class="badge ${c.type.includes('เชื้อรา')?'bg-g':c.type.includes('แมลง')?'bg-r':'bg-o'}">${c.type}</span></td>
+<td>${c.stock||'—'}</td>
+<td><span style="font-weight:700;color:${(c.wait||0)>14?'var(--red-d)':'var(--tx)'}">${c.wait||0} วัน</span></td>
+<td style="font-weight:600;color:${c.lastUsed?'var(--tx)':'var(--tx-h)'}">${fmt(c.lastUsed)||'—'}</td>
+<td>${cd?`<span class="badge ${safe?'bg-g':'bg-r'}">${safe?'✅ เก็บได้':'⚠️ ถึง '+fmt(cd)}</span>`:'—'}</td>
+<td style="white-space:nowrap">
+  <button class="btn btn-xs btn-s" onclick="openM('chem-stock',JSON.parse(decodeURIComponent('${cS}')))">✏️</button>
+  <button class="btn btn-xs btn-d" onclick="delCS('${c.id}')">✕</button>
+</td></tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════
+// HARVEST — with date range filter + sort
+// ════════════════════════════════════════
+function rHarv(){
+  const q=(document.getElementById('hvq')?.value||'').toLowerCase();
+  const tf=document.getElementById('hvf')?.value||'';
+  const gf=document.getElementById('hvg')?.value||'';
+  const frm=document.getElementById('hv-from')?.value||'';
+  const to=document.getElementById('hv-to')?.value||'';
+  const sort=document.getElementById('hv-sort')?.value||'date-desc';
+  const yr=thisY();const mo=thisM();const all=DB.harvest;
+  const mgY=all.filter(h=>h.type==='Mangosteen'&&(h.date||'').startsWith(yr));
+  const duY=all.filter(h=>h.type==='Durian'&&(h.date||'').startsWith(yr));
+  document.getElementById('hv-mg').textContent=mgY.reduce((s,h)=>s+h.weight,0).toLocaleString()+' กก.';
+  document.getElementById('hv-mg-r').textContent=money(mgY.reduce((s,h)=>s+h.total,0))+' ปีนี้';
+  document.getElementById('hv-du').textContent=duY.reduce((s,h)=>s+h.weight,0).toLocaleString()+' กก.';
+  document.getElementById('hv-du-r').textContent=money(duY.reduce((s,h)=>s+h.total,0))+' ปีนี้';
+  const totY=all.filter(h=>(h.date||'').startsWith(yr));
+  const totM=all.filter(h=>(h.date||'').startsWith(mo));
+  document.getElementById('hv-tot').textContent=totY.reduce((s,h)=>s+h.weight,0).toLocaleString()+' กก.';
+  document.getElementById('hv-tot-r').textContent=money(totY.reduce((s,h)=>s+h.total,0));
+  document.getElementById('hv-mo').textContent=totM.reduce((s,h)=>s+h.weight,0).toLocaleString()+' กก.';
+  document.getElementById('hv-mo-r').textContent=money(totM.reduce((s,h)=>s+h.total,0));
+  let rows=[...all].filter(h=>{
+    const mq=!q||(h.customer||'').toLowerCase().includes(q)||h.type.toLowerCase().includes(q);
+    const mt=!tf||h.type===tf;const mg=!gf||h.grade===gf;
+    const mf=!frm||h.date>=frm;const mto=!to||h.date<=to;
+    return mq&&mt&&mg&&mf&&mto;
+  });
+  const[sk,sd]=sort.split('-');
+  rows.sort((a,b)=>{const av=a[sk]||0;const bv=b[sk]||0;return sd==='desc'?(bv>av?1:bv<av?-1:0):(av>bv?1:av<bv?-1:0);});
+  const tbody=document.getElementById('hv-tbody');
+  tbody.innerHTML=!rows.length?`<tr><td colspan="9" style="text-align:center;padding:36px;color:var(--tx-h)">ยังไม่มีบันทึกผลผลิต</td></tr>`:
+  rows.map(h=>{const hS=encodeURIComponent(JSON.stringify(h));const tb=h.type==='Mangosteen'?'<span class="badge bg-p">🌳 มังคุด</span>':'<span class="badge bg-o">🌴 ทุเรียน</span>';
+  return`<tr><td>${fmt(h.date)}</td><td>${tb}</td><td><span class="badge ${h.grade==='มันรวม'?'bg-g':h.grade==='ทีรวม'?'bg-o':'bg-gray'}">${h.grade}</span></td><td><strong>${h.weight}</strong></td><td>${money(h.price)}</td><td style="color:var(--green-d);font-weight:700">${money(h.total)}</td><td>${h.customer||'—'}</td><td>${h.remark||'—'}</td><td><button class="btn btn-xs btn-s" onclick="openM('harvest',JSON.parse(decodeURIComponent('${hS}')))">✏️</button><button class="btn btn-xs btn-d" onclick="delH('${h.id}')">✕</button></td></tr>`;}).join('');
+}
+function delH(id){if(!confirm('ลบบันทึกผลผลิต?'))return;DB.harvest=DB.harvest.filter(h=>h.id!==id);afterSave(['harvest']);toast('ลบแล้ว','w');}
+
+// ════════════════════════════════════════
+// INCOME — date range + sort + pie
+// ════════════════════════════════════════
+function rInc(){
+  const q=(document.getElementById('incq')?.value||'').toLowerCase();
+  const cf=document.getElementById('incf')?.value||'';
+  const frm=document.getElementById('inc-from')?.value||'';
+  const to=document.getElementById('inc-to')?.value||'';
+  const sort=document.getElementById('inc-sort')?.value||'date-desc';
+  const yr=thisY();const mo=thisM();
+  let rows=[...DB.income].filter(r=>{
+    const mq=!q||(r.desc||'').toLowerCase().includes(q);
+    const mc=!cf||r.cat===cf;
+    const mf=!frm||r.date>=frm;const mto=!to||r.date<=to;
+    return mq&&mc&&mf&&mto;
+  });
+  const[sk,sd]=sort.split('-');
+  rows.sort((a,b)=>{const av=a[sk]||0;const bv=b[sk]||0;return sd==='desc'?(bv>av?1:bv<av?-1:0):(av>bv?1:av<bv?-1:0);});
+  document.getElementById('inc-m').textContent=money(DB.income.filter(r=>(r.date||'').startsWith(mo)).reduce((s,r)=>s+r.amount,0));
+  document.getElementById('inc-y').textContent=money(DB.income.filter(r=>(r.date||'').startsWith(yr)).reduce((s,r)=>s+r.amount,0));
+  document.getElementById('inc-cnt').textContent=DB.income.length;
+  document.getElementById('inc-tbody').innerHTML=!rows.length?`<tr><td colspan="6" style="text-align:center;padding:36px;color:var(--tx-h)">ยังไม่มีรายรับ</td></tr>`:
+  rows.map(r=>{const rS=encodeURIComponent(JSON.stringify(r));const fromHarv=r.fromHarvest?'<span class="badge bg-g" style="font-size:10px">🍈 จากผลผลิต</span> ':' ';return`<tr><td>${fmt(r.date)}</td><td>${fromHarv}${r.desc}</td><td>${r.cat}</td><td style="color:var(--green-d);font-weight:700">${money(r.amount)}</td><td>${r.notes||'—'}</td><td><button class="btn btn-xs btn-s" onclick="openM('income',JSON.parse(decodeURIComponent('${rS}')))">✏️</button><button class="btn btn-xs btn-d" onclick="delRec('income','${r.id}')">✕</button></td></tr>`;}).join('');
+  const mgInc=DB.income.filter(r=>(r.date||'').startsWith(yr)&&r.fruit==='Mangosteen').reduce((s,r)=>s+r.amount,0);
+  const duInc=DB.income.filter(r=>(r.date||'').startsWith(yr)&&r.fruit==='Durian').reduce((s,r)=>s+r.amount,0);
+  const otInc=DB.income.filter(r=>(r.date||'').startsWith(yr)&&!['Mangosteen','Durian'].includes(r.fruit)).reduce((s,r)=>s+r.amount,0);
+  const total=mgInc+duInc+otInc||1;
+  const cats=[{label:'มังคุด',val:mgInc,color:'#9C27B0'},{label:'ทุเรียน',val:duInc,color:'#FF9800'},{label:'อื่นๆ',val:otInc,color:'#9E9E9E'}].filter(c=>c.val>0);
+  document.getElementById('inc-pie').innerHTML=renderPie(cats,total);
+}
+
+// ════════════════════════════════════════
+// EXPENSE — date range + sort + pie
+// ════════════════════════════════════════
+function rExp(){
+  const q=(document.getElementById('expq')?.value||'').toLowerCase();
+  const cf=document.getElementById('expf')?.value||'';
+  const frm=document.getElementById('exp-from')?.value||'';
+  const to=document.getElementById('exp-to')?.value||'';
+  const sort=document.getElementById('exp-sort')?.value||'date-desc';
+  const yr=thisY();const mo=thisM();const td=today();
+  let rows=[...DB.expense].filter(r=>{
+    const mq=!q||(r.desc||'').toLowerCase().includes(q);
+    const mc=!cf||r.cat===cf;
+    const mf=!frm||r.date>=frm;const mto=!to||r.date<=to;
+    return mq&&mc&&mf&&mto;
+  });
+  const[sk,sd]=sort.split('-');
+  rows.sort((a,b)=>{const av=a[sk]||0;const bv=b[sk]||0;return sd==='desc'?(bv>av?1:bv<av?-1:0):(av>bv?1:av<bv?-1:0);});
+  document.getElementById('exp-td').textContent=money(DB.expense.filter(r=>r.date===td).reduce((s,r)=>s+r.amount,0));
+  document.getElementById('exp-m').textContent=money(DB.expense.filter(r=>(r.date||'').startsWith(mo)).reduce((s,r)=>s+r.amount,0));
+  document.getElementById('exp-y').textContent=money(DB.expense.filter(r=>(r.date||'').startsWith(yr)).reduce((s,r)=>s+r.amount,0));
+  document.getElementById('exp-tbody').innerHTML=!rows.length?`<tr><td colspan="6" style="text-align:center;padding:36px;color:var(--tx-h)">ยังไม่มีรายจ่าย</td></tr>`:
+  rows.map(r=>{const rS=encodeURIComponent(JSON.stringify(r));return`<tr><td>${fmt(r.date)}</td><td>${r.desc}</td><td>${r.cat}</td><td style="color:var(--red-d);font-weight:700">${money(r.amount)}</td><td>${r.notes||'—'}</td><td><button class="btn btn-xs btn-s" onclick="openM('expense',JSON.parse(decodeURIComponent('${rS}')))">✏️</button><button class="btn btn-xs btn-d" onclick="delRec('expense','${r.id}')">✕</button></td></tr>`;}).join('');
+  const cats2=['ปุ๋ย','สารเคมี','แรงงาน','น้ำมัน','อุปกรณ์','อื่นๆ'];
+  const cols=['#4CAF50','#F44336','#2196F3','#FF9800','#795548','#9E9E9E'];
+  const ec=cats2.map((cat,i)=>({label:cat,val:DB.expense.filter(r=>(r.date||'').startsWith(yr)&&r.cat===cat).reduce((s,r)=>s+r.amount,0),color:cols[i]})).filter(c=>c.val>0);
+  document.getElementById('exp-pie').innerHTML=renderPie(ec,ec.reduce((s,c)=>s+c.val,0)||1);
+}
+
+// ════════════════════════════════════════
+// INVENTORY
+// ════════════════════════════════════════
+let _icat='';
+function fInv(cat,el){_icat=cat;document.querySelectorAll('.chip[onclick*="fInv"]').forEach(c=>c.classList.remove('on'));el?.classList.add('on');rInv();}
+function rInv(){
+  const items=DB.inventory.filter(i=>!_icat||i.cat===_icat);
+  const grid=document.getElementById('inv-grid');
+  if(!items.length){grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">📦</div><div class="et">ไม่มีรายการ</div><div class="es">เพิ่มวัสดุในสต็อก</div><button class="btn btn-p" onclick="openM('inventory')">+ เพิ่มรายการ</button></div>`;return;}
+  grid.innerHTML=items.map(item=>{
+    const low=item.qty<=item.minQty;const pct=item.minQty?Math.min(100,Math.round(item.qty/Math.max(item.minQty*2,1)*100)):60;
+    const iS=encodeURIComponent(JSON.stringify(item));
+    return`<div class="ic${low?' low':''}" onclick="openM('inventory',JSON.parse(decodeURIComponent('${iS}')))">
+<div style="display:flex;justify-content:space-between;align-items:flex-start"><div class="ic-name">${item.name}</div>${low?'<span class="badge bg-r">ต่ำ</span>':''}</div>
+<div class="ic-cat">${item.cat}</div>
+<div style="display:flex;justify-content:space-between;align-items:flex-end"><div><div class="ic-qty">${item.qty}</div><div class="ic-unit">${item.unit}</div></div>${item.cost?`<div style="font-size:12px;color:var(--tx-m)">฿${item.cost}/${item.unit}</div>`:''}</div>
+<div class="prog" style="margin-top:11px"><div class="prog-fill" style="width:${pct}%;background:${low?'var(--red)':pct<60?'var(--orange)':'var(--green)'}"></div></div>
+${item.minQty?`<div style="font-size:11px;color:var(--tx-h);margin-top:4px">แจ้งเตือน ≤ ${item.minQty} ${item.unit}</div>`:''}
+</div>`;}).join('');
+  document.getElementById('buy-list').innerHTML=!DB.inventory.filter(i=>i.qty<=i.minQty).length?'<div style="color:var(--tx-h);text-align:center;padding:14px">🎉 ไม่มีรายการต้องซื้อ</div>':
+  DB.inventory.filter(i=>i.qty<=i.minQty).map(i=>`<div class="srow"><span>📦 ${i.name}</span><span class="val" style="color:var(--red-d)">เหลือ ${i.qty} ${i.unit} (ขั้นต่ำ ${i.minQty})</span></div>`).join('');
+}
+
+// ════════════════════════════════════════
+// PIE CHART (CSS conic-gradient)
+// ════════════════════════════════════════
+function renderPie(cats,total){
+  let deg=0;
+  const segs=cats.map(c=>{const angle=(c.val/total)*360;const pct=Math.round((c.val/total)*100);const seg=`<div style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(transparent ${deg}deg,${c.color} ${deg}deg,${c.color} ${deg+angle}deg,transparent ${deg+angle}deg)"></div>`;deg+=angle;return{seg,pct,label:c.label,color:c.color,val:c.val};});
+  const pie=`<div style="position:relative;width:100px;height:100px;border-radius:50%;background:var(--border);flex-shrink:0">${segs.map(s=>s.seg).join('')}<div style="position:absolute;inset:25%;background:var(--surface);border-radius:50%"></div></div>`;
+  const legend=segs.map(s=>`<div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;font-size:13px"><div style="width:12px;height:12px;border-radius:3px;background:${s.color};flex-shrink:0"></div><span>${s.label}</span><span style="margin-left:auto;font-weight:700">${s.pct}%</span><span style="color:var(--tx-h);font-size:12px">${money(s.val)}</span></div>`).join('');
+  return`<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">${pie}<div style="flex:1;min-width:120px">${legend}</div></div>`;
+}
+
+// ════════════════════════════════════════
+// REPORTS — Bar + Pie + Line + KPIs (FUNCTIONAL_SPEC)
+// ════════════════════════════════════════
+function rRep(){
+  const yr=(document.getElementById('rep-yr')?.value||thisY());
+  const months=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const mInc=months.map((_,i)=>DB.income.filter(r=>(r.date||'').startsWith(`${yr}-${String(i+1).padStart(2,'0')}`)).reduce((s,r)=>s+r.amount,0));
+  const mExp=months.map((_,i)=>DB.expense.filter(r=>(r.date||'').startsWith(`${yr}-${String(i+1).padStart(2,'0')}`)).reduce((s,r)=>s+r.amount,0));
+  const mKg=months.map((_,i)=>DB.harvest.filter(h=>(h.date||'').startsWith(`${yr}-${String(i+1).padStart(2,'0')}`)).reduce((s,h)=>s+h.weight,0));
+  const mProfit=mInc.map((v,i)=>v-mExp[i]);
+  const maxV=Math.max(...mInc,...mExp,1);
+  // Bar chart
+  const bar=document.getElementById('rep-bar');
+  bar.innerHTML=mInc.map((v,i)=>`<div class="bar-g"><div style="flex:1;display:flex;align-items:flex-end;gap:2px;width:100%"><div class="bar" style="flex:1;background:var(--green);height:${Math.max(4,(v/maxV)*110)}px" title="${months[i]} รายรับ ${money(v)}"></div><div class="bar" style="flex:1;background:var(--red);opacity:.7;height:${Math.max(4,(mExp[i]/maxV)*110)}px" title="${months[i]} รายจ่าย ${money(mExp[i])}"></div></div></div>`).join('');
+  document.getElementById('rep-bar-lbl').innerHTML=months.map(m=>`<div style="flex:1;text-align:center;font-size:10px;color:var(--tx-h)">${m}</div>`).join('');
+  // Expense pie by category
+  const cats=['ปุ๋ย','สารเคมี','แรงงาน','น้ำมัน','อุปกรณ์','อื่นๆ'];
+  const cols=['#4CAF50','#F44336','#2196F3','#FF9800','#795548','#9E9E9E'];
+  const ec=cats.map((cat,i)=>({label:cat,val:DB.expense.filter(r=>(r.date||'').startsWith(yr)&&r.cat===cat).reduce((s,r)=>s+r.amount,0),color:cols[i]})).filter(c=>c.val>0);
+  document.getElementById('rep-exp-pie').innerHTML=renderPie(ec,ec.reduce((s,c)=>s+c.val,0)||1);
+  // Line charts
+  rLine('rep-line-harv','rep-line-harv-txt',mKg,'#4CAF50');
+  rLine('rep-line-profit','rep-line-profit-txt',mProfit,'#2196F3');
+  // KPIs (per FUNCTIONAL_SPEC: Total Income, Total Expense, Net Profit, Total Harvest Weight, Total Cost)
+  const totKg=DB.harvest.filter(h=>(h.date||'').startsWith(yr)).reduce((s,h)=>s+h.weight,0);
+  const totCost=DB.expense.filter(r=>(r.date||'').startsWith(yr)).reduce((s,r)=>s+r.amount,0);
+  const totInc=DB.income.filter(r=>(r.date||'').startsWith(yr)).reduce((s,r)=>s+r.amount,0);
+  const cpk=totKg?Math.round(totCost/totKg):0;
+  const gpm=totInc?((totInc-totCost)/totInc*100).toFixed(1):0;
+  const fertilCost=DB.fertLog.filter(r=>(r.date||'').startsWith(yr)).reduce((s,r)=>s+r.cost,0);
+  document.getElementById('rep-kpi').innerHTML=`<div class="kpi-grid">
+<div class="kpi"><div class="kpi-val">${money(cpk)}</div><div class="kpi-lbl">ต้นทุน/กก.</div></div>
+<div class="kpi"><div class="kpi-val">${gpm}%</div><div class="kpi-lbl">อัตรากำไรขั้นต้น</div></div>
+<div class="kpi"><div class="kpi-val">${totKg.toLocaleString()} กก.</div><div class="kpi-lbl">ผลผลิตรวม</div></div>
+<div class="kpi"><div class="kpi-val">${money(totInc)}</div><div class="kpi-lbl">รายรับรวม</div></div>
+<div class="kpi"><div class="kpi-val">${money(totCost)}</div><div class="kpi-lbl">รายจ่ายรวม</div></div>
+<div class="kpi"><div class="kpi-val" style="color:${totInc-totCost>=0?'var(--green-d)':'var(--red-d)'}">${money(totInc-totCost)}</div><div class="kpi-lbl">กำไรสุทธิ</div></div>
+<div class="kpi"><div class="kpi-val">${money(fertilCost)}</div><div class="kpi-lbl">ค่าปุ๋ยรวม</div></div>
+<div class="kpi"><div class="kpi-val">${DB.fertLog.filter(r=>(r.date||'').startsWith(yr)).length}</div><div class="kpi-lbl">ครั้งที่ใส่ปุ๋ย</div></div>
+</div>`;
+  // Yearly summary table
+  document.getElementById('rep-summary').innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px">
+${months.map((m,i)=>{const p=mProfit[i];return`<div class="fgs"><div class="fgs-v" style="color:${p>=0?'var(--green-d)':'var(--red-d)'};font-size:14px">${money(p)}</div><div class="fgs-u">รายรับ ${money(mInc[i])}</div><div class="fgs-l">${m}</div></div>`;}).join('')}</div>`;
+}
+function rLine(svgId,txtId,data,color){
+  const svg=document.getElementById(svgId);const txt=document.getElementById(txtId);
+  const hasData=data.some(v=>v!==0);
+  if(!hasData){if(txt)txt.textContent='ไม่มีข้อมูล';return;}
+  if(txt)txt.textContent='';
+  const max=Math.max(...data.map(Math.abs),1);const w=400;const h=100;const pad=10;
+  const pts=data.map((v,i)=>`${pad+(i/(data.length-1))*(w-pad*2)},${h/2-(v/max)*(h/2-pad)}`).join(' ');
+  svg.innerHTML=`<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+${data.map((v,i)=>`<circle cx="${pad+(i/(data.length-1))*(w-pad*2)}" cy="${h/2-(v/max)*(h/2-pad)}" r="3" fill="${color}"/>`).join('')}
+<line x1="${pad}" y1="${h/2}" x2="${w-pad}" y2="${h/2}" stroke="var(--border)" stroke-width="1" stroke-dasharray="4"/>`;
+}
+
+// ════════════════════════════════════════
+// SETTINGS
+// ════════════════════════════════════════
+function rSett(){
+  document.getElementById('set-fn').value=DB.settings.farmName||'';
+  document.getElementById('set-own').value=DB.settings.owner||'';
+  document.getElementById('set-loc').value=DB.settings.location||'';
+  document.getElementById('set-area').value=DB.settings.area||'';
+  document.getElementById('set-cur').value=DB.settings.currency||'฿';
+  document.getElementById('set-bag').value=DB.settings.bagDefault||25;
+  document.getElementById('data-sum').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:14px">
+<div>🌳 ต้นไม้: <strong>${DB.trees.length}</strong></div><div>✅ งาน: <strong>${DB.tasks.length}</strong></div>
+<div>🍈 ผลผลิต: <strong>${DB.harvest.length}</strong></div><div>☠️ พ่นยา: <strong>${DB.sprayLog.length}</strong></div>
+<div>💰 รายรับ: <strong>${DB.income.length}</strong></div><div>💸 รายจ่าย: <strong>${DB.expense.length}</strong></div>
+<div>📦 สต็อก: <strong>${DB.inventory.length}</strong></div><div>🧪 ประวัติปุ๋ย: <strong>${DB.fertLog.length}</strong></div>
+</div><div style="margin-top:12px;padding:10px;background:var(--gray-l);border-radius:var(--radius-s);font-size:12px;color:var(--tx-m)">💾 localStorage · Key: ${LS}</div>`;
+}
+
+// ════════════════════════════════════════
+// AI ASSISTANT
+// ════════════════════════════════════════
+function askAI(q){document.getElementById('chat-in').value=q;sendChat();}
+function sendChat(){
+  const inp=document.getElementById('chat-in');const q=inp.value.trim();if(!q)return;inp.value='';
+  const msgs=document.getElementById('chat-msgs');
+  msgs.innerHTML+=`<div class="msg user">${q}</div>`;msgs.scrollTop=msgs.scrollHeight;
+  setTimeout(()=>{msgs.innerHTML+=`<div class="msg ai">${aiReply(q)}</div>`;msgs.scrollTop=msgs.scrollHeight;},350);
+}
+function aiReply(q){
+  const ql=q.toLowerCase();const td=today();const yr=thisY();const mo=thisM();
+  if(ql.includes('วันนี้')&&(ql.includes('ทำ')||ql.includes('งาน'))){
+    const tt=DB.tasks.filter(t=>!t.done&&t.date===td);
+    const ov=DB.tasks.filter(t=>!t.done&&t.date&&t.date<td);
+    let r=`📋 <strong>งานวันนี้ (${fmt(td)})</strong><br><br>`;
+    if(!tt.length&&!ov.length)return r+'ไม่มีงานกำหนดวันนี้ครับ 🎉';
+    if(ov.length)r+=`⚠️ <strong>งานค้าง ${ov.length} รายการ:</strong><br>${ov.map(t=>`• ${t.name} (${fmt(t.date)})`).join('<br>')}<br><br>`;
+    if(tt.length)r+=`✅ <strong>งานวันนี้ ${tt.length} รายการ:</strong><br>${tt.map(t=>`• ${t.name}${t.zone?' ('+t.zone+')':''}`).join('<br>')}`;
+    return r;
+  }
+  if(ql.includes('ปุ๋ย')&&(ql.includes('เหลือ')||ql.includes('กี่'))){const fert=DB.inventory.filter(i=>i.cat==='ปุ๋ย');if(!fert.length)return'ยังไม่มีข้อมูลปุ๋ยในสต็อกครับ';return`📦 <strong>ปุ๋ยคงเหลือ:</strong><br><br>${fert.map(f=>{const bags=Math.floor(f.qty/(DB.settings.bagDefault||25));return`• ${f.name}: ${f.qty} ${f.unit} (≈ ${bags} กระสอบ)${f.qty<=f.minQty?' ⚠️ ต้องซื้อ':''}`;}).join('<br>')}`;
+  }
+  if(ql.includes('ปุ๋ย')){return'ไปที่ "คำนวณปุ๋ย" กรอกข้อมูลต้นไม้ระบบจะคำนวณอัตโนมัติพร้อม AI แนะนำครับ 🧪';}
+  if(ql.includes('รายรับ')){const iM=DB.income.filter(r=>(r.date||'').startsWith(mo)).reduce((s,r)=>s+r.amount,0);const iY=DB.income.filter(r=>(r.date||'').startsWith(yr)).reduce((s,r)=>s+r.amount,0);return`💰 เดือนนี้: <strong>${money(iM)}</strong><br>ปีนี้: <strong>${money(iY)}</strong>`;}
+  if(ql.includes('กำไร')){const iY=DB.income.filter(r=>(r.date||'').startsWith(yr)).reduce((s,r)=>s+r.amount,0);const eY=DB.expense.filter(r=>(r.date||'').startsWith(yr)).reduce((s,r)=>s+r.amount,0);const p=iY-eY;return`📈 รายรับ: ${money(iY)}<br>รายจ่าย: ${money(eY)}<br><strong>${p>=0?'กำไร':'ขาดทุน'}: ${money(p)}</strong>`;}
+  if(ql.includes('งานค้าง')||ql.includes('ค้าง')){const ov=DB.tasks.filter(t=>!t.done&&t.date&&t.date<td);if(!ov.length)return'🎉 ไม่มีงานค้างครับ!';return`⚠️ <strong>งานค้าง ${ov.length} รายการ:</strong><br><br>${ov.map(t=>`• ${t.name} — ${fmt(t.date)}`).join('<br>')}`;} 
+  if(ql.includes('มังคุด')&&(ql.includes('กิโล')||ql.includes('กก'))){const mg=DB.harvest.filter(h=>h.type==='Mangosteen'&&(h.date||'').startsWith(yr));const tk=mg.reduce((s,h)=>s+h.weight,0);const tr=mg.reduce((s,h)=>s+h.total,0);return`🌳 มังคุดปีนี้: ${tk.toLocaleString()} กก. · ${money(tr)}<br>ราคาเฉลี่ย: ${tk?money(Math.round(tr/tk))+'/กก.':'—'}`;}
+  if(ql.includes('ทุเรียน')&&(ql.includes('กิโล')||ql.includes('กก'))){const du=DB.harvest.filter(h=>h.type==='Durian'&&(h.date||'').startsWith(yr));const tk=du.reduce((s,h)=>s+h.weight,0);const tr=du.reduce((s,h)=>s+h.total,0);return`🌴 ทุเรียนปีนี้: ${tk.toLocaleString()} กก. · ${money(tr)}<br>ราคาเฉลี่ย: ${tk?money(Math.round(tr/tk))+'/กก.':'—'}`;}
+  if(ql.includes('ต้นทุน/กก')||ql.includes('ต้นทุนต่อกิโล')){const tk=DB.harvest.filter(h=>(h.date||'').startsWith(yr)).reduce((s,h)=>s+h.weight,0);const tc=DB.expense.filter(r=>(r.date||'').startsWith(yr)).reduce((s,r)=>s+r.amount,0);return`🎯 ต้นทุน/กก. ปีนี้: <strong>${money(tk?Math.round(tc/tk):0)}</strong><br>ต้นทุนรวม: ${money(tc)}<br>ผลผลิตรวม: ${tk.toLocaleString()} กก.`;}
+  if(ql.includes('ใช้เงิน')||ql.includes('รายจ่าย')){const eY=DB.expense.filter(r=>(r.date||'').startsWith(yr)).reduce((s,r)=>s+r.amount,0);const eM=DB.expense.filter(r=>(r.date||'').startsWith(mo)).reduce((s,r)=>s+r.amount,0);return`💸 เดือนนี้: ${money(eM)}<br>ปีนี้: ${money(eY)}`;}
+  if(ql.includes('ต้นไม้')||ql.includes('กี่ต้น')){const mg=DB.trees.filter(t=>t.type==='Mangosteen').length;const du=DB.trees.filter(t=>t.type==='Durian').length;const sick=DB.trees.filter(t=>t.health==='sick').length;return`🌳 มังคุด: ${mg} ต้น · 🌴 ทุเรียน: ${du} ต้น${sick?`<br>⚠️ ต้องดูแล/ป่วย: ${sick} ต้น`:''}`;}
+  return`สวัสดีครับ! ถามผมได้เรื่อง:<br><br>
+• <strong>งาน:</strong> "วันนี้ต้องทำอะไร" "งานค้าง"<br>
+• <strong>การเงิน:</strong> "รายรับเดือนนี้" "กำไรปีนี้" "ใช้เงินไปเท่าไร"<br>
+• <strong>ผลผลิต:</strong> "มังคุดปีนี้กี่กิโล"<br>
+• <strong>ปุ๋ย:</strong> "เหลือปุ๋ยกี่กระสอบ"<br>
+• <strong>KPI:</strong> "ต้นทุนต่อกิโลกรัม"<br><br>ลองถามใหม่ครับ 🌿`;
+}
+
+// ════════════════════════════════════════
+// EXPORT — JSON, CSV, PDF, Excel (FUNCTIONAL_SPEC)
+// ════════════════════════════════════════
+function doExportJSON(){const b=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`ai-farm-backup-${today()}.json`;a.click();toast('Export JSON สำเร็จ');}
+function doExportCSV(){
+  const h=['วันที่','ชนิด','เกรด','น้ำหนัก(กก.)','ราคา/กก.','รวม(฿)','ลูกค้า'];
+  const r=DB.harvest.map(h=>[h.date,h.type,h.grade,h.weight,h.price,h.total,h.customer].map(v=>`"${v||''}"`).join(','));
+  const b=new Blob([[h.join(','),...r].join('\n')],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`farm-harvest-${today()}.csv`;a.click();toast('Export CSV สำเร็จ');
+}
+function doExportFLCSV(){
+  const h=['วันที่','ชนิดพืช','ระยะ','ปุ๋ย','กก./ต้น','รวมกก.','กระสอบ','ต้นทุน(฿)','ผู้ดำเนินการ','หมายเหตุ'];
+  const r=DB.fertLog.map(r=>[r.date,r.plant,r.stage,r.fertilizer,r.kgPerTree,r.totalKg,r.bags,r.cost,r.operator,r.note].map(v=>`"${v||''}"`).join(','));
+  const b=new Blob([[h.join(','),...r].join('\n')],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`fert-log-${today()}.csv`;a.click();toast('Export CSV ประวัติปุ๋ยสำเร็จ');
+}
+// PDF Export — print-friendly window
+function doExportPDF(){
+  const yr=document.getElementById('rep-yr')?.value||thisY();
+  const incY=DB.income.filter(r=>(r.date||'').startsWith(yr)).reduce((s,r)=>s+r.amount,0);
+  const expY=DB.expense.filter(r=>(r.date||'').startsWith(yr)).reduce((s,r)=>s+r.amount,0);
+  const profit=incY-expY;
+  const totKg=DB.harvest.filter(h=>(h.date||'').startsWith(yr)).reduce((s,h)=>s+h.weight,0);
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Farm Report ${yr}</title>
+<style>body{font-family:'Segoe UI',sans-serif;padding:32px;color:#212121;max-width:800px;margin:0 auto}
+h1{color:#2E7D32;border-bottom:2px solid #4CAF50;padding-bottom:8px}
+h2{color:#388E3C;margin-top:24px}
+table{width:100%;border-collapse:collapse;margin:12px 0}
+th{background:#E8F5E9;padding:8px;text-align:left;font-size:12px;border:1px solid #C8E6C9}
+td{padding:8px;border:1px solid #E0E0E0;font-size:13px}
+.stat{display:inline-block;background:#F1F8E9;border:1px solid #C8E6C9;border-radius:8px;padding:12px 20px;margin:8px;text-align:center}
+.stat-v{font-size:22px;font-weight:800;color:#2E7D32}
+.stat-l{font-size:12px;color:#757575}
+@media print{@page{margin:15mm}}</style></head>
+<body><h1>🌿 รายงานสวนผลไม้ ปี ${yr}</h1>
+<p>${DB.settings.farmName} · ${DB.settings.location} · พิมพ์: ${fmt(today())}</p>
+<h2>สรุปการเงิน</h2>
+<div><div class="stat"><div class="stat-v">${money(incY)}</div><div class="stat-l">รายรับรวม</div></div>
+<div class="stat"><div class="stat-v">${money(expY)}</div><div class="stat-l">รายจ่ายรวม</div></div>
+<div class="stat"><div class="stat-v" style="color:${profit>=0?'#2E7D32':'#B71C1C'}">${money(profit)}</div><div class="stat-l">กำไรสุทธิ</div></div>
+<div class="stat"><div class="stat-v">${totKg.toLocaleString()} กก.</div><div class="stat-l">ผลผลิตรวม</div></div></div>
+<h2>ผลผลิต</h2>
+<table><tr><th>วันที่</th><th>ชนิด</th><th>เกรด</th><th>น้ำหนัก</th><th>ราคา/กก.</th><th>รวม</th><th>ลูกค้า</th></tr>
+${DB.harvest.filter(h=>(h.date||'').startsWith(yr)).map(h=>`<tr><td>${fmt(h.date)}</td><td>${h.type}</td><td>${h.grade}</td><td>${h.weight} กก.</td><td>${money(h.price)}</td><td>${money(h.total)}</td><td>${h.customer||'—'}</td></tr>`).join('')}
+</table>
+<h2>รายรับ</h2>
+<table><tr><th>วันที่</th><th>รายละเอียด</th><th>จำนวน</th></tr>
+${DB.income.filter(r=>(r.date||'').startsWith(yr)).map(r=>`<tr><td>${fmt(r.date)}</td><td>${r.desc}</td><td>${money(r.amount)}</td></tr>`).join('')}
+</table>
+<h2>รายจ่าย</h2>
+<table><tr><th>วันที่</th><th>รายละเอียด</th><th>หมวด</th><th>จำนวน</th></tr>
+${DB.expense.filter(r=>(r.date||'').startsWith(yr)).map(r=>`<tr><td>${fmt(r.date)}</td><td>${r.desc}</td><td>${r.cat}</td><td>${money(r.amount)}</td></tr>`).join('')}
+</table>
+<script>window.print();<\/script></body></html>`);
+  win.document.close();toast('เปิดหน้า PDF แล้ว — สั่งพิมพ์หรือ Save as PDF');
+}
+// Excel Export (CSV with BOM for Excel encoding)
+function doExportExcel(){
+  const yr=document.getElementById('rep-yr')?.value||thisY();
+  const BOM='\uFEFF';
+  const h1='วันที่,ชนิด,เกรด,น้ำหนัก(กก.),ราคา/กก.,รวม(฿),ลูกค้า';
+  const r1=DB.harvest.filter(h=>(h.date||'').startsWith(yr)).map(h=>[h.date,h.type,h.grade,h.weight,h.price,h.total,h.customer||''].join(','));
+  const h2='วันที่,รายละเอียด,หมวด,จำนวน(฿)';
+  const r2=DB.income.filter(r=>(r.date||'').startsWith(yr)).map(r=>[r.date,r.desc,r.cat,r.amount].join(','));
+  const h3='วันที่,รายละเอียด,หมวด,จำนวน(฿)';
+  const r3=DB.expense.filter(r=>(r.date||'').startsWith(yr)).map(r=>[r.date,r.desc,r.cat,r.amount].join(','));
+  const csv=BOM+`ผลผลิต\n${h1}\n${r1.join('\n')}\n\nรายรับ\n${h2}\n${r2.join('\n')}\n\nรายจ่าย\n${h3}\n${r3.join('\n')}`;
+  const b=new Blob([csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`farm-report-${yr}.csv`;a.click();
+  toast('Export Excel (CSV) สำเร็จ — เปิดด้วย Excel ได้เลย');
+}
+function doImport(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);Object.keys(DB).forEach(k=>{if(d[k]!==undefined)DB[k]=d[k];});dbS();rPage(_p);toast('นำเข้าข้อมูลสำเร็จ ✓');}catch{toast('ไฟล์ JSON ไม่ถูกต้อง','e');}};r.readAsText(f);}
+function doClear(){if(!confirm('⚠️ ลบข้อมูลทั้งหมด?'))return;if(!confirm('ยืนยัน — ข้อมูลจะหายถาวร'))return;Object.assign(DB,{trees:[],tasks:[],harvest:[],sprayLog:[],chemStock:[],income:[],expense:[],inventory:[],fertCalcs:[],fertLog:[]});dbS();rPage(_p);toast('ล้างข้อมูลแล้ว','w');}
+
+// ════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════
+function toast(msg,type='s'){
+  const tc=document.getElementById('tc');const el=document.createElement('div');
+  el.className=`toast t-${type}`;
+  el.innerHTML=`<span>${type==='s'?'✓':type==='e'?'✕':type==='w'?'⚠️':'ℹ️'}</span>${msg}`;
+  tc.appendChild(el);
+  setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.remove(),300);},3000);
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+// ════════════════════════════════════════
+// WEATHER — Open-Meteo (free, no API key)
+// Bang Lamung, Chon Buri: 12.9236, 100.8825
+// ════════════════════════════════════════
+const WX_LAT=12.9236,WX_LON=100.8825;
+const WMO_DESC={0:'ท้องฟ้าแจ่มใส',1:'แจ่มใสเป็นส่วนใหญ่',2:'เมฆบางส่วน',3:'ครึ้ม',45:'หมอก',48:'หมอกเกาะแข็ง',51:'ฝนปรอย',53:'ฝนปรอยปานกลาง',55:'ฝนปรอยหนัก',61:'ฝนเล็กน้อย',63:'ฝนปานกลาง',65:'ฝนหนัก',71:'หิมะเบา',80:'ฝนไม่ต่อเนื่อง',81:'ฝนปานกลาง',82:'ฝนหนักมาก',95:'พายุฝนฟ้าคะนอง',96:'พายุ+ลูกเห็บ'};
+const WMO_ICON={0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌦️',63:'🌧️',65:'🌧️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️'};
+function wxAdvice(code,wind){
+  if([95,96,82,65].includes(code))return'⚠️ ไม่เหมาะสำหรับพ่นยา';
+  if([61,63,80,81].includes(code))return'🌧️ ฝนตก — งดพ่นยา';
+  if(wind>30)return'💨 ลมแรง — ระวังพ่นยา';
+  if([0,1,2].includes(code))return'✅ เหมาะสำหรับพ่นยา';
+  return'⛅ สภาพปานกลาง';
+}
+async function fetchWeather(){
+  try{
+    const url=`https://api.open-meteo.com/v1/forecast?latitude=${WX_LAT}&longitude=${WX_LON}&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,uv_index,weather_code&hourly=temperature_2m&timezone=Asia%2FBangkok&forecast_days=1`;
+    const res=await fetch(url);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const d=await res.json();
+    const c=d.current;
+    const code=c.weather_code??0;
+    document.getElementById('wx-t').textContent=Math.round(c.temperature_2m??32);
+    document.getElementById('wx-icon').textContent=WMO_ICON[code]||'⛅';
+    document.getElementById('wx-d').textContent=(WMO_DESC[code]||'—')+' · '+wxAdvice(code,c.wind_speed_10m??0);
+    document.getElementById('wx-hum').innerHTML=(Math.round(c.relative_humidity_2m??0))+'<span style="font-size:13px">%</span>';
+    document.getElementById('wx-rain').innerHTML=(c.precipitation??0).toFixed(1)+'<span style="font-size:13px">mm</span>';
+    document.getElementById('wx-wind').innerHTML=Math.round(c.wind_speed_10m??0)+'<span style="font-size:13px">km/h</span>';
+    document.getElementById('wx-uv').textContent=Math.round(c.uv_index??0);
+    document.getElementById('wx-loc').textContent=(DB.settings.location||'บางละมุง, ชลบุรี')+' · อัปเดต '+new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+  }catch(e){
+    document.getElementById('wx-d').textContent='ไม่สามารถโหลดสภาพอากาศได้';
+  }
+}
+
+(function(){
+  dbL();seed();
+  const yr=new Date().getFullYear();
+  const sel=document.getElementById('rep-yr');sel.innerHTML='';
+  for(let y=yr-2;y<=yr+1;y++){const o=document.createElement('option');o.value=y;o.textContent=y+(y===yr?' (ปีนี้)':'');if(y===yr)o.selected=true;sel.appendChild(o);}
+  document.getElementById('sb-name').textContent=DB.settings.farmName||'สวนผลไม้';
+  document.getElementById('wx-loc').textContent=DB.settings.location||'บางละมุง, ชลบุรี';
+  rDash();badge();
+  // โหลดอากาศทันทีและอัปเดตทุกชั่วโมง
+  fetchWeather();
+  setInterval(fetchWeather,60*60*1000);
+})();
+</script>
+</body>
+</html>
